@@ -859,6 +859,7 @@
     const [activeChart, setActiveChart]       = useState('prototyping');
     const [activeSubSkill, setActiveSubSkill] = useState(null);
     const [hoverIdx, setHoverIdx]             = useState(null);
+    const [selectedMember, setSelectedMember] = useState(null);
     const chartSvgRef = useRef(null);
 
     const MONTHS           = ['Oct','Nov','Dec','Jan','Feb','Mar','Apr'];
@@ -913,11 +914,71 @@
     const handleChartLeave=()=>setHoverIdx(null);
 
     const members = [
-      { name: 'Aiko Okafor',   role: 'Data Analyst',        skills: 3, color: C.accent },
-      { name: 'Marcus Chen',   role: 'Senior Data Analyst',  skills: 1, color: C.warm },
-      { name: 'Lily Monroe',   role: 'ML Engineer',          skills: 4, color: '#059669' },
-      { name: 'David Kim',     role: 'Data Scientist',       skills: 2, color: C.accent },
-      { name: 'Rina Taguchi',  role: 'Data Analyst',         skills: 3, color: '#6366F1' },
+      { name: 'Aiko Okafor',  role: 'Data Analyst',       color: C.accent,   skills: 3, trend: '+2 this quarter',
+        skillDetail: [
+          { label: 'Prompt Engineering',      status: 'complete',     pct: 100 },
+          { label: 'AI Workflow Integration', status: 'complete',     pct: 100 },
+          { label: 'Claude API Fundamentals', status: 'complete',     pct: 100 },
+          { label: 'Prototyping & Iteration', status: 'in-progress',  pct: 62  },
+        ],
+        examples: [
+          'Built an AI-assisted data brief template now used by 4 teammates',
+          'Reduced report turnaround from 3 days to 6 hours using Claude API',
+        ],
+        feedback: 'Aiko is your strongest performer — she\'s leading by example and influencing peers. Consider naming her an informal AI mentor for the team. In your next 1:1, help her frame the impact of her workflow changes for her Q2 review so the value is visible to stakeholders.',
+      },
+      { name: 'Marcus Chen',  role: 'Senior Data Analyst', color: C.warm,     skills: 1, trend: 'No activity since Jan',
+        skillDetail: [
+          { label: 'Prompt Engineering',      status: 'complete',     pct: 100 },
+          { label: 'AI Workflow Integration', status: 'not-started',  pct: 0   },
+          { label: 'Claude API Fundamentals', status: 'not-started',  pct: 0   },
+          { label: 'Prototyping & Iteration', status: 'not-started',  pct: 0   },
+        ],
+        examples: [
+          'Completed Prompt Engineering in December — no Coursera activity since',
+          'No applied skill usage detected in project data for Q1',
+        ],
+        feedback: 'Marcus completed his first skill in December but hasn\'t engaged since. In your 1:1, explore what\'s creating friction — it may be workload, unclear expectations, or relevance. Try connecting the skills to a specific project he\'s already working on, like the Q2 client analysis.',
+      },
+      { name: 'Lily Monroe',  role: 'ML Engineer',         color: '#059669',  skills: 4, trend: 'Goal achieved Feb 14',
+        skillDetail: [
+          { label: 'Prompt Engineering',      status: 'complete',     pct: 100 },
+          { label: 'AI Workflow Integration', status: 'complete',     pct: 100 },
+          { label: 'Claude API Fundamentals', status: 'complete',     pct: 100 },
+          { label: 'Prototyping & Iteration', status: 'complete',     pct: 100 },
+        ],
+        examples: [
+          'Integrated Claude API into the risk scoring pipeline (January)',
+          'Prototyped 2 internal tools now used daily by the analytics team',
+        ],
+        feedback: 'Lily hit her Q2 goal in February — earliest on the team. Think stretch goals: an advanced AI Systems module or a peer teaching role. She\'s ready for challenges beyond the current rubric and will disengage if not stretched.',
+      },
+      { name: 'David Kim',    role: 'Data Scientist',      color: '#0065FF',  skills: 2, trend: '+1 this month',
+        skillDetail: [
+          { label: 'Prompt Engineering',      status: 'complete',     pct: 100 },
+          { label: 'AI Workflow Integration', status: 'complete',     pct: 100 },
+          { label: 'Claude API Fundamentals', status: 'in-progress',  pct: 45  },
+          { label: 'Prototyping & Iteration', status: 'not-started',  pct: 0   },
+        ],
+        examples: [
+          'Applying prompt engineering daily for model documentation',
+          '45% through Claude API Fundamentals — active learner this month',
+        ],
+        feedback: 'David is self-motivated and making solid progress. He\'s 45% through Claude API Fundamentals — a gentle nudge to finish before month-end keeps Q2 on track. Ask what he\'s building with these skills; he may have ideas worth resourcing.',
+      },
+      { name: 'Rina Taguchi', role: 'Data Analyst',        color: '#6366F1',  skills: 3, trend: '+1 last week',
+        skillDetail: [
+          { label: 'Prompt Engineering',      status: 'complete',     pct: 100 },
+          { label: 'AI Workflow Integration', status: 'complete',     pct: 100 },
+          { label: 'Claude API Fundamentals', status: 'complete',     pct: 100 },
+          { label: 'Prototyping & Iteration', status: 'in-progress',  pct: 30  },
+        ],
+        examples: [
+          'Redesigned her weekly reporting workflow using AI Workflow Integration',
+          'Shared her prompt library with 2 colleagues on the BI team',
+        ],
+        feedback: 'Rina just hit her third skill and is actively applying what she\'s learned — she\'s influencing teammates organically. Encourage her to keep the momentum on Prototyping & Iteration; she\'s on pace to finish by end of May and would benefit from a concrete project to prototype against.',
+      },
     ];
 
     return (
@@ -1129,56 +1190,142 @@
               {/* Team members */}
               <div className="fade-up-d1" style={{ background: '#fff', border: '1px solid #E0E0E0', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
                 <div style={{ padding: '14px 18px', borderBottom: '1px solid #F0F0F0', fontSize: '14px', fontWeight: '600', color: '#1A1A1A' }}>Team Members</div>
-                {members.map((m, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 18px', borderBottom: i < members.length - 1 ? '1px solid #F5F5F5' : 'none' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: m.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', color: '#fff', flexShrink: 0 }}>
-                      {m.name.split(' ').map(n => n[0]).join('')}
+                {members.map((m, i) => {
+                  const isSelected = selectedMember === i;
+                  return (
+                    <div key={i} onClick={() => setSelectedMember(isSelected ? null : i)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 18px', borderBottom: i < members.length - 1 ? '1px solid #F5F5F5' : 'none', cursor: 'pointer', background: isSelected ? `${m.color}10` : 'transparent', borderLeft: isSelected ? `3px solid ${m.color}` : '3px solid transparent', transition: 'all 120ms' }}>
+                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: m.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', color: '#fff', flexShrink: 0 }}>
+                        {m.name.split(' ').map(n => n[0]).join('')}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: '13px', fontWeight: isSelected ? '600' : '500', color: '#1A1A1A' }}>{m.name}</div>
+                        <div style={{ fontSize: '11px', color: '#8E8E93' }}>{m.role}</div>
+                      </div>
+                      <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                        {Array.from({ length: 4 }, (_, j) => (
+                          <div key={j} style={{ width: '10px', height: '10px', borderRadius: '50%', background: j < m.skills ? m.color : '#E0E0E0' }}/>
+                        ))}
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#8E8E93', width: '58px', textAlign: 'right', flexShrink: 0 }}>{m.skills}/4 skills</div>
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '13px', fontWeight: '500', color: '#1A1A1A' }}>{m.name}</div>
-                      <div style={{ fontSize: '11px', color: '#8E8E93' }}>{m.role}</div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                      {Array.from({ length: 4 }, (_, j) => (
-                        <div key={j} style={{ width: '10px', height: '10px', borderRadius: '50%', background: j < m.skills ? m.color : '#E0E0E0' }}/>
-                      ))}
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#8E8E93', width: '58px', textAlign: 'right', flexShrink: 0 }}>{m.skills}/4 skills</div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
-            {/* Right column — info panel */}
+            {/* Right column — info panel / member profile */}
             <div>
-              <div className="fade-up-d2" style={{ background: '#fff', border: '1px solid #E0E0E0', borderRadius: '10px', padding: '18px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', marginBottom: '12px' }}>
-                <div style={{ fontSize: '13px', fontWeight: '600', color: '#1A1A1A', marginBottom: '12px' }}>Q2 Progress</div>
-                <div style={{ marginBottom: '14px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#6B7280', marginBottom: '5px' }}>
-                    <span>Team at L2+</span>
-                    <span style={{ fontWeight: '600', color: C.accent }}>9 / 15</span>
-                  </div>
-                  <div style={{ height: '8px', background: '#E0E0E0', borderRadius: '4px', overflow: 'hidden' }}>
-                    <div style={{ width: '60%', height: '100%', background: C.accent, borderRadius: '4px' }}/>
-                  </div>
-                </div>
-                <div style={{ fontSize: '12px', color: '#6B7280', lineHeight: '1.6' }}>
-                  6 members still need to complete at least 2 more skill verifications before Q2 closes on June 30.
-                </div>
-              </div>
+              {selectedMember !== null ? (() => {
+                const m = members[selectedMember];
+                return (
+                  <div key={m.name} className="fade-up" style={{ background: '#fff', border: '1px solid #E0E0E0', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+                    {/* Profile header */}
+                    <div style={{ padding: '14px 16px', borderBottom: '1px solid #F0F0F0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: m.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700', color: '#fff', flexShrink: 0 }}>
+                        {m.name.split(' ').map(n => n[0]).join('')}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: '14px', fontWeight: '600', color: '#1A1A1A' }}>{m.name}</div>
+                        <div style={{ fontSize: '11px', color: '#8E8E93' }}>{m.role}</div>
+                      </div>
+                      <button onClick={() => setSelectedMember(null)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#9CA3AF', fontSize: '18px', lineHeight: 1, padding: '2px 4px' }}>×</button>
+                    </div>
 
-              <div className="fade-up-d2" style={{ background: 'rgba(231,111,58,0.05)', border: '1px solid rgba(231,111,58,0.2)', borderRadius: '10px', padding: '16px' }}>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: '10px' }}>
-                  <span style={{ fontSize: '15px', lineHeight: 1.3 }}>⚡</span>
-                  <div style={{ fontSize: '13px', fontWeight: '600', color: C.warm }}>Action needed</div>
-                </div>
-                <p style={{ fontSize: '12px', color: '#6B7280', lineHeight: '1.6', marginBottom: '12px' }}>
-                  Marcus Chen hasn't started Prototyping & Iteration. This skill is required for his Q2 rubric goal.
-                </p>
-                <button style={{ width: '100%', padding: '8px', borderRadius: '6px', background: C.warm, border: 'none', color: '#fff', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}>
-                  Send reminder →
-                </button>
-              </div>
+                    {/* Score + trend */}
+                    <div style={{ padding: '11px 16px', borderBottom: '1px solid #F5F5F5', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        {Array.from({ length: 4 }, (_, j) => (
+                          <div key={j} style={{ width: '11px', height: '11px', borderRadius: '50%', background: j < m.skills ? m.color : '#E5E7EB' }}/>
+                        ))}
+                      </div>
+                      <span style={{ fontSize: '13px', fontWeight: '700', color: '#1A1A1A' }}>{m.skills}/4 skills</span>
+                      <span style={{ fontSize: '10px', fontWeight: '600', padding: '2px 8px', borderRadius: '10px', marginLeft: 'auto', whiteSpace: 'nowrap',
+                        background: m.skills === 4 ? 'rgba(5,150,105,0.1)' : m.trend.includes('No') ? 'rgba(231,111,58,0.1)' : '#F3F4F6',
+                        color:      m.skills === 4 ? '#059669'             : m.trend.includes('No') ? C.warm                   : '#6B7280' }}>
+                        {m.trend}
+                      </span>
+                    </div>
+
+                    {/* Skills breakdown */}
+                    <div style={{ padding: '12px 16px', borderBottom: '1px solid #F5F5F5' }}>
+                      <div style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '0.07em', textTransform: 'uppercase', color: '#9CA3AF', marginBottom: '10px' }}>Skills</div>
+                      {m.skillDetail.map(s => (
+                        <div key={s.label} style={{ marginBottom: '9px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                            <span style={{ fontSize: '12px', color: '#374151', fontWeight: '500' }}>{s.label}</span>
+                            <span style={{ fontSize: '10px', fontWeight: '600', padding: '1px 7px', borderRadius: '8px',
+                              background: s.status === 'complete' ? 'rgba(5,150,105,0.1)' : s.status === 'in-progress' ? 'rgba(99,102,241,0.1)' : '#F3F4F6',
+                              color:      s.status === 'complete' ? '#059669'              : s.status === 'in-progress' ? '#6366F1'               : '#9CA3AF' }}>
+                              {s.status === 'complete' ? '✓ Done' : s.status === 'in-progress' ? `${s.pct}% done` : 'Not started'}
+                            </span>
+                          </div>
+                          <div style={{ height: '4px', background: '#F3F4F6', borderRadius: '2px', overflow: 'hidden' }}>
+                            <div style={{ width: `${s.pct}%`, height: '100%', borderRadius: '2px',
+                              background: s.status === 'complete' ? '#059669' : s.status === 'in-progress' ? '#6366F1' : 'transparent' }}/>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Examples from Coursera */}
+                    <div style={{ padding: '12px 16px', borderBottom: '1px solid #F5F5F5' }}>
+                      <div style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '0.07em', textTransform: 'uppercase', color: '#9CA3AF', marginBottom: '8px' }}>From their Coursera activity</div>
+                      {m.examples.map((ex, i) => (
+                        <div key={i} style={{ display: 'flex', gap: '8px', marginBottom: i < m.examples.length - 1 ? '7px' : 0, alignItems: 'flex-start' }}>
+                          <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: m.color, marginTop: '6px', flexShrink: 0 }}/>
+                          <span style={{ fontSize: '12px', color: '#4B5563', lineHeight: '1.5' }}>{ex}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Coaching suggestion */}
+                    <div style={{ padding: '12px 16px', borderBottom: '1px solid #F5F5F5', background: '#FAFAF9' }}>
+                      <div style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '0.07em', textTransform: 'uppercase', color: '#9CA3AF', marginBottom: '8px' }}>1:1 coaching suggestion</div>
+                      <p style={{ fontSize: '12px', color: '#374151', lineHeight: '1.65', margin: 0 }}>{m.feedback}</p>
+                    </div>
+
+                    {/* Actions */}
+                    <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <button style={{ width: '100%', padding: '8px', borderRadius: '6px', background: m.color, border: 'none', color: '#fff', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}>
+                        Draft 1:1 note →
+                      </button>
+                      <button style={{ width: '100%', padding: '8px', borderRadius: '6px', background: 'transparent', border: '1px solid #E0E0E0', color: '#6B7280', fontSize: '12px', fontWeight: '500', cursor: 'pointer' }}>
+                        Export to Workday Performance
+                      </button>
+                    </div>
+                  </div>
+                );
+              })() : (
+                <>
+                  <div className="fade-up-d2" style={{ background: '#fff', border: '1px solid #E0E0E0', borderRadius: '10px', padding: '18px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', marginBottom: '12px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: '600', color: '#1A1A1A', marginBottom: '12px' }}>Q2 Progress</div>
+                    <div style={{ marginBottom: '14px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#6B7280', marginBottom: '5px' }}>
+                        <span>Team at L2+</span>
+                        <span style={{ fontWeight: '600', color: C.accent }}>9 / 15</span>
+                      </div>
+                      <div style={{ height: '8px', background: '#E0E0E0', borderRadius: '4px', overflow: 'hidden' }}>
+                        <div style={{ width: '60%', height: '100%', background: C.accent, borderRadius: '4px' }}/>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#6B7280', lineHeight: '1.6' }}>
+                      6 members still need to complete at least 2 more skill verifications before Q2 closes on June 30.
+                    </div>
+                  </div>
+                  <div className="fade-up-d2" style={{ background: 'rgba(231,111,58,0.05)', border: '1px solid rgba(231,111,58,0.2)', borderRadius: '10px', padding: '16px' }}>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: '10px' }}>
+                      <span style={{ fontSize: '15px', lineHeight: 1.3 }}>⚡</span>
+                      <div style={{ fontSize: '13px', fontWeight: '600', color: C.warm }}>Action needed</div>
+                    </div>
+                    <p style={{ fontSize: '12px', color: '#6B7280', lineHeight: '1.6', marginBottom: '12px' }}>
+                      Marcus Chen hasn't started Prototyping & Iteration. This skill is required for his Q2 rubric goal.
+                    </p>
+                    <button style={{ width: '100%', padding: '8px', borderRadius: '6px', background: C.warm, border: 'none', color: '#fff', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}>
+                      Send reminder →
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
