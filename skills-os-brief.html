@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Skills OS — Coursera</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:      #F9F8F6;
+      --surface: #FFFFFF;
+      --border:  rgba(28,25,23,0.09);
+      --tPri:    #1C1917;
+      --tSec:    #44403C;
+      --tMut:    #78716C;
+      --accent:  #5B5FEF;
+      --warm:    #E76F3A;
+      --success: #059669;
+      --dark1:   #080C14;
+      --dark2:   #0C1221;
+      --dark3:   #101828;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0px); }
+      50%      { transform: translateY(-8px); }
+    }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(24px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:0.5; transform:scale(0.8); }
+    }
+    @keyframes blink {
+      0%,100% { opacity:1; } 50% { opacity:0; }
+    }
+    html { scroll-behavior:smooth; }
+    body {
+      font-family:'Inter',-apple-system,sans-serif;
+      background:var(--bg);
+      color:var(--tPri);
+      line-height:1.6;
+      -webkit-font-smoothing:antialiased;
+      overflow-x:hidden;
+    }
+
+    /* ── Utilities ── */
+    .wrap  { max-width:760px; margin:0 auto; padding:0 40px; }
+    .wide  { max-width:1100px; margin:0 auto; padding:0 40px; }
+    .bleed { width:100vw; position:relative; left:50%; transform:translateX(-50%); }
+
+    /* ── Header ── */
+    header { padding:44px 40px 0; max-width:760px; margin:0 auto;
+      display:flex; align-items:center; justify-content:space-between; }
+    .masthead { font-size:13px; font-weight:600; color:var(--tMut); }
+    .masthead span { font-weight:400; }
+    .tag { font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+      color:var(--accent); background:rgba(91,95,239,.08); padding:4px 11px; border-radius:20px; }
+
+    /* ── Hero ── */
+    .hero { padding:68px 0 56px; border-bottom:1px solid var(--border); }
+    .hero h1 { font-size:52px; font-weight:800; letter-spacing:-.035em; line-height:1.08;
+      color:var(--tPri); margin-bottom:24px; max-width:640px; }
+    .hero h1 em { font-style:normal; color:var(--accent); }
+    .hero-sub { font-size:17px; line-height:1.75; color:var(--tSec); max-width:520px; margin-bottom:36px; }
+    .chips { display:flex; gap:10px; flex-wrap:wrap; }
+    .chip { display:flex; align-items:center; gap:7px; padding:6px 12px;
+      border:1px solid var(--border); border-radius:8px; background:var(--surface);
+      font-size:12.5px; color:var(--tMut); }
+    .chip .x { font-size:11px; color:#D1472A; font-weight:700; }
+    .chip .lbl { font-weight:500; color:var(--tSec); }
+
+    /* ── Context stamp ── */
+    .stamp { display:flex; align-items:center; gap:9px; margin-bottom:28px; }
+    .stamp-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .stamp-dot.live { animation:pulse 2s ease-in-out infinite; }
+    .stamp-text { font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; }
+
+    /* ── Dark sections ── */
+    .dark-section {
+      background:linear-gradient(160deg, var(--dark1) 0%, var(--dark2) 50%, var(--dark3) 100%);
+      padding:88px 0;
+      overflow:hidden;
+    }
+    .dark-section .stamp-text { color:rgba(255,255,255,.45); }
+    .dark-section .stamp-dot  { background:rgba(255,255,255,.3); }
+    .dark-section .stamp-dot.live { background:#27C93F; }
+    .dark-section .phase-num  { color:rgba(255,255,255,.25); }
+    .dark-section h2          { color:#FFFFFF; }
+    .dark-section .phase-sub  { color:rgba(255,255,255,.5); }
+    .dark-section .phase-body { color:rgba(255,255,255,.65); }
+
+    /* ── Light sections ── */
+    .light-section { background:var(--bg); padding:88px 0; }
+
+    /* ── Phase text ── */
+    .phase-num { font-size:11px; font-weight:700; letter-spacing:.12em;
+      color:var(--tMut); margin-bottom:18px; }
+    h2 { font-size:34px; font-weight:800; letter-spacing:-.025em; line-height:1.18;
+      color:var(--tPri); margin-bottom:10px; }
+    .phase-sub { font-size:14px; font-style:italic; color:var(--tMut); margin-bottom:20px; }
+    .phase-body { font-size:15.5px; line-height:1.78; color:var(--tSec); max-width:480px; }
+
+    /* ── Split layout (text left, laptop right) ── */
+    .split { display:grid; grid-template-columns:1fr 1.5fr; gap:64px; align-items:center; }
+    .split-reverse { grid-template-columns:1.5fr 1fr; }
+    .split-reverse .split-text { order:2; }
+    .split-reverse .split-visual { order:1; }
+
+    /* ── Stack layout (text top, laptop below full-width) ── */
+    .stack .stack-text { max-width:580px; margin-bottom:52px; }
+
+    /* ── MacBook frame ── */
+    .laptop-wrap {
+      position:relative;
+      animation:float 6s ease-in-out infinite;
+      filter:drop-shadow(0 32px 64px rgba(0,0,0,0.35));
+    }
+    .laptop-lid {
+      background:linear-gradient(to bottom, #2A2A2A, #1C1C1C);
+      border-radius:14px 14px 0 0;
+      padding:16px 16px 0;
+      border:1.5px solid rgba(255,255,255,.08);
+      border-bottom:none;
+      position:relative;
+    }
+    .laptop-camera {
+      width:6px; height:6px; border-radius:50%;
+      background:rgba(255,255,255,.15);
+      margin:0 auto 10px;
+    }
+    .laptop-screen-area {
+      background:#000;
+      border-radius:6px 6px 0 0;
+      overflow:hidden;
+      line-height:0;
+    }
+    .laptop-screen-area img { width:100%; display:block; }
+    .laptop-base {
+      background:linear-gradient(to bottom, #D0D0D0, #B8B8B8);
+      height:22px;
+      border-radius:0 0 6px 6px;
+      border:1px solid rgba(0,0,0,.15);
+      border-top:none;
+      position:relative;
+    }
+    .laptop-base::after {
+      content:'';
+      position:absolute;
+      bottom:0; left:50%; transform:translateX(-50%);
+      width:28%; height:100%;
+      background:rgba(0,0,0,.06);
+      border-radius:0 0 4px 4px;
+    }
+
+    /* ── Cinematic quote (phase 03) ── */
+    .cinematic {
+      max-width:700px; margin:0 auto; text-align:center; padding:0 40px;
+    }
+    .cinematic .eyebrow {
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(91,95,239,.12); border:1px solid rgba(91,95,239,.25);
+      border-radius:20px; padding:6px 14px; margin-bottom:32px;
+      font-size:11px; font-weight:600; color:rgba(255,255,255,.7); letter-spacing:.06em;
+    }
+    .mcp-dot-anim { width:6px; height:6px; border-radius:50%; background:#27C93F;
+      animation:pulse 1.8s ease-in-out infinite; }
+    .cinematic h2 { font-size:40px; color:#fff; margin-bottom:20px; }
+    .cinematic .subtext { font-size:16px; color:rgba(255,255,255,.55); max-width:480px;
+      margin:0 auto 48px; line-height:1.7; }
+    .quoted-block {
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.1);
+      border-left:3px solid var(--accent);
+      border-radius:12px;
+      padding:24px 28px;
+      font-size:15px; font-style:italic; line-height:1.75;
+      color:rgba(255,255,255,.65);
+      text-align:left; margin-bottom:20px;
+    }
+    .gap-tag {
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(231,111,58,.1); border:1px solid rgba(231,111,58,.3);
+      border-radius:8px; padding:8px 14px;
+      font-size:13px; color:var(--warm); font-weight:500;
+    }
+
+    /* ── Wallet dark section ── */
+    .wallet-section {
+      background:linear-gradient(160deg, #060C0E 0%, #0A1A18 50%, #071210 100%);
+    }
+    .wallet-section .phase-body { color:rgba(255,255,255,.6); }
+    .wallet-section h2 { color:#fff; }
+    .wallet-section .phase-sub { color:rgba(255,255,255,.4); }
+
+    /* ── Why section ── */
+    .why-section { padding:88px 0; border-top:1px solid var(--border); }
+    .why-eyebrow { font-size:11px; font-weight:700; letter-spacing:.1em;
+      text-transform:uppercase; color:var(--tMut); margin-bottom:28px; }
+    .why-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .why-card { background:var(--surface); border:1px solid var(--border);
+      border-radius:16px; padding:24px; }
+    .why-num { font-size:24px; font-weight:800; color:rgba(28,25,23,.07);
+      letter-spacing:-.04em; margin-bottom:12px; }
+    .why-title { font-size:14px; font-weight:700; color:var(--tPri); margin-bottom:7px; }
+    .why-body  { font-size:13px; line-height:1.65; color:var(--tMut); }
+
+    /* ── Footer ── */
+    .footer-section {
+      padding:44px 0 72px;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .footer-by   { font-size:12px; color:var(--tMut); margin-bottom:3px; }
+    .footer-name { font-size:15px; font-weight:600; color:var(--tPri); }
+    .proto-btn {
+      display:inline-flex; align-items:center; gap:9px;
+      background:var(--tPri); color:#fff; text-decoration:none;
+      padding:13px 24px; border-radius:12px; font-size:14px; font-weight:600;
+      transition:background 150ms; letter-spacing:-.01em;
+    }
+    .proto-btn:hover { background:#2D2A27; }
+
+    @media (max-width:900px) {
+      .split { grid-template-columns:1fr; }
+      .split-reverse .split-text, .split-reverse .split-visual { order:unset; }
+      .hero h1 { font-size:34px; }
+      h2 { font-size:26px; }
+      .cinematic h2 { font-size:28px; }
+      .why-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+  <div class="masthead">Skills OS <span>— Coursera</span></div>
+  <div class="tag">Exploration</div>
+</header>
+
+<!-- ── Hero ── -->
+<div class="wrap">
+  <section class="hero">
+    <h1>Skills that stick because they're built on <em>how you actually work</em></h1>
+    <p class="hero-sub">Enterprise learning fails when it's disconnected from real work. Skills OS uses behavioral evidence from AI tools to make every learning moment feel earned and specific.</p>
+    <div class="chips">
+      <div class="chip"><span class="x">✕</span><span class="lbl">Generic LMS catalog</span></div>
+      <div class="chip"><span class="x">✕</span><span class="lbl">Static self-assessments</span></div>
+      <div class="chip"><span class="x">✕</span><span class="lbl">Course completion tracking</span></div>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- PHASE 01 — Admin (dark, split) -->
+<!-- ══════════════════════════════════════════ -->
+<section class="bleed dark-section">
+  <div class="wide">
+    <div class="split">
+      <div class="split-text">
+        <div class="stamp">
+          <div class="stamp-dot" style="background:rgba(255,255,255,.3)"></div>
+          <span class="stamp-text">Admin view · Meridian Financial</span>
+        </div>
+        <p class="phase-num">PHASE 01</p>
+        <h2>The org sets the targets</h2>
+        <p class="phase-sub" style="color:rgba(255,255,255,.4)">"AI Prototyping is tracking at 67% team readiness — up 45% since October."</p>
+        <p class="phase-body">L&D admins track skill readiness across the team — not course completions, but verified capabilities. MCP signal shows how the team is actually using AI: prompt length, session frequency, pipeline adoption.</p>
+      </div>
+      <div class="split-visual">
+        <div class="laptop-wrap">
+          <div class="laptop-lid">
+            <div class="laptop-camera"></div>
+            <div class="laptop-screen-area">
+              <img src="./screenshots/05-admin-targets.jpg" alt="Admin — Team Skill Progress"/>
+            </div>
+          </div>
+          <div class="laptop-base"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- PHASE 02 — My Plan (light, stack full-width) -->
+<!-- ══════════════════════════════════════════ -->
+<section class="bleed light-section">
+  <div class="wide">
+    <div class="stack">
+      <div class="stack-text wrap" style="padding:0">
+        <div class="stamp">
+          <div class="stamp-dot" style="background:var(--tMut)"></div>
+          <span class="stamp-text" style="color:var(--tMut)">Learner view · My Plan</span>
+        </div>
+        <p class="phase-num">PHASE 02</p>
+        <h2>The learner sees evidence, not assignments</h2>
+        <p class="phase-sub">"Three things have clearly shifted over the past few weeks."</p>
+        <p class="phase-body">When Marcus opens Coursera, he sees behavioral observations from how he's actually been working — not a self-assessment. Specific evidence from his AI sessions, surfaced via MCP.</p>
+      </div>
+      <div class="laptop-wrap" style="animation-delay:.5s; filter:drop-shadow(0 24px 48px rgba(0,0,0,.14))">
+        <div class="laptop-lid">
+          <div class="laptop-camera"></div>
+          <div class="laptop-screen-area">
+            <img src="./screenshots/01-my-plan.jpg" alt="Learner — My Plan"/>
+          </div>
+        </div>
+        <div class="laptop-base"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- PHASE 03 — Learn (dark, cinematic centered) -->
+<!-- ══════════════════════════════════════════ -->
+<section class="bleed dark-section">
+  <div class="wide">
+
+    <!-- Centered text block -->
+    <div class="cinematic">
+      <div class="eyebrow">
+        <div class="mcp-dot-anim"></div>
+        MCP · Learning Session 1 · AI Prototyping
+      </div>
+      <h2>The lesson arrives with proof</h2>
+      <p class="subtext">Each session opens with a specific observation from the learner's own work — a prompt they've actually used and a precise diagnosis of what's missing.</p>
+      <div class="quoted-block">
+        "You are a senior quantitative analyst with 15 years of experience reviewing financial models. You approach every model with healthy skepticism."
+      </div>
+      <div class="gap-tag">↳ Missing: output format instructions &amp; behavior under uncertainty</div>
+    </div>
+
+    <!-- Laptop below -->
+    <div style="margin-top:56px">
+      <div class="laptop-wrap" style="animation-delay:1s; max-width:960px; margin:0 auto; filter:drop-shadow(0 32px 64px rgba(0,0,0,.5))">
+        <div class="laptop-lid">
+          <div class="laptop-camera"></div>
+          <div class="laptop-screen-area">
+            <img src="./screenshots/02-learn-write.jpg" alt="Learn — Write phase"/>
+          </div>
+        </div>
+        <div class="laptop-base"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- PHASE 04 — Lab (light, split reversed) -->
+<!-- ══════════════════════════════════════════ -->
+<section class="bleed light-section">
+  <div class="wide">
+    <div class="split split-reverse">
+      <div class="split-visual">
+        <div class="laptop-wrap" style="animation-delay:1.5s; filter:drop-shadow(0 24px 48px rgba(0,0,0,.14))">
+          <div class="laptop-lid">
+            <div class="laptop-camera"></div>
+            <div class="laptop-screen-area">
+              <img src="./screenshots/03-learn-lab.jpg" alt="Lab — launch screen"/>
+            </div>
+          </div>
+          <div class="laptop-base"></div>
+        </div>
+      </div>
+      <div class="split-text">
+        <div class="stamp">
+          <div class="stamp-dot" style="background:var(--tMut)"></div>
+          <span class="stamp-text" style="color:var(--tMut)">Lab · Apply in the real thing</span>
+        </div>
+        <p class="phase-num">PHASE 04</p>
+        <h2>No steps until you launch</h2>
+        <p class="phase-sub">"Time to apply it — in the real thing."</p>
+        <p class="phase-body">Two options: jump straight in, or start with a tutorial. The steps only appear as a live floating guide inside the tool — once the session is running, via MCP.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- PHASE 05 — Wallet (dark teal, stack) -->
+<!-- ══════════════════════════════════════════ -->
+<section class="bleed dark-section wallet-section">
+  <div class="wide">
+    <div class="stack">
+      <div class="stack-text wrap" style="padding:0">
+        <div class="stamp">
+          <div class="stamp-dot live" style="background:#27C93F"></div>
+          <span class="stamp-text">Wallet · Verified skills · Live credential</span>
+        </div>
+        <p class="phase-num" style="color:rgba(255,255,255,.25)">PHASE 05</p>
+        <h2>Skills as a living record</h2>
+        <p class="phase-sub" style="color:rgba(255,255,255,.4)">"5 skills verified — you're ahead of pace."</p>
+        <p class="phase-body">Not a badge for finishing a course — verified proof grounded in demonstrated behavior. Skills can go stale and need a refresh. The credential link is live: if a skill lapses, it updates automatically.</p>
+      </div>
+      <div style="margin-top:52px">
+        <div class="laptop-wrap" style="animation-delay:2s; filter:drop-shadow(0 32px 64px rgba(0,0,0,.5))">
+          <div class="laptop-lid">
+            <div class="laptop-camera"></div>
+            <div class="laptop-screen-area">
+              <img src="./screenshots/04-wallet.jpg" alt="Wallet — verified skills"/>
+            </div>
+          </div>
+          <div class="laptop-base"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- Why -->
+<!-- ══════════════════════════════════════════ -->
+<div class="wrap">
+  <section class="why-section">
+    <p class="why-eyebrow">Why this is the bet</p>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-num">01</div>
+        <div class="why-title">Behavioral evidence, not self-report</div>
+        <div class="why-body">MCP connects to where learners actually work and surfaces specific observations — making the learning case before the lesson begins.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-num">02</div>
+        <div class="why-title">Work-anchored application</div>
+        <div class="why-body">The lab happens inside the real tool with a live Coursera guide watching the session and surfacing hints in real time.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-num">03</div>
+        <div class="why-title">Org goals connect to individuals</div>
+        <div class="why-body">Admin skill targets flow down into each learner's plan automatically — with context about who set the goal, why, and what unlocks next.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-num">04</div>
+        <div class="why-title">Verification that means something</div>
+        <div class="why-body">Skills are verified through demonstrated behavior — not a quiz score. The wallet is a live credential that updates as skills are earned or lapse.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer-section" style="border-top:1px solid var(--border)">
+    <div>
+      <div class="footer-by">Exploration by</div>
+      <div class="footer-name">Kari Hedberg</div>
+    </div>
+    <a href="./skills-os-desktop.html" class="proto-btn">🕹️ Open prototype</a>
+  </div>
+</div>
+
+</body>
+</html>

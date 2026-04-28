@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Skills OS — Design Explorations · Coursera</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:      #F9F8F6;
+      --surface: #FFFFFF;
+      --border:  rgba(28,25,23,0.09);
+      --tPri:    #1C1917;
+      --tSec:    #44403C;
+      --tMut:    #78716C;
+      --accent:  #5B5FEF;
+      --warm:    #E76F3A;
+      --success: #059669;
+      --dark1:   #08090E;
+      --dark2:   #0D0F18;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--tPri);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    .wrap  { max-width: 760px; margin: 0 auto; padding: 0 40px; }
+    .wide  { max-width: 1060px; margin: 0 auto; padding: 0 52px; }
+    .bleed { width: 100vw; position: relative; left: 50%; transform: translateX(-50%); }
+
+    /* ── Header ── */
+    header { padding: 44px 40px 0; max-width: 760px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; }
+    .masthead { font-size: 13px; font-weight: 600; color: var(--tMut); }
+    .masthead span { font-weight: 400; }
+    .tag { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--accent); background: rgba(91,95,239,.08); padding: 4px 11px; border-radius: 20px; }
+
+    /* ── Hero ── */
+    .hero { padding: 72px 0 60px; border-bottom: 1px solid var(--border); }
+    .hero h1 { font-size: 52px; font-weight: 900; letter-spacing: -.04em; line-height: 1.05;
+      color: var(--tPri); margin-bottom: 22px; max-width: 580px; }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero-sub { font-size: 16px; line-height: 1.75; color: var(--tSec); max-width: 480px; margin-bottom: 36px; }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip { display: flex; align-items: center; gap: 7px; padding: 6px 12px;
+      border: 1px solid var(--border); border-radius: 8px; background: var(--surface);
+      font-size: 12px; color: var(--tMut); }
+    .chip .x { font-size: 11px; color: #C84B2F; font-weight: 700; }
+
+    /* ── MCP banner ── */
+    .mcp-banner {
+      background: rgba(91,95,239,0.04);
+      border: 1px solid rgba(91,95,239,0.12);
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin: 52px 0;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;
+    }
+    .mcp-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 10px; }
+    .mcp-body { font-size: 14.5px; line-height: 1.72; color: var(--tSec); }
+    .mcp-pills { display: flex; flex-direction: column; gap: 7px; }
+    .mcp-pill {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 500; color: var(--tSec);
+      padding: 7px 12px; background: white; border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .mcp-pill-dot { width: 6px; height: 6px; border-radius: 50%; background: #22C55E; flex-shrink: 0; }
+    .mcp-pill-label { font-size: 10px; color: var(--tMut); margin-left: auto; }
+
+    /* ══════ EXPLORATION SECTIONS ══════ */
+
+    .exp-dark {
+      background: linear-gradient(170deg, var(--dark1) 0%, var(--dark2) 100%);
+      padding: 96px 0 80px;
+    }
+    .exp-light {
+      background: var(--bg);
+      padding: 96px 0 80px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Section header ── */
+    .sec-header { margin-bottom: 72px; }
+    .sec-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+      color: rgba(255,255,255,.22); margin-bottom: 12px; }
+    .sec-eyebrow-light { color: var(--tMut); }
+    .sec-title { font-size: 40px; font-weight: 900; letter-spacing: -.03em; color: #fff; margin-bottom: 8px; }
+    .sec-title-light { color: var(--tPri); }
+    .sec-sub { font-size: 13px; color: rgba(255,255,255,.38); font-style: italic; margin-bottom: 18px; }
+    .sec-sub-light { color: var(--tMut); }
+    .sec-intro { font-size: 15.5px; line-height: 1.75; color: rgba(255,255,255,.58); max-width: 560px; }
+    .sec-intro-light { color: var(--tSec); }
+
+    /* ── Moment: 2-col split ── */
+    .moment { margin-bottom: 72px; }
+    .moment:last-of-type { margin-bottom: 0; }
+    .m-split { display: grid; grid-template-columns: 1fr 1.1fr; gap: 64px; align-items: center; }
+    .m-split-reverse { grid-template-columns: 1.1fr 1fr; }
+    .m-split-reverse .m-text { order: 2; }
+    .m-split-reverse .m-visual { order: 1; }
+
+    .m-num { font-size: 11px; font-weight: 700; letter-spacing: .08em;
+      color: rgba(255,255,255,.2); text-transform: uppercase; margin-bottom: 12px; }
+    .m-num-light { color: var(--tMut); }
+    .m-head { font-size: 22px; font-weight: 800; letter-spacing: -.02em;
+      color: #fff; margin-bottom: 12px; line-height: 1.25; }
+    .m-head-light { color: var(--tPri); }
+    .m-body { font-size: 14px; line-height: 1.75; color: rgba(255,255,255,.52); }
+    .m-body-light { color: var(--tSec); }
+
+    /* ── UI Crop cards ── */
+    .ui-crop {
+      overflow: hidden;
+      border-radius: 14px;
+      line-height: 0;
+      box-shadow: 0 24px 64px rgba(0,0,0,.55), 0 4px 12px rgba(0,0,0,.3);
+      position: relative;
+    }
+    .ui-crop-light {
+      box-shadow: 0 20px 56px rgba(0,0,0,.14), 0 3px 8px rgba(0,0,0,.08);
+    }
+    .ui-crop img { display: block; }
+
+    /* ── Full-width moment strip ── */
+    .moment-wide {
+      margin-bottom: 72px;
+    }
+    .m-wide-text {
+      margin-bottom: 28px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: end;
+    }
+    .m-wide-stat-row {
+      display: flex; gap: 0; margin-top: 12px;
+    }
+    .m-stat {
+      flex: 1; padding: 16px 0 0;
+      border-top: 2px solid rgba(255,255,255,.12);
+    }
+    .m-stat-num { font-size: 28px; font-weight: 800; color: var(--warm); letter-spacing: -.03em; }
+    .m-stat-num.orange { color: var(--warm); }
+    .m-stat-num.red { color: #EF4444; }
+    .m-stat-num.neutral { color: rgba(255,255,255,.6); }
+    .m-stat-label { font-size: 12px; color: rgba(255,255,255,.38); margin-top: 2px; }
+
+    /* ── Evidence card highlight ── */
+    .evidence-callout {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.1);
+      border-left: 3px solid var(--accent);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-top: 20px;
+    }
+    .evidence-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      color: rgba(91,95,239,.7); margin-bottom: 10px; }
+    .evidence-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; }
+    .evidence-item:last-child { margin-bottom: 0; }
+    .ev-arrow { color: var(--accent); font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+    .ev-text { font-size: 12.5px; color: rgba(255,255,255,.5); line-height: 1.55; }
+
+    /* ── Credential highlight (light) ── */
+    .credential-callout {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-top: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+    .cred-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--tMut); margin-bottom: 10px; }
+    .cred-item { display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 12.5px; }
+    .cred-item:last-child { border-bottom: none; }
+    .cred-name { color: var(--tPri); font-weight: 500; }
+    .cred-date { color: var(--tMut); font-size: 11.5px; }
+    .cred-check { color: var(--success); font-size: 11px; font-weight: 700; margin-left: 8px; }
+
+    /* ── Proto link ── */
+    .proto-link {
+      display: inline-flex; align-items: center; gap: 8px; margin-top: 52px;
+      font-size: 13px; font-weight: 600; color: #fff;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+      padding: 10px 18px; border-radius: 9px; text-decoration: none;
+      transition: background 150ms;
+    }
+    .proto-link:hover { background: rgba(255,255,255,.15); }
+    .proto-link-light {
+      color: var(--tPri); background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    .proto-link-light:hover { background: rgba(28,25,23,.04); }
+
+    /* ── Moment divider ── */
+    .m-divider {
+      width: 100%; height: 1px;
+      background: rgba(255,255,255,.06);
+      margin: 64px 0;
+    }
+    .m-divider-light { background: var(--border); }
+
+    /* ══════ INTEGRATIONS (footnote) ══════ */
+    .exp-teal {
+      background: linear-gradient(160deg, #040D0C 0%, #071512 100%);
+      padding: 80px 0 72px;
+    }
+    .int-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 44px; }
+    .int-card { border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,.07); }
+    .int-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      color: rgba(255,255,255,.28); padding: 9px 12px 7px;
+      background: rgba(255,255,255,.04); border-bottom: 1px solid rgba(255,255,255,.06); }
+    .int-card img { width: 100%; display: block; }
+    .aud-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 24px; }
+    .aud-card { border-radius: 10px; padding: 18px 16px;
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07); }
+    .aud-role-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      color: rgba(13,148,136,.65); margin-bottom: 8px; }
+    .aud-title { font-size: 13.5px; font-weight: 700; color: rgba(255,255,255,.82); margin-bottom: 7px; }
+    .aud-body { font-size: 12px; line-height: 1.62; color: rgba(255,255,255,.38); }
+
+    /* ══════ WHY ══════ */
+    .why-section { padding: 80px 0 0; }
+    .why-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--tMut); margin-bottom: 28px; }
+    .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .why-card { background: white; border: 1px solid var(--border);
+      border-radius: 14px; padding: 24px 22px; }
+    .why-n { font-size: 20px; font-weight: 900; color: rgba(28,25,23,.05);
+      letter-spacing: -.04em; margin-bottom: 10px; }
+    .why-title { font-size: 14px; font-weight: 700; color: var(--tPri); margin-bottom: 7px; }
+    .why-body  { font-size: 13px; line-height: 1.65; color: var(--tMut); }
+
+    /* ── Footer ── */
+    .footer-section {
+      padding: 48px 0 72px; margin-top: 64px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-by   { font-size: 12px; color: var(--tMut); margin-bottom: 3px; }
+    .footer-name { font-size: 15px; font-weight: 600; color: var(--tPri); }
+
+    @media (max-width: 900px) {
+      .m-split, .m-split-reverse, .int-grid, .aud-grid, .why-grid, .mcp-banner { grid-template-columns: 1fr; }
+      .m-split-reverse .m-text, .m-split-reverse .m-visual { order: unset; }
+      .hero h1 { font-size: 36px; }
+      .sec-title { font-size: 30px; }
+      .m-wide-text { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="masthead">Skills OS <span>— Coursera</span></div>
+  <div class="tag">3 Explorations</div>
+</header>
+
+<!-- ══════════════════════════════════════
+     HERO
+══════════════════════════════════════ -->
+<div class="wrap">
+  <section class="hero">
+    <h1>What if Coursera could see <em>how you work</em>, not just what you've completed?</h1>
+    <p class="hero-sub">Three prototypes exploring skill intelligence at every layer — the organization, the learner, and the tools people already use every day.</p>
+    <div class="chips">
+      <div class="chip"><span class="x">✕</span>&nbsp;Completion as a proxy for skill</div>
+      <div class="chip"><span class="x">✕</span>&nbsp;Generic LMS dashboards</div>
+      <div class="chip"><span class="x">✕</span>&nbsp;Learning disconnected from work</div>
+    </div>
+  </section>
+
+  <div class="mcp-banner">
+    <div>
+      <div class="mcp-label">The connective layer — MCP</div>
+      <p class="mcp-body">Model Context Protocol gives Coursera a permissioned window into the tools teams already use. Instead of inferring skill from test scores, we observe it directly — reading behavioral patterns across the surfaces where work actually happens. Each connection adds a signal layer. Together they build a holistic picture of how an enterprise is working.</p>
+    </div>
+    <div class="mcp-pills">
+      <div class="mcp-pill"><div class="mcp-pill-dot"></div>GitHub<div class="mcp-pill-label">code quality · PR patterns</div></div>
+      <div class="mcp-pill"><div class="mcp-pill-dot"></div>Figma<div class="mcp-pill-label">design output · iteration depth</div></div>
+      <div class="mcp-pill"><div class="mcp-pill-dot"></div>Cursor<div class="mcp-pill-label">prompt structure · AI usage</div></div>
+      <div class="mcp-pill"><div class="mcp-pill-dot"></div>Claude<div class="mcp-pill-label">reasoning · workflow patterns</div></div>
+      <div class="mcp-pill"><div class="mcp-pill-dot"></div>Slack<div class="mcp-pill-label">collaboration · communication</div></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     EXPLORATION 01 — GROUND TRUTH
+══════════════════════════════════════ -->
+<section class="bleed exp-dark">
+  <div class="wide">
+
+    <div class="sec-header">
+      <p class="sec-eyebrow">Exploration 01</p>
+      <h2 class="sec-title">Ground Truth</h2>
+      <p class="sec-sub">The admin layer — build the map, then let behavior fill it in</p>
+      <p class="sec-intro">L&D admins stop managing course catalogs and start managing a living skill graph. They define what good looks like at every role and level, connect the MCP signals relevant to their org, and watch behavioral evidence populate the picture — in real time, without a survey in sight.</p>
+    </div>
+
+    <!-- Moment 1: Goal builder -->
+    <div class="moment">
+      <div class="m-split">
+        <div class="m-text">
+          <p class="m-num">Step 01 &nbsp;·&nbsp; Set the target</p>
+          <h3 class="m-head">Start with intent, not a content catalog</h3>
+          <p class="m-body">Admins describe what the team needs to achieve — in plain language. Coursera pulls from the skill graph, company rubrics, and MCP usage data to map the real gaps and generate a targeted plan. No browsing. No guessing.</p>
+          <div class="evidence-callout">
+            <div class="evidence-label">What the system draws on</div>
+            <div class="evidence-item"><span class="ev-arrow">→</span><span class="ev-text">Coursera skill graph — competency definitions and sub-skills</span></div>
+            <div class="evidence-item"><span class="ev-arrow">→</span><span class="ev-text">Company rubrics and files — role expectations, internal standards</span></div>
+            <div class="evidence-item"><span class="ev-arrow">→</span><span class="ev-text">MCP connector data — behavioral evidence from real tool usage</span></div>
+          </div>
+        </div>
+        <div class="m-visual">
+          <!-- Goal builder, sidebar cropped out -->
+          <div class="ui-crop" style="height: 340px;">
+            <img src="./screen-goalbuilder.png" style="width: 128%; display: block; margin-left: -23%; margin-top: -50px;"/>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="m-divider"></div>
+
+    <!-- Moment 2: MCP signal strip -->
+    <div class="moment-wide">
+      <div class="m-wide-text">
+        <div>
+          <p class="m-num">Step 02 &nbsp;·&nbsp; See how the team actually works</p>
+          <h3 class="m-head">MCP replaces the survey</h3>
+        </div>
+        <p class="m-body" style="padding-bottom: 6px;">These aren't self-reported scores. This is a live readout of how a 15-person team is actually using AI tools at work — pulled directly from Claude sessions over the last 30 days. The gaps write themselves.</p>
+      </div>
+      <!-- MCP strip — already a perfect crop, show full width -->
+      <div class="ui-crop" style="border-radius: 12px;">
+        <img src="./screen-mcp-strip.png" style="width: 100%; display: block;"/>
+      </div>
+      <div class="m-wide-stat-row" style="margin-top: 28px;">
+        <div class="m-stat">
+          <div class="m-stat-num neutral">47</div>
+          <div class="m-stat-label">avg sessions / person in 30 days</div>
+        </div>
+        <div class="m-stat" style="padding-left: 28px; margin-left: 28px; border-left: 1px solid rgba(255,255,255,.08);">
+          <div class="m-stat-num orange">72%</div>
+          <div class="m-stat-label">simple Q&amp;A queries — short, single-turn</div>
+        </div>
+        <div class="m-stat" style="padding-left: 28px; margin-left: 28px; border-left: 1px solid rgba(255,255,255,.08);">
+          <div class="m-stat-num orange">28 words</div>
+          <div class="m-stat-label">avg prompt length — minimal context or structure</div>
+        </div>
+        <div class="m-stat" style="padding-left: 28px; margin-left: 28px; border-left: 1px solid rgba(255,255,255,.08);">
+          <div class="m-stat-num red">0</div>
+          <div class="m-stat-label">pipelines or API calls — no multi-step usage</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="m-divider"></div>
+
+    <!-- Moment 3: Team readiness chart -->
+    <div class="moment">
+      <div class="m-split m-split-reverse">
+        <div class="m-visual">
+          <!-- Chart area only — skip nav and MCP strip -->
+          <div class="ui-crop" style="height: 380px;">
+            <img src="./screenshots/05-admin-targets.jpg" style="width: 120%; display: block; margin-left: -18%; margin-top: -128px;"/>
+          </div>
+        </div>
+        <div class="m-text">
+          <p class="m-num">Step 03 &nbsp;·&nbsp; Track readiness over time</p>
+          <h3 class="m-head">Every skill becomes a measurable target</h3>
+          <p class="m-body">Org skill goals become trackable targets — broken down by skill, sub-skill, and team member. The graph shows your team vs. company average over time. Admins can drill into any node to see who's ready, who has a gap, and what behavioral evidence the system is drawing on.</p>
+          <div class="evidence-callout" style="margin-top: 20px;">
+            <div class="evidence-label">What makes this different</div>
+            <div class="evidence-item"><span class="ev-arrow">→</span><span class="ev-text">AI Prototyping tracking at 9.5/15 — up 45% since October</span></div>
+            <div class="evidence-item"><span class="ev-arrow">→</span><span class="ev-text">Sub-skills like Prompt Engineering (13/15) vs. Prototyping &amp; Iteration (6/15) visible at a glance</span></div>
+            <div class="evidence-item"><span class="ev-arrow">→</span><span class="ev-text">Click any member to see behavioral evidence + trigger a targeted plan</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <a href="https://kadavidson.github.io/skills-os-integrations/index.html" target="_blank" class="proto-link">Open prototype →</a>
+
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     EXPLORATION 02 — SKILLS OS
+══════════════════════════════════════ -->
+<section class="bleed exp-light">
+  <div class="wide">
+
+    <div class="sec-header">
+      <p class="sec-eyebrow sec-eyebrow-light">Exploration 02</p>
+      <h2 class="sec-title sec-title-light">Skills OS</h2>
+      <p class="sec-sub sec-sub-light">The learner layer — a plan that adapts in real time to how you actually work</p>
+      <p class="sec-intro sec-intro-light">The learner's plan isn't assigned — it emerges from behavioral signals across their own tools. Every recommendation is justified with a specific observation. Learning is triggered by the gap, not the calendar. Verification happens through demonstrated behavior. The credential updates as they work.</p>
+    </div>
+
+    <!-- Moment 1: What we know cards -->
+    <div class="moment">
+      <div class="m-split m-split-reverse">
+        <div class="m-visual">
+          <!-- My plan — crop to show just the WHAT WE KNOW evidence cards -->
+          <div class="ui-crop ui-crop-light" style="height: 300px;">
+            <img src="./screenshots/01-my-plan.jpg" style="width: 155%; display: block; margin-left: -5%; margin-top: -230px;"/>
+          </div>
+        </div>
+        <div class="m-text">
+          <p class="m-num m-num-light">Step 01 &nbsp;·&nbsp; Ground truth for the learner</p>
+          <h3 class="m-head m-head-light">Not assigned — it emerges from what you do</h3>
+          <p class="m-body m-body-light">Every card in Marcus's plan is grounded in something Coursera actually observed. Not a course someone thought he should take. Behavioral signals from Claude, Cursor, and GitHub build a live picture of where he is right now — and what's worth working on next.</p>
+          <div class="credential-callout">
+            <div class="cred-label">Observed · last 12 sessions</div>
+            <div class="cred-item"><span class="cred-name">Writing system prompts before analysis</span><span class="cred-check">↑ new</span></div>
+            <div class="cred-item"><span class="cred-name">Prompts 2× longer and more specific</span><span class="cred-check">↑ new</span></div>
+            <div class="cred-item"><span class="cred-name">Chaining follow-up queries</span><span class="cred-check">↑ new</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="m-divider m-divider-light"></div>
+
+    <!-- Moment 2: Learning session full-width -->
+    <div class="moment-wide">
+      <div class="m-wide-text">
+        <div>
+          <p class="m-num m-num-light">Step 02 &nbsp;·&nbsp; Learning at the moment of the gap</p>
+          <h3 class="m-head m-head-light" style="color: var(--tPri);">The lesson arrives because of what you did last week</h3>
+        </div>
+        <p class="m-body m-body-light" style="padding-bottom: 6px;">When Coursera notices a recurring pattern — prompts that are solid but missing output format instructions — it surfaces the right lesson with full context intact. Not a generic course. A targeted session, justified by evidence, delivered at the exact moment it's relevant.</p>
+      </div>
+      <!-- Full learning session view -->
+      <div class="ui-crop ui-crop-light" style="border-radius: 14px;">
+        <img src="./screenshots/02-learn-write.jpg" style="width: 100%; display: block; height: 460px; object-fit: cover; object-position: left top;"/>
+      </div>
+    </div>
+
+    <div class="m-divider m-divider-light"></div>
+
+    <!-- Moment 3: Credential -->
+    <div class="moment">
+      <div class="m-split">
+        <div class="m-text">
+          <p class="m-num m-num-light">Step 03 &nbsp;·&nbsp; Verified through doing</p>
+          <h3 class="m-head m-head-light">A credential that earns itself</h3>
+          <p class="m-body m-body-light">Skills aren't certified by a test — they're verified through demonstrated behavior in real tools. Marcus's wallet updates live as evidence accumulates across sessions. Each entry is backed by MCP session data, not a multiple-choice score. The link is live — if a skill lapses, the credential reflects it.</p>
+          <div class="credential-callout" style="margin-top: 20px;">
+            <div class="cred-label">Live credential · Marcus Chen</div>
+            <div class="cred-item"><span class="cred-name">Prompt Engineering</span><span style="font-size:11px;color:var(--tMut)">Apr 2026 <span style="color:var(--success)">✓ Fresh</span></span></div>
+            <div class="cred-item"><span class="cred-name">AI Workflow Integration</span><span style="font-size:11px;color:var(--tMut)">May 2026 <span style="color:var(--success)">✓ Fresh</span></span></div>
+            <div class="cred-item"><span class="cred-name">Claude API Fundamentals</span><span style="font-size:11px;color:var(--tMut)">Jun 2026 <span style="color:var(--success)">✓ Fresh</span></span></div>
+            <div class="cred-item"><span class="cred-name">Prototyping &amp; Iteration</span><span style="font-size:11px;color:var(--tMut)">Aug 2026 <span style="color:var(--success)">✓ Fresh</span></span></div>
+          </div>
+        </div>
+        <div class="m-visual">
+          <!-- Wallet — crop to show credential preview panel (right side) -->
+          <div class="ui-crop ui-crop-light" style="height: 480px;">
+            <img src="./screenshots/04-wallet.jpg" style="width: 165%; display: block; margin-left: -66%; margin-top: -140px;"/>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <a href="./skills-os-desktop.html" class="proto-link proto-link-light">Open prototype →</a>
+
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     EXPLORATION 03 — INTEGRATIONS (footnote)
+══════════════════════════════════════ -->
+<section class="bleed exp-teal">
+  <div class="wide">
+    <div style="max-width: 560px; margin-bottom: 12px;">
+      <p class="sec-eyebrow" style="color:rgba(255,255,255,.2)">Exploration 03</p>
+      <h2 class="sec-title" style="font-size:32px">Integrations</h2>
+      <p class="sec-sub">Skills intelligence where work already happens — IC to CEO</p>
+      <p class="sec-intro" style="font-size:14.5px">The most powerful insight is the one that arrives at the right moment for the right person. These integrations bring skill data into Slack, Claude, and Workday — without adding another tool to anyone's workflow.</p>
+    </div>
+
+    <div class="int-grid">
+      <div class="int-card">
+        <div class="int-label">Slack · Weekly manager digest</div>
+        <img src="./screenshots/int-slack.jpg" alt="Slack"/>
+      </div>
+      <div class="int-card">
+        <div class="int-label">Claude · In-context coaching</div>
+        <img src="./screenshots/int-claude.jpg" alt="Claude"/>
+      </div>
+      <div class="int-card">
+        <div class="int-label">Workday · Skills widget</div>
+        <img src="./screenshots/int-workday.jpg" alt="Workday"/>
+      </div>
+    </div>
+
+    <div class="aud-grid">
+      <div class="aud-card">
+        <div class="aud-role-label">Individual contributor</div>
+        <div class="aud-title">Coaching where you work</div>
+        <div class="aud-body">In-context nudges inside Claude and Cursor — at the exact moment a prompt could be stronger. No new tool, no context switch.</div>
+      </div>
+      <div class="aud-card">
+        <div class="aud-role-label">Manager</div>
+        <div class="aud-title">Team health in Slack</div>
+        <div class="aud-body">A weekly digest with new verifications, emerging gaps, and momentum — enough to run a better 1:1 without opening the LMS.</div>
+      </div>
+      <div class="aud-card">
+        <div class="aud-role-label">L&D · Executive</div>
+        <div class="aud-title">Skills in the org layer</div>
+        <div class="aud-body">Readiness in Workday during reviews and planning cycles — see capability gaps before they become a hiring or delivery problem.</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <a href="./integrations.html" class="proto-link">Open prototype →</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     WHY
+══════════════════════════════════════ -->
+<div class="wrap">
+  <section class="why-section">
+    <p class="why-eyebrow">Why this is the bet</p>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-n">01</div>
+        <div class="why-title">Evidence over self-report</div>
+        <div class="why-body">MCP reads behavioral signals from the tools teams already use — turning how people work into skill evidence without surveys or assessments.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-n">02</div>
+        <div class="why-title">A holistic picture of how an org works</div>
+        <div class="why-body">Signals from GitHub, Figma, Claude, and Cursor combine into a composite view of organizational capability — a live map that updates as the team does.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-n">03</div>
+        <div class="why-title">Learning triggered by the gap itself</div>
+        <div class="why-body">Every recommendation arrives tied to a specific behavioral observation. The context is already there — which makes it impossible to ignore and hard to forget.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-n">04</div>
+        <div class="why-title">Credentials earned in the work</div>
+        <div class="why-body">Skills are certified through demonstrated behavior in real tools — not a test. A credential that updates as you work actually tracks what you can do.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer-section">
+    <div>
+      <div class="footer-by">Explorations by</div>
+      <div class="footer-name">Kari Hedberg</div>
+    </div>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+      <a href="https://kadavidson.github.io/skills-os-integrations/index.html" target="_blank" class="proto-link proto-link-light" style="font-size: 12px; padding: 8px 14px; margin-top:0">Ground Truth</a>
+      <a href="./skills-os-desktop.html" class="proto-link proto-link-light" style="font-size: 12px; padding: 8px 14px; margin-top:0">Skills OS</a>
+      <a href="./integrations.html" class="proto-link proto-link-light" style="font-size: 12px; padding: 8px 14px; margin-top:0">Integrations</a>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>

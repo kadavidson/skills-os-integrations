@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ground Truth · Product Concept</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafaf9;
+      --surface: #ffffff;
+      --border: rgba(28,25,23,0.08);
+      --border-strong: rgba(28,25,23,0.14);
+      --t-pri: #1c1917;
+      --t-sec: #57534e;
+      --t-mut: #a8a29e;
+      --accent: #5b5fef;
+      --accent-light: rgba(91,95,239,0.08);
+      --accent-border: rgba(91,95,239,0.2);
+      --green: #16a34a;
+      --green-light: rgba(22,163,74,0.08);
+      --warning: #d97706;
+      --danger: #dc2626;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--t-pri);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Containers ── */
+    .wrap {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    .wrap-wide {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+
+    /* ── Animations ── */
+    @keyframes floatDevice {
+      0%, 100% { transform: translateY(0px) rotate(-0.3deg); }
+      50%       { transform: translateY(-14px) rotate(-0.3deg); }
+    }
+
+    @keyframes floatCard {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-8px); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.75); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 80px 0 64px;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 22px;
+    }
+
+    .eyebrow-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+
+    h1 {
+      font-size: 52px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      color: var(--t-pri);
+      line-height: 1.05;
+      margin-bottom: 8px;
+    }
+
+    .header-sub {
+      font-size: 14px;
+      color: var(--t-mut);
+      font-weight: 500;
+      margin-bottom: 28px;
+    }
+
+    .lede {
+      font-size: 19px;
+      font-weight: 500;
+      color: var(--t-sec);
+      line-height: 1.6;
+      max-width: 580px;
+    }
+
+    .lede strong { color: var(--t-pri); font-weight: 700; }
+
+    /* ── Section labels ── */
+    .section-wrap {
+      padding: 72px 0 0;
+    }
+
+    .section-label {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .section-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--t-mut);
+      letter-spacing: 0.06em;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--t-pri);
+    }
+
+    /* ── Stages ── */
+    .stage {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 0 28px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stage:last-child { border-bottom: none; }
+
+    .stage-time-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      color: var(--t-mut);
+      display: block;
+      margin-bottom: 3px;
+      padding-top: 3px;
+    }
+
+    .stage-time-sub {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--t-sec);
+    }
+
+    .stage-heading {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--t-pri);
+      margin-bottom: 5px;
+    }
+
+    .stage-desc {
+      font-size: 13.5px;
+      color: var(--t-sec);
+      line-height: 1.65;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 11px;
+    }
+
+    .chip {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--t-sec);
+      background: var(--surface);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .chip .material-icons { font-size: 12px; }
+    .chip.c-accent  { background: rgba(91,95,239,0.08);  border-color: rgba(91,95,239,0.2);  color: #5b5fef; }
+    .chip.c-purple  { background: rgba(139,92,246,0.08); border-color: rgba(139,92,246,0.22); color: #7c3aed; }
+    .chip.c-pink    { background: rgba(236,72,153,0.07); border-color: rgba(236,72,153,0.2);  color: #be185d; }
+    .chip.c-teal    { background: rgba(20,184,166,0.08); border-color: rgba(20,184,166,0.22); color: #0d9488; }
+    .chip.c-warn    { background: rgba(217,119,6,0.08);  border-color: rgba(217,119,6,0.22);  color: #d97706; }
+    .chip.c-danger  { background: rgba(220,38,38,0.07);  border-color: rgba(220,38,38,0.2);   color: #dc2626; }
+    .chip.c-green   { background: rgba(22,163,74,0.08);  border-color: rgba(22,163,74,0.22);  color: #16a34a; }
+
+    /* ── MacBook frame ── */
+    .macbook-wrap {
+      display: inline-block;
+      width: 100%;
+      max-width: 680px;
+      filter: drop-shadow(0 40px 80px rgba(0,0,0,0.28));
+      animation: floatDevice 8s ease-in-out infinite;
+    }
+
+    .macbook-lid {
+      background: #1e1e1e;
+      border-radius: 14px 14px 0 0;
+      padding: 18px 18px 0;
+    }
+
+    .macbook-camera-bar {
+      text-align: center;
+      margin-bottom: 9px;
+    }
+
+    .macbook-cam {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      background: #3d3d3d;
+      border-radius: 50%;
+    }
+
+    .macbook-glass {
+      border-radius: 6px 6px 0 0;
+      overflow: hidden;
+      background: #111;
+      line-height: 0;
+    }
+
+    .macbook-glass img {
+      width: 100%;
+      display: block;
+    }
+
+    .macbook-base {
+      background: linear-gradient(180deg, #d4d4d2 0%, #c0c0be 100%);
+      height: 20px;
+      border-radius: 0 0 4px 4px;
+    }
+
+    .macbook-foot {
+      background: #b0b0ae;
+      height: 5px;
+      width: 90%;
+      margin: 0 auto;
+      border-radius: 0 0 6px 6px;
+    }
+
+    /* ── Breakout sections ── */
+    .breakout {
+      padding: 80px 40px;
+    }
+
+    /* Warm sand — dashboard */
+    .breakout-sand {
+      background: linear-gradient(145deg, #f5f0e6 0%, #ece6d8 60%, #e6deca 100%);
+    }
+
+    /* Dark — MCP signal */
+    .breakout-dark {
+      background: #141210;
+    }
+
+    /* Blue-gray — learner detail */
+    .breakout-blue {
+      background: linear-gradient(145deg, #edf1f8 0%, #e5ecf6 100%);
+    }
+
+    /* Deep indigo — plan result */
+    .breakout-indigo {
+      background: linear-gradient(145deg, #12103a 0%, #0d0b2a 100%);
+    }
+
+    /* Light sage — skills */
+    .breakout-sage {
+      background: linear-gradient(145deg, #f0f4ef 0%, #e8ede7 100%);
+    }
+
+    .breakout-inner {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .breakout-tag {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .breakout-tag-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .breakout-caption {
+      font-size: 12px;
+      font-weight: 500;
+      margin-top: 16px;
+      text-align: center;
+      letter-spacing: 0.01em;
+    }
+
+    /* ── Floating UI fragment ── */
+    .ui-float {
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.12);
+      animation: floatCard 6s ease-in-out infinite;
+      line-height: 0;
+    }
+
+    .ui-float img {
+      width: 100%;
+      display: block;
+    }
+
+    /* ── Two-col breakout layout ── */
+    .breakout-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .breakout-cols.flip { direction: rtl; }
+    .breakout-cols.flip > * { direction: ltr; }
+
+    .breakout-text-heading {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+
+    .breakout-text-body {
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    /* ── MCP connector grid ── */
+    .connector-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .connector-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .connector-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 9px;
+    }
+
+    .connector-icon .material-icons { font-size: 16px; }
+    .connector-name { font-size: 12px; font-weight: 700; color: var(--t-pri); margin-bottom: 2px; }
+    .connector-type { font-size: 11px; color: var(--t-mut); line-height: 1.4; }
+
+    /* ── Diff grid ── */
+    .diff-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .diff-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .diff-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: var(--accent-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .diff-icon .material-icons { font-size: 16px; color: var(--accent); }
+    .diff-title { font-size: 13px; font-weight: 700; color: var(--t-pri); margin-bottom: 5px; }
+    .diff-body { font-size: 12.5px; color: var(--t-sec); line-height: 1.6; }
+
+    /* ── Capability stages ── */
+    .cap-stage {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 0 28px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cap-stage:last-child { border-bottom: none; }
+
+    /* ── Positioning ── */
+    .positioning {
+      background: var(--t-pri);
+      border-radius: 16px;
+      padding: 40px 44px;
+      margin: 72px 0;
+    }
+
+    .positioning p {
+      font-size: 24px;
+      font-weight: 700;
+      color: white;
+      line-height: 1.45;
+      letter-spacing: -0.015em;
+    }
+
+    .positioning p em { color: rgba(255,255,255,0.4); font-style: normal; }
+
+    /* ── Footer ── */
+    footer {
+      padding: 40px 0 64px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    footer .brand { font-size: 13px; font-weight: 700; color: var(--t-mut); }
+    footer .meta  { font-size: 12px; color: var(--t-mut); }
+
+    /* ── Dividers ── */
+    hr.section-rule {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 680px) {
+      h1 { font-size: 36px; }
+      .lede { font-size: 16px; }
+      .breakout { padding: 56px 24px; }
+      .breakout-cols { grid-template-columns: 1fr; gap: 36px; }
+      .breakout-cols.flip { direction: ltr; }
+      .diff-grid { grid-template-columns: 1fr; }
+      .connector-grid { grid-template-columns: 1fr 1fr; }
+      .stage { grid-template-columns: 1fr; gap: 4px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ════ HEADER ════ -->
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">
+        <span class="eyebrow-dot"></span>
+        Coursera · L&D Admin · Product Concept
+      </div>
+      <h1>Ground Truth</h1>
+      <p class="header-sub">Skills OS · Admin Prototype · April 2026</p>
+      <p class="lede">
+        Most L&D dashboards tell you what people <strong>completed</strong>.
+        Ground Truth tells you what they actually <strong>know how to do</strong> —
+        by pulling behavioral signals from every tool your team already works in.
+      </p>
+    </header>
+  </div>
+
+  <!-- ════ BREAKOUT 1: Dashboard in MacBook ════ -->
+  <div class="breakout breakout-sand">
+    <div class="breakout-inner">
+      <div class="breakout-tag" style="color: #a08060;">
+        <span class="breakout-tag-dot" style="background: #a08060;"></span>
+        Team Skill Progress · Dashboard
+      </div>
+      <div style="text-align: center;">
+        <div class="macbook-wrap" style="display: inline-block; text-align: left;">
+          <div class="macbook-lid">
+            <div class="macbook-camera-bar"><span class="macbook-cam"></span></div>
+            <div class="macbook-glass">
+              <img src="./screen-dashboard.png" alt="Ground Truth dashboard showing AI Prototyping at 67% readiness with MCP signal strip" />
+            </div>
+          </div>
+          <div class="macbook-base"></div>
+          <div class="macbook-foot"></div>
+        </div>
+      </div>
+      <p class="breakout-caption" style="color: #9a8a72;">
+        The Team Skill Progress dashboard — skill coverage trend + live MCP signal strip
+      </p>
+    </div>
+  </div>
+
+  <!-- ════ TEXT: Stages 1–2 ════ -->
+  <div class="wrap">
+    <div class="section-wrap">
+      <div class="section-label">
+        <span class="section-num">01</span>
+        <span class="section-title">How It Works</span>
+      </div>
+
+      <div style="display: flex; flex-direction: column;">
+        <div class="stage">
+          <div>
+            <span class="stage-time-label">Always On</span>
+            <span class="stage-time-sub">Background signal</span>
+          </div>
+          <div>
+            <div class="stage-heading">MCP connections surface real skill evidence</div>
+            <div class="stage-desc">Ground Truth reads behavioral signals from the tools your team already uses — Claude, GitHub, Figma, and more. How people prompt, code, and design reveals far more about actual skill than any survey or self-assessment.</div>
+            <div class="chips">
+              <span class="chip c-accent"><span class="material-icons">smart_toy</span> Claude · AI depth</span>
+              <span class="chip c-purple"><span class="material-icons">code</span> GitHub · Code patterns</span>
+              <span class="chip c-pink"><span class="material-icons">brush</span> Figma · Design behavior</span>
+              <span class="chip c-teal"><span class="material-icons">hub</span> Any MCP connector</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stage" style="border-bottom: none;">
+          <div>
+            <span class="stage-time-label">Mon 09:02 AM</span>
+            <span class="stage-time-sub">Manager check-in</span>
+          </div>
+          <div>
+            <div class="stage-heading">Dashboard surfaces the gap</div>
+            <div class="stage-desc">The Team Skill Progress view shows coverage by skill area and an MCP signal strip with live behavioral data. Not what your team says they know — what they actually do.</div>
+            <div class="chips">
+              <span class="chip c-warn"><span class="material-icons">trending_flat</span> 72% surface-level usage</span>
+              <span class="chip c-warn"><span class="material-icons">short_text</span> 28-word avg prompts</span>
+              <span class="chip c-danger"><span class="material-icons">close</span> 0 pipelines</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ BREAKOUT 2: MCP strip floating on dark ════ -->
+  <div class="breakout breakout-dark">
+    <div class="breakout-inner">
+      <div class="breakout-cols">
+        <div>
+          <div class="breakout-tag" style="color: rgba(255,255,255,0.35);">
+            <span class="breakout-tag-dot" style="background: #5b5fef; animation: pulse 2.4s ease-in-out infinite;"></span>
+            MCP Signal Strip · Live Behavioral Data
+          </div>
+          <div class="breakout-text-heading" style="color: white;">
+            The signal that changes everything.
+          </div>
+          <div class="breakout-text-body" style="color: rgba(255,255,255,0.55);">
+            Completion rates tell you who enrolled. The MCP signal strip tells you
+            how your team actually works — session depth, prompt complexity, and
+            whether they're building real workflows or just asking questions.
+            <br/><br/>
+            The same signal works across tools. Claude shows AI reasoning depth.
+            GitHub shows engineering maturity. Figma shows design iteration patterns.
+          </div>
+        </div>
+        <div>
+          <div class="ui-float" style="animation-delay: 0.3s; border-radius: 12px; box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06);">
+            <img src="./screen-mcp-strip.png" alt="MCP signal strip showing 47 sessions, 72% Q&A, 28-word prompts, 0 pipelines" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ TEXT: Stage 3 ════ -->
+  <div class="wrap">
+    <div class="section-wrap">
+      <div style="display: flex; flex-direction: column;">
+        <div class="stage" style="border-top: 1px solid var(--border); border-bottom: none;">
+          <div>
+            <span class="stage-time-label">Mon 09:08 AM</span>
+            <span class="stage-time-sub">Learner drill-down</span>
+          </div>
+          <div>
+            <div class="stage-heading">Three columns of truth per person</div>
+            <div class="stage-desc">Click any learner to see Workday performance goals, MCP tool behavioral evidence, and Coursera learning progress — side by side, per skill area. No tab-switching. No spreadsheets.</div>
+            <div class="chips">
+              <span class="chip"><span class="material-icons">work</span> Workday goals</span>
+              <span class="chip c-accent"><span class="material-icons">cable</span> MCP tool signals</span>
+              <span class="chip c-green"><span class="material-icons">school</span> Coursera progress</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ BREAKOUT 3: Learner detail in MacBook ════ -->
+  <div class="breakout breakout-blue">
+    <div class="breakout-inner">
+      <div class="breakout-tag" style="color: #6b82a8;">
+        <span class="breakout-tag-dot" style="background: #6b82a8;"></span>
+        Learner Detail · Lena Müller
+      </div>
+      <div style="text-align: center;">
+        <div class="macbook-wrap" style="display: inline-block; text-align: left; animation-delay: 0.5s;">
+          <div class="macbook-lid">
+            <div class="macbook-camera-bar"><span class="macbook-cam"></span></div>
+            <div class="macbook-glass">
+              <img src="./screen-learner.png" alt="Learner detail view for Lena Müller showing Workday, MCP signals, and Coursera learning" />
+            </div>
+          </div>
+          <div class="macbook-base"></div>
+          <div class="macbook-foot"></div>
+        </div>
+      </div>
+      <p class="breakout-caption" style="color: #8090a8;">
+        Per-skill-area view — Workday goals · MCP behavioral evidence · Coursera learning progress
+      </p>
+    </div>
+  </div>
+
+  <!-- ════ TEXT: Stage 4 ════ -->
+  <div class="wrap">
+    <div class="section-wrap">
+      <div style="display: flex; flex-direction: column;">
+        <div class="stage" style="border-top: 1px solid var(--border); border-bottom: none;">
+          <div>
+            <span class="stage-time-label">Mon 09:14 AM</span>
+            <span class="stage-time-sub">Plan generation</span>
+          </div>
+          <div>
+            <div class="stage-heading">AI builds the learning plan in 90 seconds</div>
+            <div class="stage-desc">Type the team goal. Click build. Ground Truth drafts a structured, multi-week learning plan — grounded in actual skill gaps and MCP evidence, not a generic course list. Adjust inline. Export when ready.</div>
+            <div class="chips">
+              <span class="chip c-green"><span class="material-icons">bolt</span> ~90-second draft</span>
+              <span class="chip"><span class="material-icons">tune</span> Adjustable inline</span>
+              <span class="chip c-accent"><span class="material-icons">account_tree</span> Gap-aligned</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ BREAKOUT 4: Plan panel on dark indigo ════ -->
+  <div class="breakout breakout-indigo">
+    <div class="breakout-inner">
+      <div class="breakout-cols flip">
+        <div>
+          <div class="breakout-tag" style="color: rgba(255,255,255,0.3);">
+            <span class="breakout-tag-dot" style="background: #818cf8;"></span>
+            Goal Builder · Draft Plan
+          </div>
+          <div class="breakout-text-heading" style="color: white;">
+            From gap to plan in 90 seconds.
+          </div>
+          <div class="breakout-text-body" style="color: rgba(255,255,255,0.5);">
+            Type what your team needs to get better at. Ground Truth pulls from
+            the Coursera skill graph, your company rubrics, and MCP connector data
+            to build a structured learning plan — with pacing, verification moments,
+            and milestones.
+            <br/><br/>
+            Not a course list. A real program.
+          </div>
+        </div>
+        <div>
+          <div class="ui-float" style="border-radius: 14px; box-shadow: 0 30px 70px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);">
+            <img src="./screen-plan-panel.png" alt="Draft plan showing Prompt Engineering + AI Workflow Integration plan" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ SECTION 02: MCP Connectors ════ -->
+  <div class="wrap">
+    <div class="section-wrap" style="padding-bottom: 72px;">
+      <div class="section-label">
+        <span class="section-num">02</span>
+        <span class="section-title">MCP Connectors · Where the Signal Comes From</span>
+      </div>
+
+      <p style="font-size: 14px; color: var(--t-sec); line-height: 1.7; margin-bottom: 22px;">
+        Ground Truth doesn't require a new tool. It reads from the MCP connections your team already has — each one a window into a different skill domain. The more tools connected, the richer the picture.
+      </p>
+
+      <div class="connector-grid">
+        <div class="connector-card">
+          <div class="connector-icon" style="background: rgba(91,95,239,0.08);">
+            <span class="material-icons" style="color: #5b5fef;">smart_toy</span>
+          </div>
+          <div class="connector-name">Claude</div>
+          <div class="connector-type">AI fluency · Prompt depth · Reasoning</div>
+        </div>
+        <div class="connector-card">
+          <div class="connector-icon" style="background: rgba(28,25,23,0.06);">
+            <span class="material-icons" style="color: #44403c;">code</span>
+          </div>
+          <div class="connector-name">GitHub</div>
+          <div class="connector-type">Coding skill · PR quality · Review depth</div>
+        </div>
+        <div class="connector-card">
+          <div class="connector-icon" style="background: rgba(236,72,153,0.07);">
+            <span class="material-icons" style="color: #be185d;">brush</span>
+          </div>
+          <div class="connector-name">Figma</div>
+          <div class="connector-type">Design maturity · Iteration · Systems</div>
+        </div>
+        <div class="connector-card">
+          <div class="connector-icon" style="background: rgba(20,184,166,0.08);">
+            <span class="material-icons" style="color: #0d9488;">task_alt</span>
+          </div>
+          <div class="connector-name">Jira / Linear</div>
+          <div class="connector-type">Project patterns · Delivery · Scoping</div>
+        </div>
+        <div class="connector-card">
+          <div class="connector-icon" style="background: rgba(217,119,6,0.08);">
+            <span class="material-icons" style="color: #d97706;">chat</span>
+          </div>
+          <div class="connector-name">Slack</div>
+          <div class="connector-type">Communication · Async clarity</div>
+        </div>
+        <div class="connector-card">
+          <div class="connector-icon" style="background: rgba(139,92,246,0.08);">
+            <span class="material-icons" style="color: #7c3aed;">table_chart</span>
+          </div>
+          <div class="connector-name">Notion / Docs</div>
+          <div class="connector-type">Writing quality · Structured thinking</div>
+        </div>
+        <div class="connector-card">
+          <div class="connector-icon" style="background: rgba(22,163,74,0.08);">
+            <span class="material-icons" style="color: #16a34a;">work</span>
+          </div>
+          <div class="connector-name">Workday</div>
+          <div class="connector-type">Goals · Role context · Performance</div>
+        </div>
+        <div class="connector-card" style="border-style: dashed; background: transparent;">
+          <div class="connector-icon" style="background: var(--bg);">
+            <span class="material-icons" style="color: var(--t-mut);">add</span>
+          </div>
+          <div class="connector-name" style="color: var(--t-mut);">Your tools</div>
+          <div class="connector-type">Any MCP-enabled tool</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ BREAKOUT 5: Skills tree on sage ════ -->
+  <div class="breakout breakout-sage">
+    <div class="breakout-inner">
+      <div class="breakout-tag" style="color: #6a8060;">
+        <span class="breakout-tag-dot" style="background: #6a8060;"></span>
+        Company Skill Targets · Admin View
+      </div>
+      <div style="text-align: center;">
+        <div class="macbook-wrap" style="display: inline-block; text-align: left; animation-delay: 1s;">
+          <div class="macbook-lid">
+            <div class="macbook-camera-bar"><span class="macbook-cam"></span></div>
+            <div class="macbook-glass">
+              <img src="./screen-skills.png" alt="Company Skill Targets view with skill areas and company context files" />
+            </div>
+          </div>
+          <div class="macbook-base"></div>
+          <div class="macbook-foot"></div>
+        </div>
+      </div>
+      <p class="breakout-caption" style="color: #889a80;">
+        Admin sets the skill model; MCP connectors fill in behavioral evidence per learner
+      </p>
+    </div>
+  </div>
+
+  <!-- ════ SECTION 03: Why Different ════ -->
+  <div class="wrap">
+    <div class="section-wrap">
+      <div class="section-label">
+        <span class="section-num">03</span>
+        <span class="section-title">Why This Is Different</span>
+      </div>
+
+      <div class="diff-grid">
+        <div class="diff-card">
+          <div class="diff-icon"><span class="material-icons">sensors</span></div>
+          <div class="diff-title">Behavioral signal across your whole tool stack</div>
+          <div class="diff-body">Most LMS dashboards tell you who finished a course. Ground Truth tells you how people actually work — from how they prompt Claude, to how they structure code, to how they design in Figma.</div>
+        </div>
+        <div class="diff-card">
+          <div class="diff-icon"><span class="material-icons">hub</span></div>
+          <div class="diff-title">Three systems, one view</div>
+          <div class="diff-body">Workday performance goals, MCP tool signals, and Coursera learning data — unified per learner, per skill area. No tab-switching. No reconciliation spreadsheet.</div>
+        </div>
+        <div class="diff-card">
+          <div class="diff-icon"><span class="material-icons">bolt</span></div>
+          <div class="diff-title">Plans in 90 seconds, not 90 minutes</div>
+          <div class="diff-body">Type a goal. The AI builds a structured, gap-aligned plan grounded in actual evidence — not a generic recommendation list pulled from the catalog.</div>
+        </div>
+        <div class="diff-card">
+          <div class="diff-icon"><span class="material-icons">verified</span></div>
+          <div class="diff-title">Speaks skill strategy, not LMS admin</div>
+          <div class="diff-body">Designed for L&D managers making decisions — not LMS admins managing enrollments. The language and workflow match how skill strategy actually happens.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ SECTION 04: Capabilities ════ -->
+  <div class="wrap">
+    <div class="section-wrap">
+      <div class="section-label">
+        <span class="section-num">04</span>
+        <span class="section-title">Four Capabilities Stacked</span>
+      </div>
+
+      <div style="display: flex; flex-direction: column;">
+        <div class="cap-stage">
+          <div>
+            <span class="stage-time-label">Data layer</span>
+            <span class="stage-time-sub" style="font-size: 11.5px; font-weight: 600; color: var(--t-sec);">Coursera catalog</span>
+          </div>
+          <div>
+            <div class="stage-heading">Skill taxonomy + learning content</div>
+            <div class="stage-desc">The world's largest professional learning catalog, mapped to a structured skill taxonomy. Ground Truth surfaces the right content — already in the platform your company pays for.</div>
+          </div>
+        </div>
+        <div class="cap-stage">
+          <div>
+            <span class="stage-time-label">Signal layer</span>
+            <span class="stage-time-sub" style="font-size: 11.5px; font-weight: 600; color: var(--t-sec);">MCP connectors</span>
+          </div>
+          <div>
+            <div class="stage-heading">Behavioral intelligence from real work</div>
+            <div class="stage-desc">MCP data from Claude, GitHub, Figma, and other tools turns day-to-day work patterns into skill evidence — without surveys, self-assessments, or manager observation.</div>
+          </div>
+        </div>
+        <div class="cap-stage">
+          <div>
+            <span class="stage-time-label">Integration layer</span>
+            <span class="stage-time-sub" style="font-size: 11.5px; font-weight: 600; color: var(--t-sec);">Workday</span>
+          </div>
+          <div>
+            <div class="stage-heading">Declared goals meet observed reality</div>
+            <div class="stage-desc">Performance goals and job roles from Workday anchor the skill model to what the company actually cares about — not what the LMS happens to have courses for.</div>
+          </div>
+        </div>
+        <div class="cap-stage">
+          <div>
+            <span class="stage-time-label">Intelligence layer</span>
+            <span class="stage-time-sub" style="font-size: 11.5px; font-weight: 600; color: var(--t-sec);">AI plan builder</span>
+          </div>
+          <div>
+            <div class="stage-heading">From evidence to action in one step</div>
+            <div class="stage-desc">AI synthesizes all sources into a targeted learning plan — not a recommendation list, but a structured program with rationale, timeline, and measurable milestones.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ POSITIONING ════ -->
+  <div class="wrap">
+    <div class="positioning">
+      <p>
+        Completion data tells you what people <em>watched</em>.<br />
+        Ground Truth tells you what people <em>know</em>.
+      </p>
+    </div>
+  </div>
+
+  <!-- ════ FOOTER ════ -->
+  <div class="wrap">
+    <footer>
+      <span class="brand">Ground Truth · Coursera</span>
+      <span class="meta">Design concept · April 2026</span>
+    </footer>
+  </div>
+
+</body>
+</html>
