@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "skills-os",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["http-server", ".", "-p", "8000", "-o", "false"],
+      "port": 8000
+    }
+  ]
+}

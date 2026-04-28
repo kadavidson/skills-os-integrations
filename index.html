@@ -31,8 +31,18 @@
       40%           { transform: scale(1);    opacity: 1;    }
     }
 
-    .slide-up    { animation: slideUp    0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-    .fade-in     { animation: fadeIn     0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    @keyframes slideInRight {
+      from { transform: translateX(100%); }
+      to   { transform: translateX(0); }
+    }
+    @keyframes skeletonPulse {
+      0%, 100% { opacity: 0.35; }
+      50%       { opacity: 0.8; }
+    }
+    .slide-up    { animation: slideUp      0.2s  cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .fade-in     { animation: fadeIn       0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .artifact-in { animation: slideInRight 0.38s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .skeleton    { animation: skeletonPulse 1.5s ease-in-out infinite; background: #E7E5E4; border-radius: 6px; }
     .dot-1 { animation: pulseDot 1.4s infinite 0s; }
     .dot-2 { animation: pulseDot 1.4s infinite 0.2s; }
     .dot-3 { animation: pulseDot 1.4s infinite 0.4s; }
@@ -274,14 +284,36 @@
      VIGNETTE 1 — Goal Setting
   ══════════════════════════════════════════════════════════════ */
   function V1GoalSetting({ ann, onBuildPlan }) {
-    const [stage, setStage]     = useState('input'); // input | thinking | result
-    const [followup, setFollowup] = useState('');
+    const [stage, setStage]               = useState('input'); // input | thinking | result
+    const [followup, setFollowup]         = useState('');
+    const [showArtifact, setShowArtifact] = useState(false);
+    const [artifactReady, setArtifactReady] = useState(false);
+    const scrollRef = React.useRef(null);
 
     useEffect(() => {
       if (stage !== 'thinking') return;
       const t = setTimeout(() => setStage('result'), 2000);
       return () => clearTimeout(t);
     }, [stage]);
+
+    const artifactScrollRef = React.useRef(null);
+
+    useEffect(() => {
+      if (!showArtifact) { setArtifactReady(false); return; }
+      // Scroll left panel to bottom after layout settles so "Adjust this plan" is visible
+      const tScroll = setTimeout(() => {
+        if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }, 80);
+      const t = setTimeout(() => setArtifactReady(true), 1700);
+      return () => { clearTimeout(t); clearTimeout(tScroll); };
+    }, [showArtifact]);
+
+    // When artifact content renders, reset it to top
+    useEffect(() => {
+      if (artifactReady && artifactScrollRef.current) {
+        artifactScrollRef.current.scrollTop = 0;
+      }
+    }, [artifactReady]);
 
     const MCP_SIGNALS = [
       { value: '47',      label: 'Avg sessions / person', sub: 'Last 30 days',                           color: C.tPri  },
@@ -383,39 +415,179 @@
     );
 
     /* ── Plan ── */
-    if (stage === 'plan') {
-      const PHASES = [
-        {
-          id: 'phase1', label: 'Prompt Engineering', days: 'Days 1–5', color: C.accent,
-          modules: [
-            { day: 'Day 1–2', label: 'Writing effective system prompts',      type: 'standard', desc: 'Structure and context-setting for consistent, repeatable Claude behavior' },
-            { day: 'Day 2–3', label: 'Chaining prompts for multi-step tasks', type: 'standard', desc: 'Decompose complex analyses into sequential prompt chains' },
-            { day: 'Day 3–4', label: 'Domain-specific context setting',       type: 'standard', desc: 'Embed Meridian financial context into prompts for precise outputs' },
-            { day: 'Day 4',   label: 'Debugging prompt failures',             type: 'standard', desc: 'Diagnose and fix prompts that return vague or incorrect outputs' },
-            { day: 'Day 5',   label: 'Meridian risk prompt templates',        type: 'company',  desc: "Apply Meridian's internal risk analysis prompt library to real portfolios" },
-          ],
-          verification: {
-            method: 'Live prompt assessment (45 min) + MCP session review',
-            detail: 'Write a system prompt from scratch for a given scenario, then demonstrate structured chaining in a live Claude session. MCP logs reviewed for prompt quality signals — not just completion.',
-          },
+    const PHASES = [
+      {
+        id: 'phase1', label: 'Prompt Engineering', days: 'Days 1–5', color: C.accent,
+        modules: [
+          { day: 'Day 1–2', label: 'Writing effective system prompts',      type: 'standard', desc: 'Structure and context-setting for consistent, repeatable Claude behavior' },
+          { day: 'Day 2–3', label: 'Chaining prompts for multi-step tasks', type: 'standard', desc: 'Decompose complex analyses into sequential prompt chains' },
+          { day: 'Day 3–4', label: 'Domain-specific context setting',       type: 'standard', desc: 'Embed Meridian financial context into prompts for precise outputs' },
+          { day: 'Day 4',   label: 'Debugging prompt failures',             type: 'standard', desc: 'Diagnose and fix prompts that return vague or incorrect outputs' },
+          { day: 'Day 5',   label: 'Meridian risk prompt templates',        type: 'company',  desc: "Apply Meridian's internal risk analysis prompt library to real portfolios" },
+        ],
+        verification: {
+          method: 'Live prompt assessment (45 min) + MCP session review',
+          detail: 'Write a system prompt from scratch for a given scenario, then demonstrate structured chaining in a live Claude session. MCP logs reviewed for prompt quality signals — not just completion.',
         },
-        {
-          id: 'phase2', label: 'AI Workflow Integration', days: 'Days 6–10', color: '#9CDEEC',
-          modules: [
-            { day: 'Day 6',   label: 'Identifying automation opportunities',  type: 'standard', desc: 'Spot high-value repeatable tasks in the current analyst workflow' },
-            { day: 'Day 7',   label: 'Building LLM-powered workflows',        type: 'standard', desc: 'Design and connect multi-step Claude pipelines end-to-end' },
-            { day: 'Day 8',   label: 'Measuring workflow quality',            type: 'standard', desc: 'Define quality metrics and test outputs against real Meridian data' },
-            { day: 'Day 9',   label: 'End-to-end pipeline design',            type: 'standard', desc: 'Build a complete pipeline: input → Claude → structured output → action' },
-            { day: 'Day 10',  label: 'Workflow demo & stakeholder handoff',   type: 'company',  desc: "Present working pipeline to team lead using Meridian's MVP sign-off checklist" },
-          ],
-          verification: {
-            method: 'Submit a working pipeline + MCP usage review',
-            detail: 'Submit a documented, working pipeline handling a real Meridian use case. MCP logs reviewed to confirm multi-step usage patterns — not one-off queries.',
-          },
+      },
+      {
+        id: 'phase2', label: 'AI Workflow Integration', days: 'Days 6–10', color: '#9CDEEC',
+        modules: [
+          { day: 'Day 6',   label: 'Identifying automation opportunities',  type: 'standard', desc: 'Spot high-value repeatable tasks in the current analyst workflow' },
+          { day: 'Day 7',   label: 'Building LLM-powered workflows',        type: 'standard', desc: 'Design and connect multi-step Claude pipelines end-to-end' },
+          { day: 'Day 8',   label: 'Measuring workflow quality',            type: 'standard', desc: 'Define quality metrics and test outputs against real Meridian data' },
+          { day: 'Day 9',   label: 'End-to-end pipeline design',            type: 'standard', desc: 'Build a complete pipeline: input → Claude → structured output → action' },
+          { day: 'Day 10',  label: 'Workflow demo & stakeholder handoff',   type: 'company',  desc: "Present working pipeline to team lead using Meridian's MVP sign-off checklist" },
+        ],
+        verification: {
+          method: 'Submit a working pipeline + MCP usage review',
+          detail: 'Submit a documented, working pipeline handling a real Meridian use case. MCP logs reviewed to confirm multi-step usage patterns — not one-off queries.',
         },
-      ];
+      },
+    ];
 
-      return (
+    /* ── Artifact panel (right side) ── */
+    const ArtifactPanel = () => (
+      <div className="artifact-in" style={{ width: 500, flexShrink: 0, borderLeft: `1px solid ${C.border}`, background: C.surface, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        {/* Header */}
+        <div style={{ padding: '12px 18px', borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', gap: 8, background: C.surfaceMuted, flexShrink: 0 }}>
+          <div style={{ width: 7, height: 7, borderRadius: 2, background: C.accent, flexShrink: 0 }} />
+          <span style={{ fontSize: 12, fontWeight: 700, color: C.tPri, flex: 1 }}>Draft plan</span>
+          <span style={{ fontSize: 11, color: C.tMut, marginRight: 8 }}>10 days · 15 analysts</span>
+          <button onClick={() => setShowArtifact(false)} style={{ background: 'none', border: 'none', color: C.tMut, cursor: 'pointer', fontSize: 15, lineHeight: 1, padding: '2px 4px', borderRadius: 4 }}>✕</button>
+        </div>
+
+        {!artifactReady ? (
+          /* ── Loading skeleton ── */
+          <div style={{ flex: 1, padding: '28px 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 6 }}>
+              <span className="dot-1" style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: C.accent }} />
+              <span className="dot-2" style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: C.accent }} />
+              <span className="dot-3" style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: C.accent }} />
+              <span style={{ fontSize: 12, color: C.tMut, marginLeft: 4 }}>Building your plan…</span>
+            </div>
+            {[55, 38, 70, 28, 60, 45, 80, 33, 65, 42, 72, 30].map((w, i) => (
+              <div key={i} className="skeleton" style={{ height: i % 4 === 0 ? 18 : i % 3 === 0 ? 14 : 10, width: `${w}%`, animationDelay: `${i * 0.07}s` }} />
+            ))}
+          </div>
+        ) : (
+          /* ── Plan content ── */
+          <div ref={artifactScrollRef} className="fade-in" style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '20px 22px 48px' }}>
+            {/* Plan summary */}
+            <div style={{ background: C.bg, borderRadius: 12, padding: '14px 16px', border: `1px solid ${C.border}` }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: C.accent, textTransform: 'uppercase', letterSpacing: '0.09em', marginBottom: 4 }}>Plan · 10 days · 15 analysts</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: C.tPri, marginBottom: 10, letterSpacing: '-0.02em' }}>Prompt Engineering + AI Workflow Integration</div>
+              <div style={{ display: 'flex', gap: 14 }}>
+                {[['10', 'modules'], ['2', 'verifications'], ['15', 'analysts'], ['7–14d', 'per person']].map(([val, lbl], i) => (
+                  <div key={i} style={{ flexDirection: 'column', gap: 1, borderLeft: i > 0 ? `1px solid ${C.border}` : 'none', paddingLeft: i > 0 ? 14 : 0 }}>
+                    <div style={{ fontSize: 15, fontWeight: 800, color: C.tPri, letterSpacing: '-0.02em' }}>{val}</div>
+                    <div style={{ fontSize: 10, color: C.tMut }}>{lbl}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Adapts to each learner — top of plan */}
+            <div style={{ background: 'rgba(91,95,239,0.04)', borderRadius: 12, border: '1px solid rgba(91,95,239,0.12)', padding: '12px 14px' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: C.accent, textTransform: 'uppercase', letterSpacing: '0.09em', marginBottom: 9 }}>Adapts to each learner</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 9 }}>
+                {[
+                  { label: 'Pacing',         detail: "Adjusts to each person's MCP session depth and frequency" },
+                  { label: 'Starting point', detail: 'Skips sub-skills already demonstrated in their Claude sessions' },
+                  { label: 'Verification',   detail: 'Behavioral signal + live check — not just module completion' },
+                  { label: 'Path length',    detail: '7–14 days per person; shorter for stronger MCP signals' },
+                ].map((item, i) => (
+                  <div key={i}>
+                    <div style={{ fontSize: 11.5, fontWeight: 700, color: C.tPri, marginBottom: 2 }}>{item.label}</div>
+                    <div style={{ fontSize: 11, color: C.tSec, lineHeight: 1.5 }}>{item.detail}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Key verification moments */}
+            <div style={{ background: C.bg, borderRadius: 12, border: `1px solid ${C.border}`, overflow: 'hidden' }}>
+              <div style={{ padding: '9px 14px', background: C.surfaceMuted, borderBottom: `1px solid ${C.border}` }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: C.tPri }}>Key verification moments</span>
+              </div>
+              {/* Day 5 */}
+              <div style={{ padding: '11px 14px', borderBottom: `1px solid ${C.border}`, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                <span style={{ fontSize: 10, color: C.tMut, minWidth: 34, paddingTop: 2 }}>Day 5</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: C.tPri }}>Prompt Engineering Assessment</span>
+                    {/* Anthropic logo */}
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" title="Anthropic">
+                      <path d="M13.8 4H17L11 20H7.8L13.8 4Z" fill="#CE7B4C"/>
+                      <path d="M7 4H10.2L4.2 20H1L7 4Z" fill="#CE7B4C"/>
+                    </svg>
+                  </div>
+                  <div style={{ fontSize: 11, color: C.tMut, lineHeight: 1.5 }}>45-min live Claude session · write system prompt + demonstrate chaining</div>
+                </div>
+                <span style={{ fontSize: 10, fontWeight: 700, color: C.success, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 5, padding: '2px 7px', whiteSpace: 'nowrap', flexShrink: 0 }}>Verified</span>
+              </div>
+              {/* Day 10 */}
+              <div style={{ padding: '11px 14px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                <span style={{ fontSize: 10, color: C.tMut, minWidth: 34, paddingTop: 2 }}>Day 10</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: C.tPri }}>AI Workflow Certificate</span>
+                    {/* Google logo */}
+                    <svg width="14" height="14" viewBox="0 0 24 24">
+                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    {/* Coursera C */}
+                    <svg width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#0056D2"/><path d="M16.5 15.8A6 6 0 1 1 16.5 8.2" stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round"/></svg>
+                  </div>
+                  <div style={{ fontSize: 11, color: C.tMut, lineHeight: 1.5 }}>Submit working pipeline · MCP review confirms multi-step patterns · certificate issued</div>
+                </div>
+                <span style={{ fontSize: 10, fontWeight: 700, color: C.success, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 5, padding: '2px 7px', whiteSpace: 'nowrap', flexShrink: 0 }}>Verified</span>
+              </div>
+            </div>
+
+            {/* Phases */}
+            {PHASES.map(phase => (
+              <div key={phase.id} style={{ background: C.bg, borderRadius: 12, border: `1px solid ${C.border}`, overflow: 'hidden' }}>
+                <div style={{ padding: '10px 14px', background: C.surfaceMuted, borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: 2, background: phase.color, flexShrink: 0 }} />
+                  <span style={{ fontSize: 12, fontWeight: 700, color: C.tPri }}>{phase.label}</span>
+                  <span style={{ fontSize: 11, color: C.tMut }}>· {phase.days}</span>
+                </div>
+                {phase.modules.map((mod, mi) => (
+                  <div key={mi} style={{ padding: '9px 14px', borderBottom: mi < phase.modules.length - 1 ? `1px solid ${C.border}` : 'none', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                    <span style={{ fontSize: 10, color: C.tMut, whiteSpace: 'nowrap', marginTop: 2, minWidth: 44 }}>{mod.day}</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 12.5, fontWeight: 600, color: C.tPri, marginBottom: 2, display: 'flex', gap: 6, alignItems: 'center' }}>
+                        {mod.label}
+                        {mod.type === 'company' && <span style={{ fontSize: 9, fontWeight: 700, color: C.warm, background: 'rgba(255,107,53,0.1)', border: '1px solid rgba(255,107,53,0.25)', borderRadius: 4, padding: '1px 5px' }}>Meridian</span>}
+                      </div>
+                      <div style={{ fontSize: 11, color: C.tMut, lineHeight: 1.5 }}>{mod.desc}</div>
+                    </div>
+                  </div>
+                ))}
+                <div style={{ padding: '10px 14px', background: 'rgba(16,185,129,0.04)', borderTop: `1px solid ${C.border}` }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: C.success, textTransform: 'uppercase', letterSpacing: '0.07em' }}>Verification · </span>
+                  <span style={{ fontSize: 11, color: C.tSec }}>{phase.verification.method}</span>
+                  <div style={{ fontSize: 11, color: C.tMut, marginTop: 3, lineHeight: 1.5 }}>{phase.verification.detail}</div>
+                </div>
+              </div>
+            ))}
+
+            {/* CTA */}
+            <button style={{ width: '100%', background: C.accent, color: 'white', border: 'none', borderRadius: 10, padding: '12px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', marginTop: 4 }}>
+              Finalize and assign to team →
+            </button>
+          </div>
+          </div>
+        )}
+      </div>
+    );
+
+    if (false) { const _dead = null; return (
         <div style={{ flex: 1, overflowY: 'auto', background: C.bg }}>
           <div style={{ maxWidth: 680, margin: '0 auto', padding: '44px 36px' }}>
 
@@ -467,7 +639,7 @@
               </div>
 
               {/* Phases */}
-              {PHASES.map(phase => (
+              {PHASES_UNUSED.map(phase => (
                 <div key={phase.id} style={{ background: C.surface, borderRadius: 14, border: `1px solid ${C.border}`, overflow: 'hidden' }}>
                   <div style={{ padding: '11px 18px', background: C.surfaceMuted, borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
@@ -542,8 +714,10 @@
 
     /* ── Result ── */
     return (
-      <div style={{ flex: 1, overflowY: 'auto', background: C.bg }}>
-        <div style={{ maxWidth: 680, margin: '0 auto', padding: '52px 36px' }}>
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden', background: C.bg }}>
+        {/* Left: analysis panel */}
+        <div ref={scrollRef} style={{ flex: '1 1 0', minWidth: 0, overflowY: 'auto' }}>
+        <div style={{ maxWidth: showArtifact ? 560 : 680, margin: '0 auto', padding: '44px 32px', transition: 'max-width 350ms ease' }}>
 
           {/* Editable goal — still live in result */}
           <div style={{ background: C.surface, borderRadius: 14, border: `1px solid ${C.border}`, overflow: 'hidden', marginBottom: 20 }}>
@@ -665,22 +839,40 @@
               </div>
             </div>
 
-            {/* What do you want to do from here */}
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: C.tPri, marginBottom: 12 }}>What do you want to do from here?</div>
+            {/* CTA + Adjust section */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {/* Build CTA — ALWAYS AT TOP */}
+              <button
+                onClick={() => { if (!showArtifact) setShowArtifact(true); }}
+                style={{ width: '100%', background: showArtifact ? (artifactReady ? 'rgba(34,197,94,0.1)' : C.surfaceMuted) : C.accent, color: showArtifact ? (artifactReady ? '#16a34a' : C.tMut) : 'white', border: showArtifact ? `1px solid ${artifactReady ? 'rgba(34,197,94,0.3)' : C.border}` : 'none', borderRadius: 10, padding: '13px 20px', fontSize: 14, fontWeight: 600, cursor: showArtifact ? 'default' : 'pointer', fontFamily: 'inherit', transition: 'all 300ms ease' }}
+                onMouseEnter={e => { if (!showArtifact) { e.currentTarget.style.filter = 'brightness(1.06)'; e.currentTarget.style.transform = 'translateY(-1px)'; } }}
+                onMouseLeave={e => { e.currentTarget.style.filter = 'none'; e.currentTarget.style.transform = 'none'; }}>
+                {showArtifact ? (artifactReady ? '✓ Plan drafted — review in the right panel' : 'Building plan…') : 'Build this plan →'}
+              </button>
+
+              {/* Divider + Adjust label */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 2 }}>
+                <div style={{ flex: 1, height: 1, background: C.border }} />
+                <span style={{ fontSize: 11, fontWeight: 600, color: showArtifact ? C.accent : C.tMut, textTransform: 'uppercase', letterSpacing: '0.07em', whiteSpace: 'nowrap' }}>
+                  {showArtifact ? 'Adjust this plan' : 'Or refine first'}
+                </span>
+                <div style={{ flex: 1, height: 1, background: C.border }} />
+              </div>
+
               {/* Open text field */}
-              <div style={{ position: 'relative', marginBottom: 12 }}>
+              <div style={{ position: 'relative' }}>
                 <textarea
                   value={followup}
                   onChange={e => setFollowup(e.target.value)}
-                  placeholder="Tell us anything — adjust the timeline, focus area, team size…"
-                  style={{ width: '100%', height: 72, padding: '11px 14px', border: `1px solid ${C.border}`, borderRadius: 10, fontSize: 13, lineHeight: 1.6, color: C.tPri, background: C.surface, resize: 'none', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', transition: 'border-color 150ms ease' }}
+                  placeholder={showArtifact ? 'Tell us how to adjust — extend the timeline, shift focus, change team size…' : 'Tell us anything — adjust the timeline, focus area, team size…'}
+                  style={{ width: '100%', height: 72, padding: '11px 14px', border: `1px solid ${showArtifact ? 'rgba(91,95,239,0.25)' : C.border}`, borderRadius: 10, fontSize: 13, lineHeight: 1.6, color: C.tPri, background: showArtifact ? 'rgba(91,95,239,0.02)' : C.surface, resize: 'none', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', transition: 'border-color 150ms ease' }}
                   onFocus={e => e.target.style.borderColor = C.accent}
-                  onBlur={e => e.target.style.borderColor = C.border}
+                  onBlur={e => e.target.style.borderColor = showArtifact ? 'rgba(91,95,239,0.25)' : C.border}
                 />
               </div>
+
               {/* Pre-prompt chips */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginBottom: 16 }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
                 {[
                   'Extend to 30 days and cover all 4 skills',
                   'Focus on Prompt Engineering first',
@@ -695,13 +887,6 @@
                   </button>
                 ))}
               </div>
-              {/* Build CTA */}
-              <button onClick={() => setStage('plan')}
-                style={{ width: '100%', background: C.accent, color: 'white', border: 'none', borderRadius: 10, padding: '13px 20px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 120ms cubic-bezier(0.4,0,0.2,1)' }}
-                onMouseEnter={e => { e.currentTarget.style.filter = 'brightness(1.06)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.filter = 'none'; e.currentTarget.style.transform = 'none'; }}>
-                Build this plan →
-              </button>
             </div>
 
             <div style={{ fontSize: 11, color: C.tMut, textAlign: 'center', paddingTop: 4 }}>
@@ -709,6 +894,9 @@
             </div>
           </div>
         </div>
+        </div>
+        {/* Right: artifact panel */}
+        {showArtifact && <ArtifactPanel/>}
         {ann && <Ann text="An enterprise admin's entry point is 'what do I need my team to be able to do?' — not a skill picker or a catalog." style={{ bottom: 48, left: 64 }}/>}
       </div>
     );
@@ -721,7 +909,8 @@
     const [activeArea, setActiveArea]         = useState(null);
     const [uploadState, setUploadState]       = useState('idle');
     const [showMerge, setShowMerge]           = useState(false);
-    const [expandedSkill, setExpandedSkill]   = useState(null);
+    const [collapsedSkills, setCollapsedSkills] = useState(new Set()); // empty = all expanded
+    const toggleSkill = (id) => setCollapsedSkills(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
     const [addingSkill, setAddingSkill]       = useState(false);
     const [newSkillLabel, setNewSkillLabel]   = useState('');
     const [addingSubTo, setAddingSubTo]       = useState(null);
@@ -1039,67 +1228,81 @@
             )}
           </div>
 
-          {/* Skill list */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+          {/* Legend */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: C.accent, opacity: 0.45 }} />
+              <span style={{ fontSize: 11, color: C.tMut }}>Standard — Coursera Skills Graph</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: C.warm }} />
+              <span style={{ fontSize: 11, color: C.tMut }}>Company-added — {area.rubricLabel || 'Meridian'}</span>
+            </div>
+          </div>
+
+          {/* Skill tree — all expanded by default */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {allSkills.map((sk) => {
-              const isOpen = expandedSkill === sk.id;
+              const isOpen = !collapsedSkills.has(sk.id);
               const subs = [...(sk.subs || []), ...(customSubs[sk.id] || [])];
               return (
-                <div key={sk.id} style={{ background: C.surface, borderRadius: 12, border: `1px solid ${isOpen ? 'rgba(91,95,239,0.2)' : C.border}`, overflow: 'hidden', transition: 'border-color 150ms' }}>
-                  {/* Skill row */}
+                <div key={sk.id}>
+                  {/* Skill header row */}
                   <div
-                    onClick={() => setExpandedSkill(isOpen ? null : sk.id)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 16px', cursor: 'pointer', background: isOpen ? 'rgba(91,95,239,0.04)' : 'transparent', transition: 'background 120ms' }}
-                    onMouseEnter={(e) => !isOpen && (e.currentTarget.style.background = C.surfaceMuted)}
-                    onMouseLeave={(e) => !isOpen && (e.currentTarget.style.background = 'transparent')}
+                    onClick={() => toggleSkill(sk.id)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 14px', cursor: 'pointer', background: C.surface, borderRadius: isOpen ? '10px 10px 0 0' : 10, border: `1px solid ${isOpen ? 'rgba(91,95,239,0.18)' : C.border}`, borderBottom: isOpen ? `1px solid ${C.border}` : undefined, transition: 'border-radius 150ms' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = C.surfaceMuted; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = C.surface; }}
                   >
-                    <span style={{ fontSize: 10, color: C.tMut, transition: 'transform 200ms cubic-bezier(0.4,0,0.2,1)', transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)', display: 'inline-block', userSelect: 'none', flexShrink: 0 }}>▶</span>
-                    <NodeDot status={sk.status} size={16}/>
-                    <span style={{ flex: 1, fontSize: 14, fontWeight: 600, color: C.tPri }}>{sk.label}</span>
+                    <span style={{ fontSize: 9, color: C.tMut, transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)', display: 'inline-block', transition: 'transform 200ms cubic-bezier(0.4,0,0.2,1)', userSelect: 'none', flexShrink: 0 }}>▶</span>
+                    <NodeDot status={sk.status} size={14}/>
+                    <span style={{ flex: 1, fontSize: 13.5, fontWeight: 700, color: C.tPri }}>{sk.label}</span>
                     <TypeBadge type={sk.type}/>
-                    <span style={{ fontSize: 12, color: C.tMut, whiteSpace: 'nowrap', marginLeft: 6 }}>{sk.count} members</span>
-                    <span style={{ fontSize: 11, color: C.tMut, background: C.surfaceMuted, borderRadius: 8, padding: '2px 8px', border: `1px solid ${C.border}`, whiteSpace: 'nowrap' }}>{subs.length} sub-skills</span>
+                    <span style={{ fontSize: 11.5, color: C.tMut, whiteSpace: 'nowrap' }}>{sk.count} members</span>
+                    <span style={{ fontSize: 11, color: C.tMut, background: C.surfaceMuted, borderRadius: 6, padding: '2px 7px', border: `1px solid ${C.border}`, whiteSpace: 'nowrap' }}>{subs.length} sub-skills</span>
                   </div>
 
-                  {/* Sub-skills panel */}
+                  {/* Tree sub-skills */}
                   {isOpen && (
-                    <div style={{ borderTop: `1px solid ${C.border}`, background: C.bg, padding: '14px 16px 14px 46px' }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: C.tMut, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10 }}>Sub-skills</div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                        {subs.map((sub, j) => (
-                          <div key={sub.id || j} style={{
-                            display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px',
-                            background: sub.type === 'company' ? 'rgba(255,107,53,0.04)' : C.surface,
-                            borderRadius: 8, border: sub.type === 'company' ? '1px solid rgba(255,107,53,0.2)' : `1px solid ${C.border}`,
-                          }}>
-                            <div style={{ width: 6, height: 6, borderRadius: '50%', background: sub.type === 'company' ? C.warm : C.accent, flexShrink: 0 }} />
-                            <span style={{ flex: 1, fontSize: 13, color: C.tSec }}>{sub.label}</span>
-                            <TypeBadge type={sub.type}/>
-                          </div>
-                        ))}
+                    <div style={{ background: C.bg, borderRadius: '0 0 10px 10px', border: `1px solid rgba(91,95,239,0.18)`, borderTop: 'none', padding: '10px 14px 14px' }}>
+                      <div style={{ position: 'relative' }}>
+                        {/* Vertical trunk line — stops before the last item's bottom */}
+                        <div style={{ position: 'absolute', left: 7, top: 4, bottom: 20, width: 1.5, background: C.border, borderRadius: 1 }} />
+                        <div style={{ paddingLeft: 24, display: 'flex', flexDirection: 'column', gap: 5 }}>
+                          {subs.map((sub, j) => {
+                            const isComp = sub.type === 'company';
+                            return (
+                              <div key={sub.id || j} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                {/* Horizontal elbow from trunk to item */}
+                                <div style={{ position: 'absolute', left: -17, top: '50%', width: 16, height: 1.5, background: C.border, transform: 'translateY(-50%)' }} />
+                                <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', background: isComp ? 'rgba(255,107,53,0.04)' : C.surface, borderRadius: 7, border: `1px solid ${isComp ? 'rgba(255,107,53,0.22)' : C.border}` }}>
+                                  <div style={{ width: 7, height: 7, borderRadius: '50%', background: isComp ? C.warm : C.accent, flexShrink: 0, opacity: isComp ? 1 : 0.45 }} />
+                                  <span style={{ flex: 1, fontSize: 13, color: isComp ? C.tPri : C.tSec, fontWeight: isComp ? 500 : 400 }}>{sub.label}</span>
+                                  <TypeBadge type={sub.type}/>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
 
                       {/* Add sub-skill */}
-                      <div style={{ marginTop: 10 }}>
+                      <div style={{ marginTop: 8, paddingLeft: 24 }}>
                         {addingSubTo === sk.id ? (
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <input
-                              autoFocus value={newSubLabel} onChange={e => setNewSubLabel(e.target.value)}
+                            <input autoFocus value={newSubLabel} onChange={e => setNewSubLabel(e.target.value)}
                               onKeyDown={e => { if (e.key === 'Enter') addCustomSub(sk.id); if (e.key === 'Escape') { setAddingSubTo(null); setNewSubLabel(''); } }}
                               placeholder="Name this sub-skill…"
-                              style={{ flex: 1, fontSize: 13, border: `1.5px solid ${C.accent}`, borderRadius: 8, padding: '7px 12px', outline: 'none', background: C.surface }}
-                            />
+                              style={{ flex: 1, fontSize: 13, border: `1.5px solid ${C.accent}`, borderRadius: 8, padding: '7px 12px', outline: 'none', background: C.surface }} />
                             <TypeBadge type="company"/>
                             <button onClick={() => addCustomSub(sk.id)} style={{ background: C.accent, color: 'white', border: 'none', borderRadius: 8, padding: '7px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Add</button>
                             <button onClick={() => { setAddingSubTo(null); setNewSubLabel(''); }} style={{ background: 'none', border: `1px solid ${C.border}`, borderRadius: 8, padding: '7px 10px', fontSize: 12, color: C.tSec, cursor: 'pointer' }}>✕</button>
                           </div>
                         ) : (
-                          <button
-                            onClick={(e) => { e.stopPropagation(); setAddingSubTo(sk.id); }}
-                            style={{ background: 'none', border: '1.5px dashed rgba(255,107,53,0.4)', borderRadius: 8, padding: '7px 12px', fontSize: 12, fontWeight: 600, color: C.warm, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, transition: 'all 150ms cubic-bezier(0.4,0,0.2,1)' }}
-                            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,107,53,0.05)'}
-                            onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
-                          >
+                          <button onClick={(e) => { e.stopPropagation(); setAddingSubTo(sk.id); }}
+                            style={{ background: 'none', border: '1.5px dashed rgba(255,107,53,0.4)', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, color: C.warm, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}
+                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,107,53,0.05)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'none'}>
                             <span style={{ fontSize: 14, lineHeight: 1 }}>+</span> Add sub-skill
                           </button>
                         )}
@@ -1131,15 +1334,6 @@
             )}
           </div>
 
-          {/* Legend */}
-          <div style={{ display: 'flex', gap: 20, marginTop: 18 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: C.tMut }}>
-              <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: 3, background: C.surfaceMuted, border: `1px solid ${C.border}` }} /> Standard (Coursera Skills Graph)
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: C.tMut }}>
-              <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: 3, background: 'rgba(255,107,53,0.1)', border: '1.5px solid rgba(255,107,53,0.35)' }} /> Company-added (Meridian)
-            </div>
-          </div>
 
           {/* Merge details */}
           {showMerge && (

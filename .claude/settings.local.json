@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx --yes surge --version)",
+      "Read(//Users/karihedberg/.config/surge/**)",
+      "Read(//Users/karihedberg/.config/**)",
+      "Bash(gh auth *)",
+      "Bash(zip -r /tmp/prototype-deploy.zip index.html integrations.html skills-os-desktop.html skills-os.html)",
+      "Bash(curl -s -X POST https://api.netlify.com/api/v1/sites -H 'Content-Type: application/zip' --data-binary @/tmp/prototype-deploy.zip)",
+      "Bash(npx --yes localtunnel --port 8000 --subdomain coursera-integrations-proto)",
+      "Bash(jobs)",
+      "Bash(curl -s https://coursera-integrations-proto.loca.lt)",
+      "Bash(curl -s -I \"https://coursera-integrations-proto.loca.lt\")",
+      "Bash(curl -s \"https://coursera-integrations-proto.loca.lt/integrations.html\" --max-time 10)",
+      "Bash(git --version)",
+      "Bash(git config *)",
+      "Bash(ssh -T git@github.com)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git remote *)",
+      "Bash(git branch *)",
+      "Bash(git push *)"
+    ]
+  }
+}

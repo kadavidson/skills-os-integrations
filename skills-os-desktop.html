@@ -732,23 +732,19 @@
 
             {/* What we know */}
             <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: '14px', marginBottom: '14px' }}>
-              <div style={{ fontSize: '10px', fontWeight: '600', color: C.tMut, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '10px' }}>What we know</div>
-              {/* MCP signal */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
                 <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#27C93F', animation: 'mcpPulse 2s ease-in-out infinite', flexShrink: 0 }}/>
-                <span style={{ fontSize: '12px', color: C.tSec }}>{area.mcp.sessions} MCP sessions · {area.mcp.signal}</span>
+                <div style={{ fontSize: '10px', fontWeight: '600', color: C.tMut, letterSpacing: '0.08em', textTransform: 'uppercase' }}>What we know · {area.mcp.sessions} sessions</div>
               </div>
-              {/* Sub-skill signals */}
-              {area.subskills.map((s, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                  <div style={{ width: '14px', height: '14px', borderRadius: '50%', flexShrink: 0,
-                    background: s.done ? C.accent : 'transparent',
-                    border: `1.5px solid ${s.done ? C.accent : s.active ? C.accent : C.border}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '7px', fontWeight: '800', color: '#fff' }}>{s.done ? '✓' : ''}</div>
-                  <span style={{ fontSize: '12px', color: s.done ? C.tPri : s.active ? C.tSec : C.tMut, fontWeight: s.done ? '500' : '400' }}>{s.label}</span>
-                  {s.done && <span style={{ fontSize: '10px', color: C.success, marginLeft: 'auto' }}>verified</span>}
-                  {s.active && <span style={{ fontSize: '10px', color: C.accent, marginLeft: 'auto' }}>in progress</span>}
+              {/* Human narrative */}
+              <p style={{ fontSize: '13px', color: C.tSec, lineHeight: '1.65', marginBottom: '12px', margin: '0 0 12px' }}>
+                {area.mcp.narrative}
+              </p>
+              {/* Behavior shifts */}
+              {area.mcp.behaviors && area.mcp.behaviors.map((b, i) => (
+                <div key={i} style={{ display: 'flex', gap: '8px', marginBottom: '7px', alignItems: 'flex-start' }}>
+                  <span style={{ color: C.success, fontSize: '11px', flexShrink: 0, marginTop: '2px', fontWeight: '700' }}>↑</span>
+                  <span style={{ fontSize: '12px', color: C.tSec, lineHeight: '1.5' }}>{b}</span>
                 </div>
               ))}
             </div>
@@ -806,7 +802,7 @@
             {/* Workday signal */}
             {area.workday && (
               <div style={{ background: C.canvas, borderRadius: '8px', border: `1px solid ${C.border}`, padding: '9px 12px' }}>
-                <div style={{ fontSize: '10px', fontWeight: '600', color: C.tMut, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: '4px' }}>Workday</div>
+                <div style={{ fontSize: '10px', fontWeight: '600', color: C.tMut, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: '4px' }}>From your growth goals</div>
                 <div style={{ fontSize: '12px', color: C.tSec, fontStyle: 'italic', lineHeight: '1.55' }}>"{area.workday}"</div>
               </div>
             )}
@@ -822,7 +818,15 @@
           Icon: IllAIProto, title: 'AI Prototyping', status: 'active', pct: 42,
           desc: 'Build and iterate with AI tools — prompting, workflows, and APIs.',
           skills: 4, verified: 1,
-          mcp: { sessions: 12, signal: '3 behavioral patterns detected' },
+          mcp: {
+            sessions: 12,
+            narrative: "You're making real progress — and it shows in how you work. Three things have clearly shifted over the past few weeks.",
+            behaviors: [
+              "You now write a system prompt before running analysis — this wasn't happening a month ago",
+              "Your prompts are 2× longer and more specific, with personas and output instructions",
+              "You're chaining follow-up queries instead of starting fresh each time",
+            ],
+          },
           subskills: [
             { label: 'Prompt Engineering',     done: true  },
             { label: 'AI Workflow Integration', active: true },
@@ -834,7 +838,15 @@
           Icon: IllData, title: 'Data Literacy', status: 'active', pct: 68,
           desc: 'Read, analyze, and communicate with data confidently.',
           skills: 4, verified: 2,
-          mcp: { sessions: 8, signal: 'SQL + visualization sessions logged' },
+          mcp: {
+            sessions: 8,
+            narrative: "The gap between knowing this and actually using it is closing. Your sessions show you reaching for data instinctively now — not just when asked.",
+            behaviors: [
+              "SQL queries are getting more complex — you're using JOINs and subqueries regularly now",
+              "You asked for a confidence interval unprompted in last week's model review",
+              "Visualizations are appearing in your outputs before anyone requests them",
+            ],
+          },
           subskills: [
             { label: 'SQL & Data Querying',  done: true  },
             { label: 'Data Visualization',    done: true  },
@@ -944,7 +956,7 @@
           </div>
           {/* Caption bar */}
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px 14px 12px', background: 'linear-gradient(transparent, rgba(0,0,0,0.65))' }}>
-            <div style={{ fontSize: '11px', fontWeight: '600', color: 'rgba(255,255,255,0.9)', marginBottom: '2px' }}>Watch: Setting system prompts in Cursor</div>
+            <div style={{ fontSize: '11px', fontWeight: '600', color: 'rgba(255,255,255,0.9)', marginBottom: '2px' }}>Watch: Setting system prompts in Claude</div>
             <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)' }}>2 min · Step-by-step tutorial</div>
           </div>
         </div>
@@ -1201,7 +1213,7 @@
       }, [step]);
 
       const WIDGET_STEPS = [
-        { label: 'Open Cursor', tip: 'Open Cursor and create a new project — or use your existing Meridian analysis folder.' },
+        { label: 'Open Claude', tip: 'Open Claude and create a new project — or use your existing Meridian analysis folder.' },
         { label: 'Go to Settings → Rules for AI', tip: 'Press ⌘+Shift+J to open Settings, then click the "Rules for AI" tab. You\'ll see an empty panel.', hasVideo: true },
         { label: 'Paste your system prompt', tip: 'Paste the refined prompt from your feedback session. Click Save — it persists across all AI chats.', hasVideo: true },
         { label: 'Ask about Q3 financials', tip: 'Open a new AI chat and send exactly: "Review Q3 financials for Meridian — flag anomalies"' },
@@ -1352,7 +1364,7 @@
       const HEADLINES = {
         write:    "Today you're learning to write prompts that return verdicts, not just analysis.",
         feedback: "Strong foundation — two things to sharpen.",
-        lab:      "Now apply it in Cursor.",
+        lab:      "Time to apply it — in the real thing.",
       };
 
       React.useEffect(() => {
@@ -1423,13 +1435,13 @@
                     <span style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase' }}>Why this matters for you · via MCP</span>
                   </div>
                   <p style={{ fontSize:'13.5px', lineHeight:'1.7', color:C.tSec, marginBottom:'12px' }}>
-                    Coursera watched <strong>5 of your Claude sessions</strong> at Meridian last week. You keep starting with this:
+                    Coursera watched <strong>5 of your AI sessions</strong> in Claude at Meridian last week. You keep starting with this:
                   </p>
                   <div style={{ padding:'10px 13px', background:C.canvas, borderRadius:'8px', border:`1px solid ${C.border}`, fontSize:'12.5px', color:C.tSec, fontStyle:'italic', lineHeight:'1.65', marginBottom:'12px' }}>
                     "You are a senior quantitative analyst with 15 years of experience reviewing financial models. You approach every model with healthy skepticism."
                   </div>
                   <p style={{ fontSize:'13.5px', lineHeight:'1.7', color:C.tSec, margin:0 }}>
-                    It's getting you solid analysis — but your team needs <strong>risk verdicts</strong>. The prompt doesn't tell Claude how to format its output or what to do when data is ambiguous. That's the gap we're closing today.
+                    It's getting you solid analysis — but your team needs <strong>risk verdicts</strong>. The prompt doesn't tell the AI how to format its output or what to do when data is ambiguous. That's the gap we're closing today.
                   </p>
                 </div>
               </div>
@@ -1510,7 +1522,7 @@
 
       /* ── LAB ── */
       const LAB_STEPS = [
-        { title:'Open Cursor',                                                hint:'Create a new project or open an existing one' },
+        { title:'Open Claude',                                                hint:'Create a new project or open an existing one' },
         { title:'Go to Settings → Rules for AI',                             hint:'Press Cmd+Shift+J or navigate via the gear icon' },
         { title:'Paste your system prompt and save',                         hint:'This becomes the persistent context for every AI interaction in this project' },
         { title:'Ask: "Review Q3 financials for Meridian — flag anomalies"', hint:'Open a new chat and send this exact message' },
@@ -1547,57 +1559,46 @@
             <ContextBar/>
             <div style={{ maxWidth:'560px' }}>
               <div style={{ ...f(1), marginBottom:'20px' }}><Sparkle/></div>
-              <h2 style={{ fontSize:'34px', fontWeight:'700', color:C.tPri, letterSpacing:'-0.03em', lineHeight:'1.2', marginBottom:'12px', minHeight:'44px' }}>
+              <h2 style={{ fontSize:'34px', fontWeight:'700', color:C.tPri, letterSpacing:'-0.03em', lineHeight:'1.2', marginBottom:'24px', minHeight:'44px' }}>
                 {streamed}<Cursor/>
               </h2>
+
+              {/* What you'll do */}
               <div style={{ ...f(3), marginBottom:'32px' }}>
-                <p style={{ fontSize:'15px', lineHeight:'1.7', color:C.tMut }}>Set your refined system prompt as a persistent rule in Cursor. Coursera will watch your session via MCP and surface hints as you go.</p>
+                <p style={{ fontSize:'15px', lineHeight:'1.75', color:C.tSec, margin:0 }}>
+                  You'll apply your refined system prompt directly in Claude — where you already work. Coursera will appear as a floating guide and walk you through each step in real time via MCP.
+                </p>
               </div>
 
-              {/* Steps FIRST */}
-              <div style={f(4)}>
-                <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase', marginBottom:'16px' }}>Steps to follow</div>
-                {LAB_STEPS.map((s, i) => {
-                  const done   = labSteps[i];
-                  const active = !done && (i === 0 || labSteps[i-1]);
-                  return (
-                    <div key={i} onClick={() => { const n=[...labSteps]; n[i]=!n[i]; setLabSteps(n); }}
-                      style={{ display:'flex', gap:'14px', padding:'14px 0', borderBottom: i < LAB_STEPS.length-1 ? `1px solid rgba(28,25,23,0.07)` : 'none', cursor:'pointer', opacity: active||done ? 1 : 0.4, transition:'opacity 200ms ease' }}>
-                      <div style={{ width:'24px', height:'24px', borderRadius:'50%', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center',
-                        fontSize:'11px', fontWeight:'700', marginTop:'2px',
-                        background: done ? C.success : active ? C.accent : 'transparent',
-                        border:`1.5px solid ${done ? C.success : active ? C.accent : 'rgba(28,25,23,0.2)'}`,
-                        color: done||active ? '#fff' : C.tMut, transition:'all 200ms ease' }}>
-                        {done ? '✓' : i+1}
-                      </div>
-                      <div style={{ flex:1 }}>
-                        <div style={{ fontSize:'14px', fontWeight: active||done ? '600' : '400', color: done ? C.tMut : C.tPri, textDecoration: done ? 'line-through' : 'none', textDecorationColor:'rgba(28,25,23,0.3)', marginBottom:'3px', lineHeight:'1.4' }}>{s.title}</div>
-                        <div style={{ fontSize:'12px', color:C.tMut, lineHeight:'1.5' }}>{s.hint}</div>
-                      </div>
-                    </div>
-                  );
-                })}
+              {/* What the lab covers */}
+              <div style={{ ...f(4), borderRadius:'12px', border:`1px solid ${C.border}`, padding:'18px 20px', marginBottom:'36px' }}>
+                <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase', marginBottom:'14px' }}>What the lab covers</div>
+                {[
+                  'Set your prompt as a persistent rule in Claude',
+                  'Run a real analysis query on Meridian Q3 data',
+                  'Compare output — with and without the structured rules',
+                ].map((item, i) => (
+                  <div key={i} style={{ display:'flex', gap:'10px', alignItems:'flex-start', marginBottom: i < 2 ? '10px' : 0 }}>
+                    <span style={{ fontSize:'13px', color:C.accent, fontWeight:'700', flexShrink:0, marginTop:'1px' }}>→</span>
+                    <span style={{ fontSize:'13.5px', color:C.tSec, lineHeight:'1.55' }}>{item}</span>
+                  </div>
+                ))}
               </div>
 
-              {/* Video — on demand only */}
-              {videoPlaying && (
-                <div style={{ marginTop:'24px', animation:'fadeUp 300ms ease both' }}>
-                  <VideoTutorial playing={videoPlaying} onToggle={() => setVideoPlaying(v => !v)}/>
-                </div>
-              )}
-
-              {/* Start lab CTA */}
-              <div style={{ ...f(5), marginTop:'36px', paddingTop:'28px', borderTop:`1px solid rgba(28,25,23,0.08)` }}>
-                <div style={{ fontSize:'13px', color:C.tMut, marginBottom:'18px', lineHeight:'1.65' }}>
-                  Coursera shrinks to a floating widget and watches your Cursor session through an MCP connection — providing step-by-step hints in real time.
-                </div>
-                <div style={{ display:'flex', alignItems:'center', gap:'14px' }}>
-                  <button className="btn btn-primary" onClick={() => { setCursorStep(0); setLabMode('cursor'); }} style={{ padding:'13px 28px', fontSize:'14px' }}>
-                    Start Lab in Cursor →
+              {/* CTAs */}
+              <div style={f(5)}>
+                <div style={{ display:'flex', flexDirection:'column', gap:'12px', maxWidth:'320px' }}>
+                  <button className="btn btn-primary" onClick={() => { setCursorStep(0); setLabMode('cursor'); }}
+                    style={{ padding:'14px 28px', fontSize:'14px', width:'100%' }}>
+                    Launch lab →
                   </button>
-                  <button onClick={() => setVideoPlaying(v => !v)}
-                    style={{ background:'none', border:'none', cursor:'pointer', fontSize:'13px', color:C.tMut, textDecoration:'underline', fontFamily:'inherit' }}>
-                    {videoPlaying ? 'Hide video' : 'Watch tutorial first'}
+                  <button onClick={() => { setVideoPlaying(true); setCursorStep(0); setLabMode('cursor'); }}
+                    style={{ padding:'13px 28px', fontSize:'13.5px', fontWeight:'500', width:'100%',
+                      background:'transparent', border:`1px solid rgba(28,25,23,0.15)`, borderRadius:'10px',
+                      color:C.tSec, cursor:'pointer', fontFamily:'inherit', transition:'border-color 150ms ease' }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = C.tPri}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(28,25,23,0.15)'}>
+                    Start with the tutorial
                   </button>
                 </div>
               </div>
