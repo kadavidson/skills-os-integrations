@@ -32,7 +32,7 @@
     }
 
     .wrap  { max-width: 760px; margin: 0 auto; padding: 0 40px; }
-    .wide  { max-width: 1060px; margin: 0 auto; padding: 0 52px; }
+    .wide  { max-width: 1100px; margin: 0 auto; padding: 0 60px; }
     .bleed { width: 100vw; position: relative; left: 50%; transform: translateX(-50%); }
 
     /* ── Header ── */
@@ -78,117 +78,198 @@
     .mcp-pill-label { font-size: 10px; color: var(--tMut); margin-left: auto; }
 
     /* ══════ EXPLORATION SECTIONS ══════ */
-
     .exp-dark {
       background: linear-gradient(170deg, var(--dark1) 0%, var(--dark2) 100%);
-      padding: 96px 0 80px;
+      padding: 100px 0 88px;
     }
     .exp-light {
       background: var(--bg);
-      padding: 96px 0 80px;
+      padding: 100px 0 88px;
       border-top: 1px solid var(--border);
     }
 
     /* ── Section header ── */
-    .sec-header { margin-bottom: 72px; }
+    .sec-header { margin-bottom: 80px; max-width: 640px; }
     .sec-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
       color: rgba(255,255,255,.22); margin-bottom: 12px; }
     .sec-eyebrow-light { color: var(--tMut); }
-    .sec-title { font-size: 40px; font-weight: 900; letter-spacing: -.03em; color: #fff; margin-bottom: 8px; }
+    .sec-title { font-size: 44px; font-weight: 900; letter-spacing: -.03em; color: #fff; margin-bottom: 10px; line-height: 1.0; }
     .sec-title-light { color: var(--tPri); }
-    .sec-sub { font-size: 13px; color: rgba(255,255,255,.38); font-style: italic; margin-bottom: 18px; }
+    .sec-sub { font-size: 13px; color: rgba(255,255,255,.35); font-style: italic; margin-bottom: 18px; }
     .sec-sub-light { color: var(--tMut); }
-    .sec-intro { font-size: 15.5px; line-height: 1.75; color: rgba(255,255,255,.58); max-width: 560px; }
+    .sec-intro { font-size: 15.5px; line-height: 1.78; color: rgba(255,255,255,.55); }
     .sec-intro-light { color: var(--tSec); }
 
-    /* ── Moment: 2-col split ── */
-    .moment { margin-bottom: 72px; }
+    /* ── Moment ── */
+    .moment { margin-bottom: 80px; }
     .moment:last-of-type { margin-bottom: 0; }
-    .m-split { display: grid; grid-template-columns: 1fr 1.1fr; gap: 64px; align-items: center; }
-    .m-split-reverse { grid-template-columns: 1.1fr 1fr; }
-    .m-split-reverse .m-text { order: 2; }
-    .m-split-reverse .m-visual { order: 1; }
+
+    /* 2-col: text + composition */
+    .m-split { display: grid; grid-template-columns: 1fr 1.2fr; gap: 68px; align-items: center; }
+    .m-split-rev { display: grid; grid-template-columns: 1.2fr 1fr; gap: 68px; align-items: center; }
 
     .m-num { font-size: 11px; font-weight: 700; letter-spacing: .08em;
-      color: rgba(255,255,255,.2); text-transform: uppercase; margin-bottom: 12px; }
+      color: rgba(255,255,255,.22); text-transform: uppercase; margin-bottom: 14px; }
     .m-num-light { color: var(--tMut); }
-    .m-head { font-size: 22px; font-weight: 800; letter-spacing: -.02em;
-      color: #fff; margin-bottom: 12px; line-height: 1.25; }
+    .m-head { font-size: 24px; font-weight: 800; letter-spacing: -.025em;
+      color: #fff; margin-bottom: 14px; line-height: 1.2; }
     .m-head-light { color: var(--tPri); }
-    .m-body { font-size: 14px; line-height: 1.75; color: rgba(255,255,255,.52); }
+    .m-body { font-size: 14px; line-height: 1.78; color: rgba(255,255,255,.5); }
     .m-body-light { color: var(--tSec); }
 
-    /* ── UI Crop cards ── */
-    .ui-crop {
+    /* ── Screenshot compositions ── */
+    .compose { position: relative; }
+
+    /* A cropped screenshot card */
+    .sshot {
       overflow: hidden;
-      border-radius: 14px;
+      border-radius: 13px;
       line-height: 0;
-      box-shadow: 0 24px 64px rgba(0,0,0,.55), 0 4px 12px rgba(0,0,0,.3);
-      position: relative;
     }
-    .ui-crop-light {
-      box-shadow: 0 20px 56px rgba(0,0,0,.14), 0 3px 8px rgba(0,0,0,.08);
-    }
-    .ui-crop img { display: block; }
+    .sshot img { display: block; }
+    .sshot-dark { box-shadow: 0 24px 64px rgba(0,0,0,.6), 0 4px 12px rgba(0,0,0,.3), 0 0 0 1px rgba(255,255,255,.04); }
+    .sshot-light { box-shadow: 0 20px 56px rgba(0,0,0,.14), 0 3px 8px rgba(0,0,0,.07), 0 0 0 1px rgba(28,25,23,.06); }
 
-    /* ── Full-width moment strip ── */
-    .moment-wide {
-      margin-bottom: 72px;
+    /* Floating card on top */
+    .float-card {
+      position: absolute;
+      overflow: hidden;
+      border-radius: 11px;
+      line-height: 0;
     }
-    .m-wide-text {
-      margin-bottom: 28px;
-      display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: end;
+    .float-card img { display: block; }
+    .float-dark {
+      box-shadow: 0 16px 48px rgba(0,0,0,.75), 0 3px 10px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.07);
     }
-    .m-wide-stat-row {
-      display: flex; gap: 0; margin-top: 12px;
+    .float-light {
+      box-shadow: 0 16px 44px rgba(0,0,0,.18), 0 3px 10px rgba(0,0,0,.09), 0 0 0 1px rgba(28,25,23,.08);
     }
-    .m-stat {
-      flex: 1; padding: 16px 0 0;
-      border-top: 2px solid rgba(255,255,255,.12);
-    }
-    .m-stat-num { font-size: 28px; font-weight: 800; color: var(--warm); letter-spacing: -.03em; }
-    .m-stat-num.orange { color: var(--warm); }
-    .m-stat-num.red { color: #EF4444; }
-    .m-stat-num.neutral { color: rgba(255,255,255,.6); }
-    .m-stat-label { font-size: 12px; color: rgba(255,255,255,.38); margin-top: 2px; }
 
-    /* ── Evidence card highlight ── */
-    .evidence-callout {
+    /* Small annotation tag on composition */
+    .compose-tag {
+      position: absolute;
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .compose-tag-dark {
+      background: var(--accent);
+      color: white;
+    }
+    .compose-tag-glass {
+      background: rgba(10,12,18,.82);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: rgba(255,255,255,.72);
+      border: 1px solid rgba(255,255,255,.1);
+    }
+    .compose-tag-light {
+      background: white;
+      color: var(--tPri);
+      box-shadow: 0 2px 8px rgba(0,0,0,.1);
+    }
+
+    /* ── Floating stat pills over mcp strip ── */
+    .img-pill {
+      position: absolute;
+      background: rgba(8,10,18,.90);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 10px;
+      padding: 11px 14px;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .img-pill-num {
+      font-size: 26px;
+      font-weight: 800;
+      color: white;
+      line-height: 1;
+      letter-spacing: -.04em;
+    }
+    .img-pill-num.orange { color: #F97316; }
+    .img-pill-num.red    { color: #EF4444; }
+    .img-pill-num.teal   { color: #2DD4BF; }
+    .img-pill-label {
+      font-size: 10px;
+      color: rgba(255,255,255,.42);
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+
+    /* ── Annotation-numbered items ── */
+    .ann-list { display: flex; flex-direction: column; gap: 12px; margin-top: 22px; }
+    .ann-item { display: flex; gap: 11px; align-items: flex-start; }
+    .ann-n {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 20px; height: 20px; border-radius: 50%;
+      background: rgba(91,95,239,.14);
+      color: #8B8FF5;
+      font-size: 9px; font-weight: 800;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .ann-n-light { background: rgba(91,95,239,.1); color: var(--accent); }
+    .ann-text { font-size: 13px; line-height: 1.62; color: rgba(255,255,255,.48); }
+    .ann-text-light { color: var(--tSec); }
+
+    /* ── Full-width moment header ── */
+    .m-wide-header {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+      align-items: end; margin-bottom: 32px;
+    }
+
+    /* ── Side-by-side 2-up screenshots ── */
+    .two-up { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .two-up-label {
+      font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      color: rgba(255,255,255,.25); margin-top: 12px;
+    }
+    .two-up-label-light { color: var(--tMut); }
+
+    /* ── Callout card (text) ── */
+    .callout-card {
       background: rgba(255,255,255,.04);
       border: 1px solid rgba(255,255,255,.1);
       border-left: 3px solid var(--accent);
       border-radius: 12px;
       padding: 16px 18px;
-      margin-top: 20px;
+      margin-top: 24px;
     }
-    .evidence-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
-      color: rgba(91,95,239,.7); margin-bottom: 10px; }
-    .evidence-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; }
-    .evidence-item:last-child { margin-bottom: 0; }
-    .ev-arrow { color: var(--accent); font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
-    .ev-text { font-size: 12.5px; color: rgba(255,255,255,.5); line-height: 1.55; }
-
-    /* ── Credential highlight (light) ── */
-    .credential-callout {
+    .callout-card-light {
       background: white;
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px 18px;
-      margin-top: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+      border-left: 3px solid var(--accent);
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
     }
-    .cred-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
-      color: var(--tMut); margin-bottom: 10px; }
-    .cred-item { display: flex; justify-content: space-between; align-items: center;
-      padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 12.5px; }
-    .cred-item:last-child { border-bottom: none; }
+    .callout-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      color: rgba(91,95,239,.65); margin-bottom: 12px; }
+    .callout-label-light { color: var(--accent); opacity: .75; }
+
+    /* ── Live credential row ── */
+    .cred-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 7px 0; border-bottom: 1px solid var(--border);
+      font-size: 12.5px;
+    }
+    .cred-row:last-child { border-bottom: none; }
     .cred-name { color: var(--tPri); font-weight: 500; }
-    .cred-date { color: var(--tMut); font-size: 11.5px; }
-    .cred-check { color: var(--success); font-size: 11px; font-weight: 700; margin-left: 8px; }
+    .cred-meta { color: var(--tMut); font-size: 11.5px; }
+    .cred-fresh { color: var(--success); font-weight: 600; font-size: 10px; margin-left: 6px; }
+
+    /* ── Section divider ── */
+    .m-divider { width: 100%; height: 1px; background: rgba(255,255,255,.06); margin: 72px 0; }
+    .m-divider-light { background: var(--border); }
 
     /* ── Proto link ── */
     .proto-link {
-      display: inline-flex; align-items: center; gap: 8px; margin-top: 52px;
+      display: inline-flex; align-items: center; gap: 8px; margin-top: 56px;
       font-size: 13px; font-weight: 600; color: #fff;
       background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
       padding: 10px 18px; border-radius: 9px; text-decoration: none;
@@ -201,15 +282,7 @@
     }
     .proto-link-light:hover { background: rgba(28,25,23,.04); }
 
-    /* ── Moment divider ── */
-    .m-divider {
-      width: 100%; height: 1px;
-      background: rgba(255,255,255,.06);
-      margin: 64px 0;
-    }
-    .m-divider-light { background: var(--border); }
-
-    /* ══════ INTEGRATIONS (footnote) ══════ */
+    /* ══════ INTEGRATIONS ══════ */
     .exp-teal {
       background: linear-gradient(160deg, #040D0C 0%, #071512 100%);
       padding: 80px 0 72px;
@@ -249,12 +322,10 @@
     .footer-by   { font-size: 12px; color: var(--tMut); margin-bottom: 3px; }
     .footer-name { font-size: 15px; font-weight: 600; color: var(--tPri); }
 
-    @media (max-width: 900px) {
-      .m-split, .m-split-reverse, .int-grid, .aud-grid, .why-grid, .mcp-banner { grid-template-columns: 1fr; }
-      .m-split-reverse .m-text, .m-split-reverse .m-visual { order: unset; }
+    @media (max-width: 920px) {
+      .m-split, .m-split-rev, .int-grid, .aud-grid, .why-grid, .mcp-banner, .m-wide-header, .two-up { grid-template-columns: 1fr; }
       .hero h1 { font-size: 36px; }
       .sec-title { font-size: 30px; }
-      .m-wide-text { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -279,10 +350,11 @@
     </div>
   </section>
 
+  <!-- MCP connective layer -->
   <div class="mcp-banner">
     <div>
       <div class="mcp-label">The connective layer — MCP</div>
-      <p class="mcp-body">Model Context Protocol gives Coursera a permissioned window into the tools teams already use. Instead of inferring skill from test scores, we observe it directly — reading behavioral patterns across the surfaces where work actually happens. Each connection adds a signal layer. Together they build a holistic picture of how an enterprise is working.</p>
+      <p class="mcp-body">Model Context Protocol gives Coursera a permissioned window into the tools teams already use. Instead of inferring skill from test scores, we observe it directly — reading behavioral patterns across the surfaces where work actually happens. Each connection adds a signal layer. Together they build a holistic picture of how an enterprise works.</p>
     </div>
     <div class="mcp-pills">
       <div class="mcp-pill"><div class="mcp-pill-dot"></div>GitHub<div class="mcp-pill-label">code quality · PR patterns</div></div>
@@ -290,6 +362,34 @@
       <div class="mcp-pill"><div class="mcp-pill-dot"></div>Cursor<div class="mcp-pill-label">prompt structure · AI usage</div></div>
       <div class="mcp-pill"><div class="mcp-pill-dot"></div>Claude<div class="mcp-pill-label">reasoning · workflow patterns</div></div>
       <div class="mcp-pill"><div class="mcp-pill-dot"></div>Slack<div class="mcp-pill-label">collaboration · communication</div></div>
+    </div>
+  </div>
+
+  <!-- Privacy model -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:0; border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-bottom:52px;">
+    <div style="padding:24px 26px; border-right:1px solid var(--border);">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+        <div style="width:28px; height:28px; border-radius:8px; background:rgba(91,95,239,0.08); display:flex; align-items:center; justify-content:center; font-size:14px;">🙋</div>
+        <div style="font-size:11px; font-weight:700; color:var(--accent); letter-spacing:.08em; text-transform:uppercase;">Learner view</div>
+      </div>
+      <div style="font-size:14px; font-weight:700; color:var(--tPri); margin-bottom:8px; line-height:1.3;">Your own patterns, visible only to you</div>
+      <p style="font-size:13px; line-height:1.68; color:var(--tSec); margin-bottom:14px;">Individuals opt in to share their session data with Coursera. In return, they get personalized feedback on their own prompt style, workflow patterns, and skill gaps. <strong>No one else sees this analysis — not their manager, not their L&D team.</strong></p>
+      <div style="display:flex; align-items:center; gap:6px; padding:7px 11px; background:rgba(5,150,105,0.06); border:1px solid rgba(5,150,105,0.18); border-radius:8px; width:fit-content;">
+        <svg width="10" height="12" viewBox="0 0 9 11" fill="none"><path d="M1.5 5V3.5a3 3 0 0 1 6 0V5M1 5h7a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5H1a.5.5 0 0 1-.5-.5v-4A.5.5 0 0 1 1 5z" stroke="#059669" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <span style="font-size:11px; font-weight:600; color:#059669;">Your data · your insight · your choice</span>
+      </div>
+    </div>
+    <div style="padding:24px 26px; background:rgba(28,25,23,0.02);">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+        <div style="width:28px; height:28px; border-radius:8px; background:rgba(28,25,23,0.06); display:flex; align-items:center; justify-content:center; font-size:14px;">🏢</div>
+        <div style="font-size:11px; font-weight:700; color:var(--tMut); letter-spacing:.08em; text-transform:uppercase;">Admin / manager view</div>
+      </div>
+      <div style="font-size:14px; font-weight:700; color:var(--tPri); margin-bottom:8px; line-height:1.3;">Aggregated themes only — never individual content</div>
+      <p style="font-size:13px; line-height:1.68; color:var(--tSec); margin-bottom:14px;">Admins see team-level behavioral patterns: session frequency, query complexity, workflow types. <strong>No prompt content, no individual attribution, no way to trace a signal back to a specific person.</strong></p>
+      <div style="display:flex; align-items:center; gap:6px; padding:7px 11px; background:rgba(28,25,23,0.04); border:1px solid var(--border); border-radius:8px; width:fit-content;">
+        <svg width="10" height="12" viewBox="0 0 9 11" fill="none"><path d="M1.5 5V3.5a3 3 0 0 1 6 0V5M1 5h7a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5H1a.5.5 0 0 1-.5-.5v-4A.5.5 0 0 1 1 5z" stroke="var(--tMut)" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <span style="font-size:11px; font-weight:600; color:var(--tMut);">Patterns · not prompts · never individual</span>
+      </div>
     </div>
   </div>
 </div>
@@ -305,89 +405,129 @@
       <p class="sec-eyebrow">Exploration 01</p>
       <h2 class="sec-title">Ground Truth</h2>
       <p class="sec-sub">The admin layer — build the map, then let behavior fill it in</p>
-      <p class="sec-intro">L&D admins stop managing course catalogs and start managing a living skill graph. They define what good looks like at every role and level, connect the MCP signals relevant to their org, and watch behavioral evidence populate the picture — in real time, without a survey in sight.</p>
+      <p class="sec-intro">L&D admins stop managing course catalogs and start managing a living skill graph. They define what good looks like for every role, connect MCP signals relevant to their org, and watch behavioral evidence populate the picture — in real time, without a survey in sight.</p>
     </div>
 
-    <!-- Moment 1: Goal builder -->
+    <!-- ── GT Moment 1: Set the target ── -->
     <div class="moment">
       <div class="m-split">
-        <div class="m-text">
+
+        <div>
           <p class="m-num">Step 01 &nbsp;·&nbsp; Set the target</p>
-          <h3 class="m-head">Start with intent, not a content catalog</h3>
-          <p class="m-body">Admins describe what the team needs to achieve — in plain language. Coursera pulls from the skill graph, company rubrics, and MCP usage data to map the real gaps and generate a targeted plan. No browsing. No guessing.</p>
-          <div class="evidence-callout">
-            <div class="evidence-label">What the system draws on</div>
-            <div class="evidence-item"><span class="ev-arrow">→</span><span class="ev-text">Coursera skill graph — competency definitions and sub-skills</span></div>
-            <div class="evidence-item"><span class="ev-arrow">→</span><span class="ev-text">Company rubrics and files — role expectations, internal standards</span></div>
-            <div class="evidence-item"><span class="ev-arrow">→</span><span class="ev-text">MCP connector data — behavioral evidence from real tool usage</span></div>
+          <h3 class="m-head">Intent first.<br>Not a content catalog.</h3>
+          <p class="m-body">Admins describe what the team needs to achieve — in plain language. Coursera resolves that to specific skills, pulls from your org's rubrics and files, then maps the actual gap. No browsing. No guessing. You get a targeted plan, not a scroll of courses.</p>
+          <div class="ann-list">
+            <div class="ann-item">
+              <span class="ann-n">1</span>
+              <span class="ann-text">Admins write the goal in their own words — Coursera maps it to specific skills and sub-skills in your org's graph</span>
+            </div>
+            <div class="ann-item">
+              <span class="ann-n">2</span>
+              <span class="ann-text">Company rubrics, role expectations, and MCP behavioral signals fill in the current-state gaps automatically</span>
+            </div>
+            <div class="ann-item">
+              <span class="ann-n">3</span>
+              <span class="ann-text">A structured plan generates — scoped to your team's actual gaps, not a generic AI curriculum</span>
+            </div>
           </div>
         </div>
-        <div class="m-visual">
-          <!-- Goal builder, sidebar cropped out -->
-          <div class="ui-crop" style="height: 340px;">
-            <img src="./screen-goalbuilder.png" style="width: 128%; display: block; margin-left: -23%; margin-top: -50px;"/>
+
+        <!-- Composition: goalbuilder + floating plan result -->
+        <div class="compose" style="position:relative; height:460px;">
+          <!-- Primary: goal builder — skip left sidebar, show input area -->
+          <div class="sshot sshot-dark" style="position:absolute; left:0; right:24px; top:0; height:290px;">
+            <img src="./screen-goalbuilder.png" style="width:130%; margin-left:-25%; margin-top:-46px; display:block;"/>
           </div>
+          <!-- Floating: plan result — cropped to top content -->
+          <div class="float-card float-dark" style="right:0; bottom:0; width:74%; height:215px; transform:rotate(-0.8deg);">
+            <img src="./screen-plan-result.png" style="width:150%; margin-left:-8%; margin-top:-50px; display:block;"/>
+          </div>
+          <!-- Tag -->
+          <div class="compose-tag compose-tag-dark" style="right:5px; bottom:220px;">↓ Generated plan</div>
         </div>
+
       </div>
     </div>
 
     <div class="m-divider"></div>
 
-    <!-- Moment 2: MCP signal strip -->
-    <div class="moment-wide">
-      <div class="m-wide-text">
+    <!-- ── GT Moment 2: MCP signals ── -->
+    <div class="moment">
+      <div class="m-wide-header">
         <div>
           <p class="m-num">Step 02 &nbsp;·&nbsp; See how the team actually works</p>
-          <h3 class="m-head">MCP replaces the survey</h3>
+          <h3 class="m-head">MCP replaces the survey.</h3>
         </div>
-        <p class="m-body" style="padding-bottom: 6px;">These aren't self-reported scores. This is a live readout of how a 15-person team is actually using AI tools at work — pulled directly from Claude sessions over the last 30 days. The gaps write themselves.</p>
+        <p class="m-body" style="padding-bottom:6px;">These aren't self-reported scores. This is a live readout of how a 15-person team is using AI tools at work — pulled directly from Claude sessions over the last 30 days. The gaps write themselves.</p>
       </div>
-      <!-- MCP strip — already a perfect crop, show full width -->
-      <div class="ui-crop" style="border-radius: 12px;">
-        <img src="./screen-mcp-strip.png" style="width: 100%; display: block;"/>
+
+      <!-- MCP strip + floating stat pills -->
+      <div class="compose" style="position:relative;">
+        <div class="sshot sshot-dark" style="border-radius:12px;">
+          <img src="./screen-mcp-strip.png" style="width:100%; display:block;"/>
+        </div>
+        <!-- Floating pills anchored to bottom of strip -->
+        <div class="img-pill" style="left:2%; bottom:-20px;">
+          <div class="img-pill-num teal">47</div>
+          <div class="img-pill-label">avg sessions per person · 30 days</div>
+        </div>
+        <div class="img-pill" style="left:26%; bottom:-20px;">
+          <div class="img-pill-num orange">72%</div>
+          <div class="img-pill-label">single-turn Q&amp;A queries</div>
+        </div>
+        <div class="img-pill" style="left:52%; bottom:-20px;">
+          <div class="img-pill-num orange">28 words</div>
+          <div class="img-pill-label">avg prompt length</div>
+        </div>
+        <div class="img-pill" style="left:76%; bottom:-20px;">
+          <div class="img-pill-num red">0</div>
+          <div class="img-pill-label">multi-step pipelines or API calls</div>
+        </div>
       </div>
-      <div class="m-wide-stat-row" style="margin-top: 28px;">
-        <div class="m-stat">
-          <div class="m-stat-num neutral">47</div>
-          <div class="m-stat-label">avg sessions / person in 30 days</div>
-        </div>
-        <div class="m-stat" style="padding-left: 28px; margin-left: 28px; border-left: 1px solid rgba(255,255,255,.08);">
-          <div class="m-stat-num orange">72%</div>
-          <div class="m-stat-label">simple Q&amp;A queries — short, single-turn</div>
-        </div>
-        <div class="m-stat" style="padding-left: 28px; margin-left: 28px; border-left: 1px solid rgba(255,255,255,.08);">
-          <div class="m-stat-num orange">28 words</div>
-          <div class="m-stat-label">avg prompt length — minimal context or structure</div>
-        </div>
-        <div class="m-stat" style="padding-left: 28px; margin-left: 28px; border-left: 1px solid rgba(255,255,255,.08);">
-          <div class="m-stat-num red">0</div>
-          <div class="m-stat-label">pipelines or API calls — no multi-step usage</div>
-        </div>
-      </div>
+      <!-- Spacer for the overhanging pills -->
+      <div style="height:64px;"></div>
     </div>
 
     <div class="m-divider"></div>
 
-    <!-- Moment 3: Team readiness chart -->
+    <!-- ── GT Moment 3: Readiness over time ── -->
     <div class="moment">
-      <div class="m-split m-split-reverse">
-        <div class="m-visual">
-          <!-- Chart area only — skip nav and MCP strip -->
-          <div class="ui-crop" style="height: 380px;">
-            <img src="./screenshots/05-admin-targets.jpg" style="width: 120%; display: block; margin-left: -18%; margin-top: -128px;"/>
+      <div class="m-split-rev">
+
+        <!-- Composition: chart + floating detail card -->
+        <div class="compose" style="position:relative; height:440px;">
+          <!-- Primary: chart crop from admin targets -->
+          <div class="sshot sshot-dark" style="position:absolute; left:24px; right:0; top:0; height:300px;">
+            <img src="./screenshots/05-admin-targets.jpg" style="width:118%; margin-left:-12%; margin-top:-122px; display:block;"/>
           </div>
+          <!-- Floating: detail card (short, wide — 2560×608 = 1280×304 logical) -->
+          <div class="float-card float-dark" style="left:0; bottom:0; width:78%; height:170px; transform:rotate(0.6deg);">
+            <img src="./screen-detail-card.png" style="width:110%; margin-left:-5%; margin-top:-10px; display:block;"/>
+          </div>
+          <!-- Tag -->
+          <div class="compose-tag compose-tag-glass" style="left:10px; bottom:175px;">Member detail ↗</div>
         </div>
-        <div class="m-text">
+
+        <div>
           <p class="m-num">Step 03 &nbsp;·&nbsp; Track readiness over time</p>
-          <h3 class="m-head">Every skill becomes a measurable target</h3>
-          <p class="m-body">Org skill goals become trackable targets — broken down by skill, sub-skill, and team member. The graph shows your team vs. company average over time. Admins can drill into any node to see who's ready, who has a gap, and what behavioral evidence the system is drawing on.</p>
-          <div class="evidence-callout" style="margin-top: 20px;">
-            <div class="evidence-label">What makes this different</div>
-            <div class="evidence-item"><span class="ev-arrow">→</span><span class="ev-text">AI Prototyping tracking at 9.5/15 — up 45% since October</span></div>
-            <div class="evidence-item"><span class="ev-arrow">→</span><span class="ev-text">Sub-skills like Prompt Engineering (13/15) vs. Prototyping &amp; Iteration (6/15) visible at a glance</span></div>
-            <div class="evidence-item"><span class="ev-arrow">→</span><span class="ev-text">Click any member to see behavioral evidence + trigger a targeted plan</span></div>
+          <h3 class="m-head">Every skill becomes a measurable target.</h3>
+          <p class="m-body">Org goals break down by skill, sub-skill, and team member. The graph shows your team vs. company average over time. Click any node to see who's ready, who has a gap, and what behavioral evidence the system is drawing on. Admins can enrich any node — adding their own rubrics, expectations, or context to the skill graph.</p>
+          <div class="ann-list">
+            <div class="ann-item">
+              <span class="ann-n">1</span>
+              <span class="ann-text">AI Prototyping at 9.5/15 — up 45% since October. Sub-skills Prompt Engineering (13/15) vs. Prototyping &amp; Iteration (6/15) visible at a glance</span>
+            </div>
+            <div class="ann-item">
+              <span class="ann-n">2</span>
+              <span class="ann-text">Click any member to see behavioral evidence — not a test score, actual session patterns</span>
+            </div>
+            <div class="ann-item">
+              <span class="ann-n">3</span>
+              <span class="ann-text">Admins can add custom context to any skill node — company rubrics, role expectations, internal standards — layered on top of Coursera's graph</span>
+            </div>
           </div>
         </div>
+
       </div>
     </div>
 
@@ -407,72 +547,129 @@
       <p class="sec-eyebrow sec-eyebrow-light">Exploration 02</p>
       <h2 class="sec-title sec-title-light">Skills OS</h2>
       <p class="sec-sub sec-sub-light">The learner layer — a plan that adapts in real time to how you actually work</p>
-      <p class="sec-intro sec-intro-light">The learner's plan isn't assigned — it emerges from behavioral signals across their own tools. Every recommendation is justified with a specific observation. Learning is triggered by the gap, not the calendar. Verification happens through demonstrated behavior. The credential updates as they work.</p>
+      <p class="sec-intro sec-intro-light">The learner's plan isn't assigned — it emerges from behavioral signals across their own tools. Every recommendation is backed by a specific observation. Learning is triggered by the gap, not the calendar. Verification happens through demonstrated behavior. The credential updates as they work.</p>
     </div>
 
-    <!-- Moment 1: What we know cards -->
+    <!-- ── Learner Moment 1: Evidence emerges ── -->
     <div class="moment">
-      <div class="m-split m-split-reverse">
-        <div class="m-visual">
-          <!-- My plan — crop to show just the WHAT WE KNOW evidence cards -->
-          <div class="ui-crop ui-crop-light" style="height: 300px;">
-            <img src="./screenshots/01-my-plan.jpg" style="width: 155%; display: block; margin-left: -5%; margin-top: -230px;"/>
+      <div class="m-split-rev">
+
+        <!-- Composition: my-plan WHAT WE KNOW + floating plan panel -->
+        <div class="compose" style="position:relative; height:420px;">
+          <!-- Primary: 01-my-plan.jpg cropped to WHAT WE KNOW evidence cards -->
+          <div class="sshot sshot-light" style="position:absolute; left:20px; right:0; top:0; height:280px;">
+            <img src="./screenshots/01-my-plan.jpg" style="width:152%; margin-left:-5%; margin-top:-226px; display:block;"/>
           </div>
+          <!-- Floating: plan panel (1540×1720 = 770×860 logical, narrower side panel) -->
+          <div class="float-card float-light" style="left:0; bottom:0; width:60%; height:195px; transform:rotate(-0.7deg);">
+            <img src="./screen-plan-panel.png" style="width:120%; margin-left:-5%; margin-top:-60px; display:block;"/>
+          </div>
+          <!-- Tag -->
+          <div class="compose-tag compose-tag-light" style="left:10px; bottom:200px;">Skill detail ↗</div>
         </div>
-        <div class="m-text">
+
+        <div>
           <p class="m-num m-num-light">Step 01 &nbsp;·&nbsp; Ground truth for the learner</p>
-          <h3 class="m-head m-head-light">Not assigned — it emerges from what you do</h3>
-          <p class="m-body m-body-light">Every card in Marcus's plan is grounded in something Coursera actually observed. Not a course someone thought he should take. Behavioral signals from Claude, Cursor, and GitHub build a live picture of where he is right now — and what's worth working on next.</p>
-          <div class="credential-callout">
-            <div class="cred-label">Observed · last 12 sessions</div>
-            <div class="cred-item"><span class="cred-name">Writing system prompts before analysis</span><span class="cred-check">↑ new</span></div>
-            <div class="cred-item"><span class="cred-name">Prompts 2× longer and more specific</span><span class="cred-check">↑ new</span></div>
-            <div class="cred-item"><span class="cred-name">Chaining follow-up queries</span><span class="cred-check">↑ new</span></div>
+          <h3 class="m-head m-head-light">Not assigned. It emerges from what you do.</h3>
+          <p class="m-body m-body-light">Every card in Marcus's plan is grounded in something Coursera actually observed — not a course someone thought he should take. Behavioral signals from Claude, Cursor, and GitHub build a live picture of where he is right now. The plan surface shows why each item is here. No mystery.</p>
+          <div class="callout-card callout-card-light" style="margin-top:22px;">
+            <div class="callout-label callout-label-light">Observed · last 12 sessions</div>
+            <div class="ann-list" style="margin-top:0;">
+              <div class="ann-item">
+                <span class="ann-n ann-n-light">↑</span>
+                <span class="ann-text ann-text-light">Writing system prompts before analysis — new behavior in last 12 sessions</span>
+              </div>
+              <div class="ann-item">
+                <span class="ann-n ann-n-light">↑</span>
+                <span class="ann-text ann-text-light">Prompts 2× longer and more specific — measurable change from baseline</span>
+              </div>
+              <div class="ann-item">
+                <span class="ann-n ann-n-light">↑</span>
+                <span class="ann-text ann-text-light">Chaining follow-up queries — beginning to treat Claude as a reasoning partner</span>
+              </div>
+            </div>
           </div>
         </div>
+
       </div>
     </div>
 
     <div class="m-divider m-divider-light"></div>
 
-    <!-- Moment 2: Learning session full-width -->
-    <div class="moment-wide">
-      <div class="m-wide-text">
+    <!-- ── Learner Moment 2: Learning in context ── -->
+    <div class="moment">
+      <div class="m-wide-header">
         <div>
           <p class="m-num m-num-light">Step 02 &nbsp;·&nbsp; Learning at the moment of the gap</p>
-          <h3 class="m-head m-head-light" style="color: var(--tPri);">The lesson arrives because of what you did last week</h3>
+          <h3 class="m-head m-head-light" style="color:var(--tPri);">The lesson arrives because of what you did last week.</h3>
         </div>
-        <p class="m-body m-body-light" style="padding-bottom: 6px;">When Coursera notices a recurring pattern — prompts that are solid but missing output format instructions — it surfaces the right lesson with full context intact. Not a generic course. A targeted session, justified by evidence, delivered at the exact moment it's relevant.</p>
+        <p class="m-body m-body-light" style="padding-bottom:6px;">When Coursera notices a recurring pattern — prompts solid but missing output format instructions — it surfaces the right lesson with that context already intact. Not a generic course. A targeted session, tied to evidence, delivered at the exact moment it's relevant.</p>
       </div>
-      <!-- Full learning session view -->
-      <div class="ui-crop ui-crop-light" style="border-radius: 14px;">
-        <img src="./screenshots/02-learn-write.jpg" style="width: 100%; display: block; height: 460px; object-fit: cover; object-position: left top;"/>
+
+      <!-- Two-up: learn-write + learn-lab -->
+      <div class="two-up">
+        <div>
+          <div class="sshot sshot-light" style="height:280px;">
+            <img src="./screenshots/02-learn-write.jpg" style="width:115%; margin-left:-5%; margin-top:-82px; display:block;"/>
+          </div>
+          <div class="two-up-label two-up-label-light">Why this · what to work on</div>
+        </div>
+        <div>
+          <div class="sshot sshot-light" style="height:280px;">
+            <img src="./screenshots/03-learn-lab.jpg" style="width:115%; margin-left:-5%; margin-top:-82px; display:block;"/>
+          </div>
+          <div class="two-up-label two-up-label-light">Hands-on lab · apply immediately</div>
+        </div>
+      </div>
+
+      <!-- Adaptation callout -->
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:28px;">
+        <div style="padding:16px 18px; background:white; border:1px solid var(--border); border-radius:11px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--tMut);margin-bottom:8px;">Real-time adaptation</div>
+          <div style="font-size:13px;line-height:1.6;color:var(--tSec);">If Marcus skips a section or breezes through it, the plan adjusts. Next session pulls from updated behavioral signals — not a static curriculum.</div>
+        </div>
+        <div style="padding:16px 18px; background:white; border:1px solid var(--border); border-radius:11px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--tMut);margin-bottom:8px;">Gap-triggered, not calendar-triggered</div>
+          <div style="font-size:13px;line-height:1.6;color:var(--tSec);">The recommendation appeared because Marcus hit a specific pattern 4 times in 2 weeks. No manual enrollment. No manager nudge required.</div>
+        </div>
+        <div style="padding:16px 18px; background:white; border:1px solid var(--border); border-radius:11px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--tMut);margin-bottom:8px;">Context already loaded</div>
+          <div style="font-size:13px;line-height:1.6;color:var(--tSec);">The MCP observation card in the lesson tells Marcus exactly why he's here. He doesn't have to wonder whether the course is relevant — the evidence is right there.</div>
+        </div>
       </div>
     </div>
 
     <div class="m-divider m-divider-light"></div>
 
-    <!-- Moment 3: Credential -->
+    <!-- ── Learner Moment 3: Credential ── -->
     <div class="moment">
       <div class="m-split">
-        <div class="m-text">
+
+        <div>
           <p class="m-num m-num-light">Step 03 &nbsp;·&nbsp; Verified through doing</p>
-          <h3 class="m-head m-head-light">A credential that earns itself</h3>
+          <h3 class="m-head m-head-light">A credential that earns itself.</h3>
           <p class="m-body m-body-light">Skills aren't certified by a test — they're verified through demonstrated behavior in real tools. Marcus's wallet updates live as evidence accumulates across sessions. Each entry is backed by MCP session data, not a multiple-choice score. The link is live — if a skill lapses, the credential reflects it.</p>
-          <div class="credential-callout" style="margin-top: 20px;">
-            <div class="cred-label">Live credential · Marcus Chen</div>
-            <div class="cred-item"><span class="cred-name">Prompt Engineering</span><span style="font-size:11px;color:var(--tMut)">Apr 2026 <span style="color:var(--success)">✓ Fresh</span></span></div>
-            <div class="cred-item"><span class="cred-name">AI Workflow Integration</span><span style="font-size:11px;color:var(--tMut)">May 2026 <span style="color:var(--success)">✓ Fresh</span></span></div>
-            <div class="cred-item"><span class="cred-name">Claude API Fundamentals</span><span style="font-size:11px;color:var(--tMut)">Jun 2026 <span style="color:var(--success)">✓ Fresh</span></span></div>
-            <div class="cred-item"><span class="cred-name">Prototyping &amp; Iteration</span><span style="font-size:11px;color:var(--tMut)">Aug 2026 <span style="color:var(--success)">✓ Fresh</span></span></div>
+          <div class="callout-card callout-card-light" style="margin-top:24px;">
+            <div class="callout-label callout-label-light">Live credential · Marcus Chen</div>
+            <div class="cred-row"><span class="cred-name">Prompt Engineering</span><span class="cred-meta">Apr 2026<span class="cred-fresh">✓ Fresh</span></span></div>
+            <div class="cred-row"><span class="cred-name">AI Workflow Integration</span><span class="cred-meta">May 2026<span class="cred-fresh">✓ Fresh</span></span></div>
+            <div class="cred-row"><span class="cred-name">Claude API Fundamentals</span><span class="cred-meta">Jun 2026<span class="cred-fresh">✓ Fresh</span></span></div>
+            <div class="cred-row"><span class="cred-name">Prototyping &amp; Iteration</span><span class="cred-meta">Aug 2026<span class="cred-fresh">✓ Fresh</span></span></div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; margin-top:16px;">
+            <div style="width:7px;height:7px;border-radius:50%;background:#22C55E;flex-shrink:0;"></div>
+            <span style="font-size:12px;color:var(--tMut);">Skills decay and refresh automatically as behavior signals update — the credential is always current</span>
           </div>
         </div>
-        <div class="m-visual">
-          <!-- Wallet — crop to show credential preview panel (right side) -->
-          <div class="ui-crop ui-crop-light" style="height: 480px;">
-            <img src="./screenshots/04-wallet.jpg" style="width: 165%; display: block; margin-left: -66%; margin-top: -140px;"/>
+
+        <!-- Composition: wallet panel crop -->
+        <div class="compose" style="position:relative; height:460px;">
+          <!-- Wallet — crop to right side showing Live Credential Preview panel -->
+          <div class="sshot sshot-light" style="position:absolute; inset:0;">
+            <img src="./screenshots/04-wallet.jpg" style="width:168%; margin-left:-68%; margin-top:-138px; display:block;"/>
           </div>
         </div>
+
       </div>
     </div>
 
@@ -483,7 +680,7 @@
 
 
 <!-- ══════════════════════════════════════
-     EXPLORATION 03 — INTEGRATIONS (footnote)
+     EXPLORATION 03 — INTEGRATIONS
 ══════════════════════════════════════ -->
 <section class="bleed exp-teal">
   <div class="wide">

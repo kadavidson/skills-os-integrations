@@ -1203,6 +1203,11 @@
       const [tipVisible, setTipVisible] = React.useState(false);
       const [showVideo, setShowVideo] = React.useState(false);
       const [videoPlaying, setVideoPlaying] = React.useState(false);
+      const [chatOpen, setChatOpen] = React.useState(false);
+      const [chatQ, setChatQ] = React.useState('');
+      const [chatA, setChatA] = React.useState(null);
+      const [chatLoading, setChatLoading] = React.useState(false);
+      const inputRef = React.useRef(null);
 
       React.useEffect(() => {
         setTipVisible(false);
@@ -1211,6 +1216,44 @@
         const t = setTimeout(() => setTipVisible(true), 1400);
         return () => clearTimeout(t);
       }, [step]);
+
+      React.useEffect(() => {
+        if (chatOpen && inputRef.current) inputRef.current.focus();
+      }, [chatOpen]);
+
+      const getResponse = (q, stepIdx) => {
+        const lq = q.toLowerCase();
+        if (lq.includes('system prompt') || lq.includes('what is') || lq.includes('explain')) {
+          return "A system prompt is a persistent instruction set that shapes every AI response in a project. Instead of re-explaining your role each query, you define it once — role, output format, assumptions — and it applies automatically.";
+        }
+        if (lq.includes('stuck') || lq.includes("can't") || lq.includes("don't know") || lq.includes("help")) {
+          const tips = [
+            "No worries. Open Claude → create a new project called Meridian Analysis → you'll find the Instructions field in the project settings (gear icon).",
+            "Make sure you're inside a Claude project, not a regular chat. The system prompt only persists in projects — that's what carries it across sessions.",
+            "Paste the refined prompt from your feedback session into the Instructions field. Keep it under 500 words — shorter is sharper."
+          ];
+          return tips[stepIdx % tips.length];
+        }
+        if (lq.includes('rules') || lq.includes('settings') || lq.includes('where')) {
+          return "In Claude Desktop: click your project name in the left sidebar → gear icon → 'Instructions'. That's the system prompt for the entire project.";
+        }
+        if (lq.includes('verdict') || lq.includes('format') || lq.includes('structure')) {
+          return 'Add this at the end of your prompt: "Lead every response with a risk verdict: Low / Medium / High. Then key findings. Then specific concerns." That structure is what makes output actionable.';
+        }
+        if (lq.includes('compare') || lq.includes('difference') || lq.includes('without')) {
+          return "Run the same query — 'Review Q3 financials, flag anomalies' — once with your system prompt active, once with it cleared. The difference in specificity and format is the skill you just learned.";
+        }
+        return "The key thing for this step: keep your role definition in the system prompt and your actual task in the chat. That separation is what makes AI output consistently useful across an entire project.";
+      };
+
+      const submitChat = () => {
+        if (!chatQ.trim()) return;
+        const q = chatQ;
+        setChatQ('');
+        setChatLoading(true);
+        setChatA(null);
+        setTimeout(() => { setChatA(getResponse(q, step)); setChatLoading(false); }, 850);
+      };
 
       const WIDGET_STEPS = [
         { label: 'Open Claude', tip: 'Open Claude and create a new project — or use your existing Meridian analysis folder.' },
@@ -1230,17 +1273,25 @@
       );
 
       if (minimized) return (
-        <div onClick={() => setMinimized(false)}
-          style={{position:'absolute',bottom:'20px',right:'20px',
-            background:'rgba(10,10,20,0.95)',border:'1px solid rgba(91,95,239,0.45)',
-            borderRadius:'22px',padding:'8px 14px 8px 10px',display:'flex',alignItems:'center',gap:'8px',
-            cursor:'pointer',backdropFilter:'blur(12px)',
-            boxShadow:'0 4px 24px rgba(0,0,0,0.5)',
-            animation:'slideUp 220ms ease both',fontFamily:'Inter,sans-serif',zIndex:10}}>
-          <CoursC/>
-          <div style={{width:'7px',height:'7px',borderRadius:'50%',background:'#27C93F',animation:'mcpPulse 2s ease-in-out infinite'}}/>
-          <span style={{fontSize:'11px',color:'rgba(255,255,255,0.7)',fontWeight:'500'}}>Step {step+1} of {WIDGET_STEPS.length}</span>
-          <span style={{fontSize:'9px',color:'rgba(255,255,255,0.3)'}}>▲</span>
+        <div style={{position:'absolute',bottom:'20px',right:'20px',display:'flex',gap:'8px',alignItems:'center',zIndex:10,animation:'slideUp 220ms ease both',fontFamily:'Inter,sans-serif'}}>
+          {/* Ask anything pill */}
+          <div onClick={() => { setMinimized(false); setChatOpen(true); }}
+            style={{background:'rgba(10,10,20,0.95)',border:'1px solid rgba(91,95,239,0.45)',
+              borderRadius:'22px',padding:'7px 14px',display:'flex',alignItems:'center',gap:'6px',
+              cursor:'pointer',backdropFilter:'blur(12px)',boxShadow:'0 4px 24px rgba(0,0,0,0.5)'}}>
+            <span style={{fontSize:'14px',lineHeight:1}}>✦</span>
+            <span style={{fontSize:'11px',color:'rgba(255,255,255,0.65)',fontWeight:'500'}}>Ask anything</span>
+          </div>
+          {/* Step pill */}
+          <div onClick={() => setMinimized(false)}
+            style={{background:'rgba(10,10,20,0.95)',border:'1px solid rgba(91,95,239,0.45)',
+              borderRadius:'22px',padding:'8px 14px 8px 10px',display:'flex',alignItems:'center',gap:'8px',
+              cursor:'pointer',backdropFilter:'blur(12px)',boxShadow:'0 4px 24px rgba(0,0,0,0.5)'}}>
+            <CoursC/>
+            <div style={{width:'7px',height:'7px',borderRadius:'50%',background:'#27C93F',animation:'mcpPulse 2s ease-in-out infinite'}}/>
+            <span style={{fontSize:'11px',color:'rgba(255,255,255,0.7)',fontWeight:'500'}}>Step {step+1} of {WIDGET_STEPS.length}</span>
+            <span style={{fontSize:'9px',color:'rgba(255,255,255,0.3)'}}>▲</span>
+          </div>
         </div>
       );
 
@@ -1301,7 +1352,7 @@
           )}
 
           {/* Actions */}
-          <div style={{padding:'10px 13px',display:'flex',flexDirection:'column',gap:'7px'}}>
+          <div style={{padding:'10px 13px 8px',display:'flex',flexDirection:'column',gap:'7px'}}>
             {isLast ? (
               <button onClick={onComplete}
                 style={{padding:'10px 0',background:'#059669',border:'none',borderRadius:'8px',
@@ -1339,6 +1390,59 @@
                   )}
                 </div>
               </>
+            )}
+          </div>
+
+          {/* Ask anything */}
+          <div style={{borderTop:'1px solid rgba(255,255,255,0.07)',padding:'9px 13px 11px'}}>
+            {chatA && (
+              <div style={{marginBottom:'8px',padding:'9px 11px',
+                background:'rgba(91,95,239,0.1)',border:'1px solid rgba(91,95,239,0.2)',
+                borderRadius:'8px',fontSize:'11.5px',color:'rgba(255,255,255,0.72)',
+                lineHeight:'1.62',animation:'fadeUp 250ms ease both'}}>
+                {chatLoading
+                  ? <span style={{color:'rgba(255,255,255,0.3)'}}>✦ thinking…</span>
+                  : chatA}
+              </div>
+            )}
+            {chatLoading && !chatA && (
+              <div style={{marginBottom:'8px',padding:'9px 11px',
+                background:'rgba(91,95,239,0.08)',border:'1px solid rgba(91,95,239,0.15)',
+                borderRadius:'8px',fontSize:'11.5px',color:'rgba(255,255,255,0.3)',
+                animation:'fadeUp 250ms ease both'}}>
+                ✦ thinking…
+              </div>
+            )}
+            {chatOpen ? (
+              <div style={{display:'flex',gap:'6px'}}>
+                <input ref={inputRef}
+                  value={chatQ}
+                  onChange={e => setChatQ(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') submitChat(); if (e.key === 'Escape') { setChatOpen(false); setChatQ(''); } }}
+                  placeholder="Ask anything…"
+                  style={{flex:1,background:'rgba(255,255,255,0.07)',
+                    border:'1px solid rgba(255,255,255,0.15)',borderRadius:'7px',
+                    padding:'7px 10px',fontSize:'11.5px',color:'rgba(255,255,255,0.88)',
+                    fontFamily:'inherit',outline:'none'}}
+                />
+                <button onClick={submitChat}
+                  style={{padding:'7px 11px',background:'#5B5FEF',border:'none',
+                    borderRadius:'7px',fontSize:'13px',color:'white',cursor:'pointer',
+                    fontFamily:'inherit',transition:'filter 150ms'}}>
+                  →
+                </button>
+              </div>
+            ) : (
+              <button onClick={() => setChatOpen(true)}
+                style={{width:'100%',padding:'7px 11px',
+                  background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.09)',
+                  borderRadius:'8px',display:'flex',alignItems:'center',gap:'7px',
+                  cursor:'pointer',fontFamily:'inherit',transition:'background 150ms ease'}}
+                onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.08)'}
+                onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.04)'}>
+                <span style={{fontSize:'14px',color:'rgba(255,255,255,0.55)',lineHeight:1}}>✦</span>
+                <span style={{fontSize:'11.5px',color:'rgba(255,255,255,0.38)'}}>Ask anything…</span>
+              </button>
             )}
           </div>
         </div>
@@ -1430,9 +1534,15 @@
               {/* Why it's relevant to Marcus — MCP insight */}
               <div style={{ ...f(3), marginBottom:'28px' }}>
                 <div style={{ borderRadius:'12px', border:`1px solid ${C.border}`, background:C.muted, borderTop:`2px solid ${C.accent}`, padding:'16px 18px' }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:'7px', marginBottom:'12px' }}>
-                    <div style={{ width:'6px', height:'6px', borderRadius:'50%', background:'#27C93F', animation:'mcpPulse 2s ease-in-out infinite', flexShrink:0 }}/>
-                    <span style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase' }}>Why this matters for you · via MCP</span>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'12px' }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:'7px' }}>
+                      <div style={{ width:'6px', height:'6px', borderRadius:'50%', background:'#27C93F', animation:'mcpPulse 2s ease-in-out infinite', flexShrink:0 }}/>
+                      <span style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase' }}>Why this matters for you · via MCP</span>
+                    </div>
+                    <div style={{ display:'flex', alignItems:'center', gap:'4px', background:'rgba(5,150,105,0.07)', border:'1px solid rgba(5,150,105,0.2)', borderRadius:'20px', padding:'2px 8px', flexShrink:0 }}>
+                      <svg width="8" height="10" viewBox="0 0 9 11" fill="none"><path d="M1.5 5V3.5a3 3 0 0 1 6 0V5M1 5h7a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5H1a.5.5 0 0 1-.5-.5v-4A.5.5 0 0 1 1 5z" stroke="#059669" strokeWidth="1.1" strokeLinecap="round"/></svg>
+                      <span style={{ fontSize:'9px', fontWeight:'700', color:'#059669', letterSpacing:'0.06em', textTransform:'uppercase' }}>Only visible to you</span>
+                    </div>
                   </div>
                   <p style={{ fontSize:'13.5px', lineHeight:'1.7', color:C.tSec, marginBottom:'12px' }}>
                     We noticed a pattern across <strong>5 of your recent sessions</strong> in Cursor at Meridian. You keep starting with this:
@@ -1868,18 +1978,27 @@
             </div>
             {/* MCP */}
             <div style={{ padding:'14px 16px', borderRight:`1px solid ${C.border}` }}>
-              <div style={{ display:'flex', alignItems:'center', gap:'6px', marginBottom:'10px' }}>
-                <div style={{ width:'6px', height:'6px', borderRadius:'50%', flexShrink:0,
-                  background: sk.mcp.sessions > 0 ? '#27C93F' : C.tMut,
-                  animation: sk.mcp.sessions > 0 ? 'mcpPulse 2s ease-in-out infinite' : 'none' }}/>
-                <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.08em', textTransform:'uppercase' }}>
-                  Claude MCP · {sk.mcp.sessions > 0 ? `${sk.mcp.sessions} sessions` : 'No sessions yet'}
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'10px' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:'6px' }}>
+                  <div style={{ width:'6px', height:'6px', borderRadius:'50%', flexShrink:0,
+                    background: sk.mcp.sessions > 0 ? '#27C93F' : C.tMut,
+                    animation: sk.mcp.sessions > 0 ? 'mcpPulse 2s ease-in-out infinite' : 'none' }}/>
+                  <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.08em', textTransform:'uppercase' }}>
+                    {sk.mcp.source || 'Claude'} MCP · {sk.mcp.sessions > 0 ? `${sk.mcp.sessions} sessions` : 'No sessions yet'}
+                  </div>
                 </div>
+                {sk.mcp.sessions > 0 && (
+                  <div style={{ display:'flex', alignItems:'center', gap:'3px', padding:'2px 6px', background:'rgba(5,150,105,0.07)', border:'1px solid rgba(5,150,105,0.2)', borderRadius:'5px', flexShrink:0 }}>
+                    <svg width="7" height="9" viewBox="0 0 9 11" fill="none"><path d="M1.5 5V3.5a3 3 0 0 1 6 0V5M1 5h7a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5H1a.5.5 0 0 1-.5-.5v-4A.5.5 0 0 1 1 5z" stroke="#059669" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                    <span style={{ fontSize:'8px', fontWeight:'700', color:'#059669', letterSpacing:'0.06em', textTransform:'uppercase' }}>Only you</span>
+                  </div>
+                )}
               </div>
-              {sk.mcp.quote ? (
+              {sk.mcp.signal ? (
                 <>
-                  <div style={{ padding:'9px 11px', background:C.canvas, borderRadius:'7px', border:`1px solid ${C.border}`, fontSize:'11px', color:C.tSec, fontStyle:'italic', lineHeight:'1.65', marginBottom:'8px' }}>
-                    "{sk.mcp.quote}"
+                  <div style={{ fontSize:'9px', fontWeight:'700', color:C.tMut, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'5px' }}>Behavioral signal</div>
+                  <div style={{ padding:'9px 11px', background:C.canvas, borderRadius:'7px', border:`1px solid ${C.border}`, fontSize:'11px', color:C.tSec, lineHeight:'1.65', marginBottom:'8px' }}>
+                    {sk.mcp.signal}
                   </div>
                   {sk.mcp.usage && (
                     <div style={{ display:'flex', gap:'6px', alignItems:'flex-start' }}>
@@ -1940,7 +2059,7 @@
             {label:'Debug a failing prompt'},
             {label:'Meridian risk templates'},
           ],
-          mcp:{ sessions:5, quote:'You are a senior quantitative analyst with 15 years of experience reviewing financial models. You approach every model with healthy skepticism.', usage:'First Meridian Q3 analysis run — 5 sessions logged' },
+          mcp:{ sessions:5, signal:'System prompt written before first analysis run — role definition and skepticism framing observed. Early pattern forming.', usage:'First Meridian Q3 analysis run — 5 sessions logged' },
           workday:{ signal:'AI Prototyping track assigned — priority for Q4 readiness', source:'Priya Sharma' },
           learning:{ name:'Prompt Engineering Foundations', done:true, score:'82%' },
         },
@@ -1966,7 +2085,7 @@
             {label:'Debug a failing prompt', done:true},
             {label:'Meridian risk templates', done:true},
           ],
-          mcp:{ sessions:53, quote:'Act as a Meridian risk model reviewer. For each loan apply our 5-factor rubric and flag tier-2 threshold breaches. Return a structured report with confidence scores.', usage:'Production-grade prompts in daily credit operations' },
+          mcp:{ sessions:53, signal:'Consistent use of role + domain + constraint + output-format structure across sessions. Prompt complexity score 8.4/10 — well above team median of 5.1.', usage:'Production-grade prompts in daily credit operations' },
           workday:{ signal:'Strong improvement in AI-assisted analysis quality', source:'Priya Sharma · Apr 2026' },
           learning:{ name:'Advanced Prompt Engineering', done:true, score:'98%' },
         },
@@ -1977,7 +2096,7 @@
             {label:'Build LLM-powered workflows', done:true},
             {label:'Measure workflow quality', done:true},
           ],
-          mcp:{ sessions:38, quote:'Step 1: pull anomaly flags → Step 2: cross-reference 90-day baselines → Step 3: rank by exposure → Step 4: draft exec-ready action summary', usage:'Fully automated multi-step pipelines running in daily credit operations' },
+          mcp:{ sessions:38, signal:'Multi-stage chain prompts in regular use — structured output passing between steps, exec-ready summary generation. 4-step workflows observed across 14 sessions.', usage:'Fully automated multi-step pipelines running in daily credit operations' },
           workday:{ signal:'Reduced manual review time by 40%', source:'Q4 Performance Review' },
           learning:{ name:'AI Workflow Design', done:true, score:'96%' },
         },
@@ -1988,7 +2107,7 @@
             {label:'Message formatting', done:true},
             {label:'Handle errors & retries', done:true},
           ],
-          mcp:{ sessions:29, quote:'async def call_claude(prompt): response = await client.messages.create(model="claude-opus-4-5", max_tokens=1024, messages=[...])', usage:'Production Python service live in the risk model automation pipeline' },
+          mcp:{ source:'GitHub', sessions:29, signal:'API integration live in production — async call pattern, structured message format, error handling observed across 29 commits. Commit frequency above team median.', usage:'Production Python service live in the risk model automation pipeline' },
           workday:{ signal:'Shipped to production — running in daily ops', source:'Engineering review · Jun 2026' },
           learning:{ name:'Claude API Fundamentals', done:true, score:'94%' },
         },
@@ -2000,7 +2119,7 @@
             {label:'Iteration frameworks', done:true},
             {label:'Deploy & monitor', done:true},
           ],
-          mcp:{ sessions:21, quote:'Build a working prototype in 48h, test with 3 real users, iterate once based on friction points, then ship it.', usage:'3 internal AI tools deployed to Meridian ops team' },
+          mcp:{ source:'GitHub', sessions:21, signal:'3 feature branches shipped in <48h each — commit frequency, PR merge rate, and iteration cycle time all above team median. Rapid deploy pattern confirmed.', usage:'3 internal AI tools deployed to Meridian ops team' },
           workday:{ signal:'Led 3 AI prototyping sprints — all shipped on schedule', source:'Priya Sharma · Sep 2026' },
           learning:{ name:'Rapid Prototyping with AI', done:true, score:'91%' },
         },
@@ -2011,7 +2130,7 @@
             {label:'Visualization & reporting', done:true},
             {label:'Statistical operations', done:true},
           ],
-          mcp:{ sessions:17, quote:'df.groupby("portfolio_segment").agg({"exposure": "sum", "anomaly_flag": "mean"}).sort_values("exposure", ascending=False)', usage:'Core tool in daily portfolio analysis — every reporting cycle' },
+          mcp:{ source:'Cursor', sessions:17, signal:'Groupby + aggregation patterns in financial data — code complexity score 7.2/10, consistently clean structure, docstrings present. Usage frequency: daily.', usage:'Core tool in daily portfolio analysis — every reporting cycle' },
           workday:{ signal:'Data analysis capabilities significantly improved', source:'Peer review · Sep 2026' },
           learning:{ name:'Python for Data Analysis', done:true, score:'89%' },
         },
@@ -2023,7 +2142,7 @@
             {label:'Model validation', done:true},
             {label:'ML fundamentals'},
           ],
-          mcp:{ sessions:8, quote:null, usage:'Last active 6 months ago — usage declining, refresh recommended' },
+          mcp:{ source:'GitHub', sessions:8, signal:null, usage:'Last active 6 months ago — usage declining, refresh recommended' },
           workday:{ signal:'Not used recently — skill decay alert triggered', source:'Workday · Apr 2026' },
           learning:{ name:'Statistical Modeling', done:true, score:'87%' },
         },
