@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coursera Skills OS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root { height: 100%; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F5F4F1;
+      color: #1C1917;
+      -webkit-font-smoothing: antialiased;
+    }
+    textarea, input, button { font-family: inherit; }
+    @keyframes blink   { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    @keyframes fadeUp   { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    @keyframes slideUp  { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    @keyframes mcpPulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(0.85); } }
+
+    .scroll { overflow-y: auto; overflow-x: hidden; }
+    .scroll::-webkit-scrollbar { width: 4px; }
+    .scroll::-webkit-scrollbar-track { background: transparent; }
+    .scroll::-webkit-scrollbar-thumb { background: #E8E5E0; border-radius: 2px; }
+
+    /* ── Cards ── */
+    .card {
+      background: #FFFFFF;
+      border-radius: 12px;
+      border: 1px solid rgba(28,25,23,0.07);
+      box-shadow: 0 0 0 1px rgba(28,25,23,0.04), 0 1px 3px rgba(0,0,0,0.05), 0 3px 8px rgba(0,0,0,0.04);
+      transition: box-shadow 150ms cubic-bezier(0.4,0,0.2,1), background 150ms cubic-bezier(0.4,0,0.2,1), transform 150ms cubic-bezier(0.4,0,0.2,1);
+    }
+    .card:hover { box-shadow: 0 0 0 1px rgba(28,25,23,0.06), 0 4px 14px rgba(0,0,0,0.09), 0 8px 24px rgba(0,0,0,0.05); background: #FAFAF8; }
+    .card-static { background: #FFFFFF; border-radius: 12px; border: 1px solid rgba(28,25,23,0.07); box-shadow: 0 0 0 1px rgba(28,25,23,0.04), 0 1px 3px rgba(0,0,0,0.05); }
+
+    /* ── Buttons ── */
+    .btn {
+      border: none; font-family: inherit; font-weight: 600; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: all 120ms cubic-bezier(0.4,0,0.2,1);
+    }
+    .btn:hover  { transform: translateY(-1px); filter: brightness(1.06); }
+    .btn:active { transform: scale(0.98); filter: brightness(0.96); }
+    .btn-primary { background: #1C1917; color: #FFFFFF; border-radius: 8px; }
+    .btn-accent  { background: #5B5FEF; color: #FFFFFF; border-radius: 8px; }
+
+    /* ── Sidebar nav ── */
+    .nav-item {
+      position: relative; width: 100%; text-align: left; border: none;
+      padding: 9px 12px; border-radius: 8px;
+      display: flex; align-items: center; gap: 9px;
+      background: transparent; color: #78716C;
+      font-size: 13px; font-weight: 400; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background 150ms cubic-bezier(0.4,0,0.2,1), color 150ms cubic-bezier(0.4,0,0.2,1);
+    }
+    .nav-item:hover { background: rgba(28,25,23,0.05); color: #1C1917; }
+    .nav-item.active { background: rgba(28,25,23,0.07); color: #1C1917; font-weight: 500; }
+    .nav-item.active::before {
+      content: ''; position: absolute; left: 0; top: 4px; bottom: 4px;
+      width: 2.5px; background: #5B5FEF; border-radius: 0 2px 2px 0;
+    }
+
+    /* ── Vignette transition ── */
+    @keyframes vignetteIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .vignette { animation: vignetteIn 260ms cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+    /* ── Verify card ── */
+    @keyframes scaleIn   { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:scale(1); } }
+    @keyframes glowPulse {
+      0%   { box-shadow: 0 0 0 2px #5B5FEF, 0 0 28px rgba(91,95,239,.50), 0 12px 40px rgba(0,0,0,.35); }
+      50%  { box-shadow: 0 0 0 3px #5B5FEF, 0 0 48px rgba(91,95,239,.70), 0 12px 40px rgba(0,0,0,.35); }
+      100% { box-shadow: 0 0 0 2px #5B5FEF, 0 0 18px rgba(91,95,239,.28), 0 12px 40px rgba(0,0,0,.35); }
+    }
+    .glow-card {
+      animation: scaleIn 0.42s cubic-bezier(0.34,1.3,0.64,1) forwards,
+                 glowPulse 1.6s ease-in-out 0.5s 1 forwards;
+      box-shadow: 0 0 0 2px #5B5FEF, 0 0 18px rgba(91,95,239,.28), 0 12px 40px rgba(0,0,0,.35);
+    }
+
+    @keyframes fadeSlide { from { opacity:0; transform:translateX(8px); } to { opacity:1; transform:translateX(0); } }
+    .fade-slide { animation: fadeSlide 0.22s ease-out forwards; }
+
+    /* ── Confidence chips ── */
+    .chip-conf {
+      padding: 8px 16px; border-radius: 6px; cursor: pointer;
+      font-size: 13px; font-family: inherit;
+      transition: all 150ms cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* ── Typography helpers ── */
+    .label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .caption { font-size: 12px; color: #A8A29E; }
+
+    textarea { resize: none; outline: none; }
+    textarea:focus { border-color: #5B5FEF !important; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    const C = {
+      canvas:  '#F5F4F1',  surface: '#FFFFFF',  muted:  '#F0EDE8',
+      border:  '#E8E5E0',  tPri:   '#1C1917',   tSec:   '#57534E',
+      tMut:    '#A8A29E',  accent:  '#5B5FEF',  warm:   '#E76F3A',
+      success: '#059669',  warning: '#D97706',   bg:     '#0A0A0F',
+      sbBg:    '#ECEAE6',  sbMut:   '#78716C',  sbTxt:  '#1C1917',
+      accentLight: 'rgba(91,95,239,0.09)',
+    };
+
+    /* ── Nav mini illustrations ── */
+    const IconMyPlan = ({ active = false }) => (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M4 20 C7 20 9 16 12 12 C15 8 17 4 20 4"
+              stroke={active ? 'rgba(139,143,255,0.55)' : 'rgba(255,255,255,0.15)'}
+              strokeWidth="1.5" strokeDasharray="2 2.5" strokeLinecap="round"/>
+        <circle cx="4"  cy="20" r="3"   fill={active ? '#8B8FFF' : '#4A4A4E'}/>
+        <circle cx="12" cy="12" r="3.5" fill={active ? '#5B5FEF' : '#3A3A3E'}/>
+        <circle cx="12" cy="12" r="1.5" fill={active ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.08)'}/>
+        <circle cx="20" cy="4"  r="2.5" fill={active ? '#E76F3A' : '#3A3A3E'}/>
+        <circle cx="20" cy="4"  r="1"   fill={active ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.12)'}/>
+      </svg>
+    );
+
+    const IconLearn = ({ active = false }) => (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M12 20 L3 16.5 V7 L12 10.5 Z"
+              fill={active ? 'rgba(91,95,239,0.75)' : 'rgba(255,255,255,0.18)'}/>
+        <path d="M12 20 L21 16.5 V7 L12 10.5 Z"
+              fill={active ? 'rgba(91,95,239,0.35)' : 'rgba(255,255,255,0.08)'}/>
+        <line x1="12" y1="10.5" x2="12" y2="20"
+              stroke={active ? 'rgba(139,143,255,0.5)' : 'rgba(255,255,255,0.15)'} strokeWidth="1.2"/>
+        <path d="M16.5 2 L14.8 6 L16.8 6 L14.5 10 L19.5 5 L17.5 5 Z"
+              fill={active ? '#E76F3A' : '#5A5A5E'}/>
+      </svg>
+    );
+
+    const IconVerify = ({ active = false }) => (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2.5 L3 6.5 V12 C3 17 7 21.5 12 23 C17 21.5 21 17 21 12 V6.5 Z"
+              fill={active ? 'rgba(91,95,239,0.2)' : 'rgba(255,255,255,0.06)'}
+              stroke={active ? 'rgba(91,95,239,0.75)' : 'rgba(255,255,255,0.18)'} strokeWidth="1.2"/>
+        <path d="M12 5.5 L6 8 V12 C6 15.7 8.5 19 12 20.5 C15.5 19 18 15.7 18 12 V8 Z"
+              fill={active ? 'rgba(91,95,239,0.45)' : 'rgba(255,255,255,0.04)'}/>
+        <path d="M8.5 12.5 L11 15 L16.5 9"
+              stroke={active ? '#fff' : 'rgba(255,255,255,0.35)'}
+              strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    );
+
+    const IconWallet = ({ active = false }) => (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <rect x="3.5" y="7" width="17" height="11" rx="2.5"
+              fill={active ? 'rgba(91,95,239,0.35)' : 'rgba(255,255,255,0.08)'}
+              transform="rotate(-4 12 12.5)"/>
+        <rect x="3" y="9" width="18" height="12" rx="2.5"
+              fill={active ? '#5B5FEF' : '#3A3A3E'}/>
+        <circle cx="8.5" cy="13.5" r="2.5" fill={active ? '#E76F3A' : '#5A5A5E'}/>
+        <rect x="13" y="12.5" width="5.5" height="1.2" rx="0.6"
+              fill={active ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.2)'}/>
+        <rect x="13" y="15" width="3.5" height="1" rx="0.5"
+              fill={active ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.1)'}/>
+      </svg>
+    );
+
+    /* ── Source card + agent mini illustrations ── */
+    const IconAgent = () => (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="8.5" fill="rgba(91,95,239,0.2)" stroke="rgba(91,95,239,0.6)" strokeWidth="1.3"/>
+        <circle cx="9"  cy="10.5" r="1.8" fill="#8B8FFF"/>
+        <circle cx="15" cy="10.5" r="1.8" fill="#8B8FFF"/>
+        <circle cx="12" cy="15"   r="1.8" fill="#E76F3A"/>
+        <line x1="9"  y1="10.5" x2="15" y2="10.5" stroke="rgba(139,143,255,0.5)" strokeWidth="1"/>
+        <line x1="9"  y1="10.5" x2="12" y2="15"   stroke="rgba(139,143,255,0.4)" strokeWidth="1"/>
+        <line x1="15" y1="10.5" x2="12" y2="15"   stroke="rgba(139,143,255,0.4)" strokeWidth="1"/>
+      </svg>
+    );
+
+    const IconWorkday = () => (
+      <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
+        <circle cx="9" cy="5.5" r="2.8" fill="rgba(255,255,255,0.9)"/>
+        <circle cx="4" cy="13.5" r="2"   fill="rgba(255,255,255,0.6)"/>
+        <circle cx="14" cy="13.5" r="2"  fill="rgba(255,255,255,0.6)"/>
+        <path d="M2 17.5 Q4 12 9 12 Q14 12 16 17.5"
+              stroke="rgba(255,255,255,0.35)" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
+      </svg>
+    );
+
+    const IconMeridian = () => (
+      <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
+        <rect x="6"   y="12.5" width="6"  height="3"   rx="1" fill="rgba(255,255,255,0.55)"/>
+        <rect x="3.5" y="7.5"  width="11" height="4"   rx="1" fill="rgba(255,255,255,0.75)"/>
+        <rect x="1.5" y="2.5"  width="15" height="4"   rx="1" fill="rgba(255,255,255,0.92)"/>
+      </svg>
+    );
+
+    const IconClaude = () => (
+      <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
+        <circle cx="9"  cy="9"    r="2.8" fill="rgba(255,255,255,0.9)"/>
+        <circle cx="3"  cy="4.5"  r="1.4" fill="rgba(255,255,255,0.5)"/>
+        <circle cx="15" cy="4.5"  r="1.4" fill="rgba(255,255,255,0.5)"/>
+        <circle cx="3"  cy="13.5" r="1.4" fill="rgba(255,255,255,0.5)"/>
+        <circle cx="15" cy="13.5" r="1.4" fill="rgba(255,255,255,0.5)"/>
+        <line x1="9" y1="9" x2="3"  y2="4.5"  stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
+        <line x1="9" y1="9" x2="15" y2="4.5"  stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
+        <line x1="9" y1="9" x2="3"  y2="13.5" stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
+        <line x1="9" y1="9" x2="15" y2="13.5" stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
+      </svg>
+    );
+
+    const IconSeal = () => {
+      const rays = Array.from({length: 12}, (_, i) => {
+        const a = (i * 30) * Math.PI / 180;
+        return { x1: 40 + Math.cos(a)*27, y1: 40 + Math.sin(a)*27, x2: 40 + Math.cos(a)*35, y2: 40 + Math.sin(a)*35 };
+      });
+      return (
+        <svg width="64" height="64" viewBox="0 0 80 80" fill="none">
+          {rays.map((r, i) => (
+            <line key={i} x1={r.x1} y1={r.y1} x2={r.x2} y2={r.y2}
+                  stroke={C.accent} strokeWidth="2" strokeLinecap="round" opacity="0.55"/>
+          ))}
+          <circle cx="40" cy="40" r="25" fill="rgba(91,95,239,0.18)" stroke={C.accent} strokeWidth="1.5"/>
+          <circle cx="40" cy="40" r="19" fill="rgba(91,95,239,0.1)" stroke="rgba(91,95,239,0.35)" strokeWidth="1"/>
+          <path d="M27 40 L36 49 L55 29"
+                stroke={C.accent} strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      );
+    };
+
+    /* ── Sidebar ── */
+    function Sidebar({ tab, onSelect, collapsed, onToggle }) {
+      const items = [
+        { id: 0, label: 'My Plan', I: IconMyPlan },
+        { id: 1, label: 'Learn',   I: IconLearn  },
+        { id: 2, label: 'Wallet',  I: IconWallet },
+      ];
+      /* Text elements fade + shrink together */
+      const txt = {
+        overflow: 'hidden', whiteSpace: 'nowrap', flexShrink: 0,
+        opacity:   collapsed ? 0 : 1,
+        maxWidth:  collapsed ? '0px' : '180px',
+        transition: collapsed
+          ? 'opacity 80ms ease, max-width 220ms cubic-bezier(0.4,0,0.2,1)'
+          : 'opacity 160ms ease 110ms, max-width 220ms cubic-bezier(0.4,0,0.2,1)',
+      };
+      const itemStyle = {
+        justifyContent: collapsed ? 'center' : 'flex-start',
+        padding: collapsed ? '10px 0' : '9px 12px',
+        gap: collapsed ? '0' : '9px',
+      };
+      return (
+        <div style={{
+          width: collapsed ? '62px' : '220px',
+          flexShrink: 0, background: C.sbBg, display: 'flex', flexDirection: 'column',
+          borderRadius: '12px',
+          border: '1px solid rgba(28,25,23,0.1)',
+          boxShadow: '0 2px 12px rgba(0,0,0,0.07)',
+          transition: 'width 220ms cubic-bezier(0.4,0,0.2,1)',
+          overflow: 'hidden',
+        }}>
+
+          {/* Logo + collapse toggle in header */}
+          <div style={{ padding: '16px 10px 14px', display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', gap: '8px', borderBottom: '1px solid rgba(28,25,23,0.08)', flexShrink: 0 }}>
+            {!collapsed && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', minWidth: 0 }}>
+                <svg width="28" height="28" viewBox="0 0 100 100" style={{ flexShrink: 0 }}>
+                  <circle cx="50" cy="50" r="50" fill="#2255D6"/>
+                  <path fill="white" d="M86.4,71 A42,42 0 1,1 86.4,29 L79,29 L79,37.5 L71.7,37.5 A25,25 0 1,0 71.7,62.5 Z"/>
+                </svg>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: C.sbTxt, letterSpacing: '-0.2px' }}>Coursera</div>
+                  <div style={{ fontSize: '10px', fontWeight: '600', color: C.accent, letterSpacing: '0.08em', marginTop: '1px' }}>LEARNER VIEW</div>
+                </div>
+              </div>
+            )}
+            <button onClick={onToggle} style={{ width: '22px', height: '22px', borderRadius: '6px', border: 'none', background: 'rgba(28,25,23,0.06)', color: C.sbMut, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 150ms ease', flexShrink: 0 }}>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <path d={collapsed ? 'M3 1 L7 5 L3 9' : 'M7 1 L3 5 L7 9'}
+                      stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          </div>
+
+          {/* Nav items */}
+          <div style={{ padding: '8px', flex: 1 }}>
+            {items.map(({ id, label, I }) => (
+              <button key={id} onClick={() => onSelect(id)}
+                className={`nav-item${tab === id ? ' active' : ''}`}
+                style={itemStyle} title={label}>
+                <span style={{ display:'flex', flexShrink:0, filter: tab===id ? 'none' : 'saturate(0) opacity(0.35)', transition:'filter 150ms ease' }}><I active={true}/></span>
+                <span style={txt}>{label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* User avatar */}
+          <div style={{ padding: '10px 12px', borderTop: '1px solid rgba(28,25,23,0.08)', display: 'flex', alignItems: 'center', gap: '9px', flexShrink: 0 }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', color: '#fff', flexShrink: 0 }}>MC</div>
+            <div style={txt}>
+              <div style={{ fontSize: '13px', fontWeight: '500', color: C.sbTxt, lineHeight: '1.3' }}>Marcus Chen</div>
+              <div style={{ fontSize: '11px', color: C.sbMut }}>Senior Data Analyst</div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Skill Tracker (Learn right panel, collapsible) ── */
+    function SkillTracker({ collapsed = false, onToggle = () => {} }) {
+      const [area, setArea]     = useState('prototyping');
+      const [skill, setSkill]   = useState('workflow');
+      const [navOpen, setNavOpen] = useState(false);
+
+      const areas = [
+        { id: 'prototyping', Ill: IllAIProto,    name: 'AI Prototyping',      status: 'active', pct: 42 },
+        { id: 'data',        Ill: IllData,        name: 'Data Literacy',        status: 'active', pct: 68 },
+        { id: 'strategy',    Ill: IllStrategy,    name: 'AI Strategy',          status: 'upnext', pct: 0  },
+        { id: 'management',  Ill: IllManagement,  name: 'Management in AI Era', status: 'locked', pct: 0  },
+      ];
+      const skillsByArea = {
+        prototyping: [
+          { id: 'prompt',   name: 'Prompt Engineering',      sprint: 'Sprint 1', done: true,   pct: 100 },
+          { id: 'workflow', name: 'AI Workflow Integration',  sprint: 'Sprint 2', active: true, pct: 15  },
+          { id: 'api',      name: 'Claude API Fundamentals',  sprint: 'Sprint 3', pct: 0 },
+          { id: 'proto',    name: 'Prototyping & Iteration',  sprint: 'Sprint 4', pct: 0 },
+        ],
+        data: [
+          { id: 'sql',    name: 'SQL & Data Querying',    sprint: 'Sprint 1', done: true,   pct: 100 },
+          { id: 'viz',    name: 'Data Visualization',     sprint: 'Sprint 2', done: true,   pct: 100 },
+          { id: 'stats',  name: 'Statistical Analysis',   sprint: 'Sprint 3', active: true, pct: 45  },
+          { id: 'python', name: 'Python for Data',        sprint: 'Sprint 4', pct: 0 },
+        ],
+        strategy: [
+          { id: 'roi',     name: 'ROI Frameworks',    sprint: 'Sprint 1', pct: 0 },
+          { id: 'risk',    name: 'AI Risk Assessment', sprint: 'Sprint 2', pct: 0 },
+          { id: 'org',     name: 'Org Readiness',      sprint: 'Sprint 3', pct: 0 },
+          { id: 'roadmap', name: 'AI Roadmapping',     sprint: 'Sprint 4', pct: 0 },
+        ],
+        management: [
+          { id: 'change',  name: 'Change Management',    sprint: 'Sprint 1', pct: 0 },
+          { id: 'team',    name: 'Team Dynamics',         sprint: 'Sprint 2', pct: 0 },
+          { id: 'perf',    name: 'Performance in AI Era', sprint: 'Sprint 3', pct: 0 },
+          { id: 'culture', name: 'AI Culture Building',   sprint: 'Sprint 4', pct: 0 },
+        ],
+      };
+      const comps = [
+        { ok: true,  label: 'Role defined clearly' },
+        { ok: true,  label: 'Tone specified (skeptical)' },
+        { ok: true,  label: 'Domain expertise established' },
+        { ok: false, label: 'Output format instructions' },
+        { ok: false, label: 'Behavior under uncertainty' },
+        { ok: false, label: 'Escalation behavior' },
+      ];
+      const steps = [
+        { label: 'Write a system prompt',       done: true  },
+        { label: 'Chain 2 prompts in sequence', done: false },
+        { label: 'Debug a failing prompt',      done: false },
+        { label: 'Live assessment (≈ 15 min)',  done: false },
+      ];
+
+      const done     = comps.filter(c => c.ok).length;
+      const compPct  = done / comps.length;
+      const r = 28, circ = 2 * Math.PI * r;
+
+      const currentSkills   = skillsByArea[area] || [];
+      const currentAreaObj  = areas.find(a => a.id === area);
+      const currentSkillObj = currentSkills.find(s => s.id === skill) || currentSkills[0];
+
+      function switchArea(id) {
+        const s = skillsByArea[id];
+        setArea(id);
+        const active = s.find(x => x.active) || s[0];
+        if (active) setSkill(active.id);
+      }
+
+      return (
+        <div style={{ width: collapsed ? '44px' : '288px', flexShrink: 0, borderLeft: `1px solid ${C.border}`, background: C.surface, display: 'flex', flexDirection: 'column', transition: 'width 220ms cubic-bezier(0.4,0,0.2,1)', overflow: 'hidden' }}>
+
+          {/* ── Toggle button only — no label ── */}
+          <div style={{ padding: '13px 14px', borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'flex-end', flexShrink: 0 }}>
+            <button onClick={onToggle} style={{ width: '22px', height: '22px', borderRadius: '6px', border: `1px solid ${C.border}`, background: 'transparent', color: C.tMut, cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 150ms ease' }}>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <path d={collapsed ? 'M3 1 L7 5 L3 9' : 'M7 1 L3 5 L7 9'} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          </div>
+
+          <div className="scroll" style={{ flex: 1, opacity: collapsed ? 0 : 1, transition: 'opacity 150ms ease', pointerEvents: collapsed ? 'none' : 'auto' }}>
+
+            {/* ── Context strip: always visible, tap to expand nav ── */}
+            <div onClick={() => setNavOpen(o => !o)}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '11px 14px',
+                borderBottom: `1px solid ${C.border}`, cursor: 'pointer',
+                background: navOpen ? C.accentLight : 'transparent',
+                transition: 'background 150ms ease' }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: '10px', fontWeight: '600', color: C.tMut, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: '2px' }}>{currentAreaObj?.name}</div>
+                <div style={{ fontSize: '13px', fontWeight: '600', color: C.tPri, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{currentSkillObj?.name}</div>
+              </div>
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"
+                style={{ flexShrink: 0, color: C.tMut, transition: 'transform 200ms ease', transform: navOpen ? 'rotate(180deg)' : 'none' }}>
+                <path d="M2 5 L7 9 L12 5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+
+            {/* ── Nav drawer (areas + skills) ── */}
+            {navOpen && (
+              <div style={{ borderBottom: `1px solid ${C.border}`, background: C.muted }}>
+
+                {/* Areas */}
+                <div style={{ padding: '8px 8px 4px' }}>
+                  {areas.map(a => {
+                    const sel    = a.id === area;
+                    const locked = a.status === 'locked';
+                    return (
+                      <div key={a.id}
+                        onClick={() => !locked && switchArea(a.id)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '9px', padding: '7px 9px', borderRadius: '8px',
+                          background: sel ? C.surface : 'transparent',
+                          border: `1px solid ${sel ? C.border : 'transparent'}`,
+                          boxShadow: sel ? '0 1px 3px rgba(0,0,0,0.05)' : 'none',
+                          cursor: locked ? 'default' : 'pointer',
+                          opacity: locked ? 0.4 : 1,
+                          marginBottom: '2px',
+                          transition: 'all 150ms ease' }}>
+                        <a.Ill size={20}/>
+                        <span style={{ flex: 1, fontSize: '12px', fontWeight: sel ? '600' : '400',
+                          color: sel ? C.tPri : C.tSec,
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.name}</span>
+                        {sel && <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: C.accent, flexShrink: 0 }}/>}
+                        {locked && <span style={{ fontSize: '10px' }}>🔒</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Divider */}
+                <div style={{ height: '1px', background: C.border, margin: '2px 8px 6px' }}/>
+
+                {/* Skills for selected area */}
+                <div style={{ padding: '0 8px 8px' }}>
+                  {currentSkills.map(s => {
+                    const sel = skill === s.id;
+                    return (
+                      <div key={s.id}
+                        onClick={(e) => { e.stopPropagation(); setSkill(s.id); setNavOpen(false); }}
+                        style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '9px', padding: '7px 9px',
+                          borderRadius: '8px',
+                          background: sel ? C.surface : 'transparent',
+                          border: `1px solid ${sel ? C.border : 'transparent'}`,
+                          boxShadow: sel ? '0 1px 3px rgba(0,0,0,0.05)' : 'none',
+                          cursor: 'pointer',
+                          marginBottom: '2px',
+                          transition: 'all 150ms ease' }}>
+                        {sel && <div style={{ position: 'absolute', left: 0, top: '6px', bottom: '6px', width: '2.5px', background: C.accent, borderRadius: '0 2px 2px 0' }}/>}
+                        <div style={{ width: '7px', height: '7px', borderRadius: '50%', flexShrink: 0,
+                          background: s.done ? C.success : s.active ? C.accent : C.border }}/>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '12px', fontWeight: sel ? '600' : '400',
+                            color: s.done ? C.success : C.tPri,
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</div>
+                        </div>
+                        {s.done && <span style={{ fontSize: '10px', color: C.success, fontWeight: '700', flexShrink: 0 }}>✓</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* ── Curriculum — always visible ── */}
+            <div style={{ padding: '16px 14px 20px' }}>
+
+              {/* Progress ring card */}
+              <div className="card-static" style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px', marginBottom: '14px' }}>
+                <div style={{ position: 'relative', flexShrink: 0 }}>
+                  <svg width="66" height="66" viewBox="0 0 66 66">
+                    <circle cx="33" cy="33" r={r} fill="none" stroke={C.border} strokeWidth="5"/>
+                    <circle cx="33" cy="33" r={r} fill="none" stroke={C.accent} strokeWidth="5" strokeLinecap="round"
+                      strokeDasharray={circ} strokeDashoffset={circ*(1-compPct)} transform="rotate(-90 33 33)"/>
+                  </svg>
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ fontSize: '17px', fontWeight: '700', color: C.tPri, lineHeight: 1 }}>{done}</span>
+                    <span style={{ fontSize: '9px', color: C.tMut, marginTop: '1px' }}>of {comps.length}</span>
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '12px', fontWeight: '600', color: C.tPri, marginBottom: '3px' }}>{done} of {comps.length} demonstrated</div>
+                  <div style={{ fontSize: '11px', color: C.tMut, lineHeight: '1.5', marginBottom: '8px' }}>{comps.length - done} more unlock verification</div>
+                  <div style={{ width: '80px', height: '3px', background: C.border, borderRadius: '2px', overflow: 'hidden' }}>
+                    <div style={{ width: `${compPct*100}%`, height: '100%', background: C.accent, borderRadius: '2px' }}/>
+                  </div>
+                </div>
+              </div>
+
+              {/* Competencies */}
+              <div style={{ fontSize: '11px', fontWeight: '600', color: C.tSec, marginBottom: '6px' }}>Competencies</div>
+              <div className="card-static" style={{ overflow: 'hidden', marginBottom: '14px' }}>
+                {comps.map((c, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '9px', padding: '8px 12px',
+                    borderBottom: i < comps.length-1 ? `1px solid ${C.border}` : 'none',
+                    background: c.ok ? 'rgba(5,150,105,0.03)' : 'transparent' }}>
+                    <div style={{ width: '15px', height: '15px', borderRadius: '50%', flexShrink: 0,
+                      background: c.ok ? 'rgba(5,150,105,0.12)' : C.muted,
+                      border: `1.5px solid ${c.ok ? C.success : C.border}`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '7px', fontWeight: '700', color: C.success }}>{c.ok ? '✓' : ''}</div>
+                    <span style={{ fontSize: '11.5px', color: c.ok ? C.tPri : C.tMut, fontWeight: c.ok ? '500' : '400' }}>{c.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Path to Verification */}
+              <div style={{ fontSize: '11px', fontWeight: '600', color: C.tSec, marginBottom: '6px' }}>Path to Verification</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                {steps.map((s, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 10px', borderRadius: '8px',
+                    border: `1px solid ${s.done ? 'rgba(5,150,105,0.2)' : C.border}`,
+                    background: s.done ? 'rgba(5,150,105,0.04)' : C.surface }}>
+                    <div style={{ width: '17px', height: '17px', borderRadius: '50%', flexShrink: 0,
+                      background: s.done ? C.success : C.border,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '8px', fontWeight: '700', color: '#fff' }}>{s.done ? '✓' : i+1}</div>
+                    <span style={{ fontSize: '11.5px', color: s.done ? C.success : C.tSec, fontWeight: s.done ? '500' : '400',
+                      textDecoration: s.done ? 'line-through' : 'none',
+                      textDecorationColor: 'rgba(5,150,105,0.4)' }}>{s.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Skill Navigator (Learn left panel) ── */
+    function SkillNav({ selected, onSelect }) {
+      const [area, setArea] = useState('prototyping');
+
+      const areas = [
+        { id: 'prototyping', emoji: '🤖', name: 'AI Prototyping',       status: 'active', pct: 42 },
+        { id: 'data',        emoji: '📊', name: 'Data Literacy',         status: 'active', pct: 68 },
+        { id: 'strategy',    emoji: '🧭', name: 'AI Strategy',           status: 'upnext', pct: 0  },
+        { id: 'management',  emoji: '🤝', name: 'Management in AI Era',  status: 'locked', pct: 0  },
+      ];
+
+      const skillsByArea = {
+        prototyping: [
+          { id: 'prompt',   name: 'Prompt Engineering',      sprint: 'Sprint 1', done: true,   pct: 100 },
+          { id: 'workflow', name: 'AI Workflow Integration',  sprint: 'Sprint 2', active: true, pct: 15  },
+          { id: 'api',      name: 'Claude API Fundamentals',  sprint: 'Sprint 3', pct: 0 },
+          { id: 'proto',    name: 'Prototyping & Iteration',  sprint: 'Sprint 4', pct: 0 },
+        ],
+        data: [
+          { id: 'sql',    name: 'SQL & Data Querying',    sprint: 'Sprint 1', done: true,   pct: 100 },
+          { id: 'viz',    name: 'Data Visualization',     sprint: 'Sprint 2', done: true,   pct: 100 },
+          { id: 'stats',  name: 'Statistical Analysis',   sprint: 'Sprint 3', active: true, pct: 45  },
+          { id: 'python', name: 'Python for Data',        sprint: 'Sprint 4', pct: 0 },
+        ],
+        strategy: [
+          { id: 'roi',     name: 'ROI Frameworks',      sprint: 'Sprint 1', pct: 0 },
+          { id: 'risk',    name: 'AI Risk Assessment',   sprint: 'Sprint 2', pct: 0 },
+          { id: 'org',     name: 'Org Readiness',        sprint: 'Sprint 3', pct: 0 },
+          { id: 'roadmap', name: 'AI Roadmapping',       sprint: 'Sprint 4', pct: 0 },
+        ],
+        management: [
+          { id: 'change',  name: 'Change Management',       sprint: 'Sprint 1', pct: 0 },
+          { id: 'team',    name: 'Team Dynamics',            sprint: 'Sprint 2', pct: 0 },
+          { id: 'perf',    name: 'Performance in AI Era',    sprint: 'Sprint 3', pct: 0 },
+          { id: 'culture', name: 'AI Culture Building',      sprint: 'Sprint 4', pct: 0 },
+        ],
+      };
+
+      const statusDot = { active: C.success, upnext: C.accent, locked: C.tMut };
+      const currentSkills = skillsByArea[area] || [];
+      const currentArea  = areas.find(a => a.id === area);
+
+      function switchArea(id) {
+        const skills = skillsByArea[id];
+        setArea(id);
+        // auto-select the active skill (or first) in new area
+        const active = skills.find(s => s.active) || skills[0];
+        if (active) onSelect(active.id);
+      }
+
+      return (
+        <div style={{ width: '214px', flexShrink: 0, borderRight: `1px solid ${C.border}`, background: C.muted, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+
+          {/* ── Area switcher ── */}
+          <div style={{ padding: '12px 8px 10px', borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
+            <div style={{ fontSize: '10px', fontWeight: '600', color: C.tMut, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px', paddingLeft: '4px' }}>Skill Areas</div>
+            {areas.map(a => {
+              const sel = area === a.id;
+              const locked = a.status === 'locked';
+              return (
+                <div key={a.id} onClick={() => !locked && switchArea(a.id)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '7px', padding: '7px 8px', borderRadius: '8px', marginBottom: '2px',
+                    cursor: locked ? 'default' : 'pointer',
+                    background: sel ? C.surface : 'transparent',
+                    border: `1px solid ${sel ? C.border : 'transparent'}`,
+                    boxShadow: sel ? '0 1px 3px rgba(0,0,0,0.05)' : 'none',
+                    opacity: locked ? 0.4 : 1,
+                    transition: 'all 150ms ease' }}>
+                  <span style={{ fontSize: '14px', lineHeight: '1', flexShrink: 0 }}>{a.emoji}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '12px', fontWeight: sel ? '600' : '500', color: sel ? C.tPri : C.tSec,
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: '1.3' }}>{a.name}</div>
+                    {a.pct > 0 && (
+                      <div style={{ height: '2px', background: C.border, borderRadius: '1px', overflow: 'hidden', marginTop: '4px' }}>
+                        <div style={{ width: `${a.pct}%`, height: '100%', background: C.accent, borderRadius: '1px' }}/>
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ width: '6px', height: '6px', borderRadius: '50%', flexShrink: 0, background: statusDot[a.status] }}/>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* ── Skills in selected area ── */}
+          <div style={{ padding: '10px 12px 8px', borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
+            <div style={{ fontSize: '11px', fontWeight: '600', color: C.tPri }}>{currentArea?.name}</div>
+            <div style={{ fontSize: '10px', color: C.tMut, marginTop: '1px' }}>
+              {currentSkills.filter(s => s.done).length} verified · {currentSkills.length} skills
+            </div>
+          </div>
+          <div className="scroll" style={{ flex: 1, padding: '8px' }}>
+            {currentSkills.map(s => {
+              const sel = selected === s.id;
+              return (
+                <div key={s.id} onClick={() => onSelect(s.id)}
+                  style={{ padding: '9px 10px', borderRadius: '8px', marginBottom: '3px', cursor: 'pointer',
+                    background: sel ? C.surface : 'transparent',
+                    border: `1px solid ${sel ? C.border : 'transparent'}`,
+                    boxShadow: sel ? '0 1px 3px rgba(0,0,0,0.05)' : 'none',
+                    transition: 'all 150ms ease' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '2px' }}>
+                    <div style={{ width: '6px', height: '6px', borderRadius: '50%', flexShrink: 0,
+                      background: s.done ? C.success : s.active ? C.accent : C.border }}/>
+                    <div style={{ fontSize: '12px', fontWeight: sel ? '600' : '500',
+                      color: s.done ? C.success : sel ? C.tPri : C.tSec, lineHeight: '1.3', flex: 1,
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</div>
+                  </div>
+                  <div style={{ fontSize: '10px', color: C.tMut, marginLeft: '13px' }}>
+                    {s.sprint}{s.done ? ' · ✓ Verified' : s.active ? ' · Active' : ' · Up next'}
+                  </div>
+                  {s.pct > 0 && !s.done && (
+                    <div style={{ marginLeft: '13px', marginTop: '4px', height: '2px', background: C.border, borderRadius: '1px', overflow: 'hidden' }}>
+                      <div style={{ width: `${s.pct}%`, height: '100%', background: C.accent, borderRadius: '1px' }}/>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Skill Area Illustrations ── */
+    const IllAIProto = ({ size = 44 }) => (
+      <svg width={size} height={size} viewBox="0 0 36 36" fill="none">
+        <circle cx="18" cy="18" r="16" fill={C.accentLight}/>
+        {/* bottom-left block */}
+        <rect x="9" y="20" width="9" height="8" rx="2" fill={C.accent} opacity="0.7"/>
+        {/* bottom-right block */}
+        <rect x="19" y="20" width="9" height="8" rx="2" fill={C.warm} opacity="0.8"/>
+        {/* top block — sitting on top, centered, slightly overlapping */}
+        <rect x="13.5" y="12" width="9" height="8" rx="2" fill={C.accent}/>
+        {/* connector dots showing join */}
+        <circle cx="18" cy="20" r="1.2" fill="white" opacity="0.9"/>
+      </svg>
+    );
+
+    const IllData = ({ size = 44 }) => (
+      <svg width={size} height={size} viewBox="0 0 36 36" fill="none">
+        <circle cx="18" cy="18" r="16" fill={C.accentLight}/>
+        <rect x="9" y="28" width="18" height="1.5" rx="0.75" fill={C.border}/>
+        <rect x="9" y="22" width="5" height="7" rx="1.5" fill={C.accent} opacity="0.4"/>
+        <rect x="16" y="17" width="5" height="12" rx="1.5" fill={C.accent}/>
+        <rect x="23" y="12" width="5" height="17" rx="1.5" fill={C.warm}/>
+      </svg>
+    );
+
+    const IllStrategy = ({ size = 44 }) => (
+      <svg width={size} height={size} viewBox="0 0 36 36" fill="none">
+        <circle cx="18" cy="18" r="16" fill={C.accentLight}/>
+        <circle cx="18" cy="18" r="10" fill="white" stroke={C.accent} strokeWidth="1.5"/>
+        <path d="M18 10 L20 18 L18 26 L16 18 Z" fill={C.accent} opacity="0.3"/>
+        <path d="M10 18 L18 16 L26 18 L18 20 Z" fill={C.warm}/>
+        <circle cx="18" cy="18" r="2" fill={C.accent}/>
+      </svg>
+    );
+
+    const IllManagement = ({ size = 44 }) => (
+      <svg width={size} height={size} viewBox="0 0 36 36" fill="none">
+        <circle cx="18" cy="18" r="16" fill={C.accentLight}/>
+        <circle cx="13" cy="14" r="3.5" fill={C.accent} opacity="0.8"/>
+        <circle cx="23" cy="14" r="3.5" fill={C.accent} opacity="0.5"/>
+        <path d="M7 27 C7 22.5 9.8 20 13 20 L23 20 C26.2 20 29 22.5 29 27Z" fill={C.accent} opacity="0.55"/>
+        <line x1="13" y1="20" x2="23" y2="20" stroke={C.warm} strokeWidth="2.5" strokeLinecap="round"/>
+      </svg>
+    );
+
+    /* ── Skill Area Card (used in My Plan) ── */
+    /* ── Active skill card — rich learner data ── */
+    function ActiveSkillCard({ area, onAction }) {
+      return (
+        <div style={{ background: C.surface, border: `1px solid rgba(28,25,23,0.08)`, borderRadius: '14px',
+          boxShadow: '0 1px 4px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div style={{ padding: '20px 22px 0' }}>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '14px' }}>
+              <area.Icon/>
+              <span style={{ fontSize: '11px', fontWeight: '600', color: C.success, background: 'rgba(5,150,105,0.08)', border: '1px solid rgba(5,150,105,0.2)', borderRadius: '6px', padding: '3px 8px' }}>Active</span>
+            </div>
+            <div style={{ fontSize: '19px', fontWeight: '700', color: C.tPri, letterSpacing: '-0.025em', marginBottom: '4px', lineHeight: '1.2' }}>{area.title}</div>
+            <div style={{ fontSize: '12.5px', color: C.tMut, lineHeight: '1.55', marginBottom: '16px' }}>{area.desc}</div>
+
+            {/* What we know */}
+            <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: '14px', marginBottom: '14px' }}>
+              <div style={{ fontSize: '10px', fontWeight: '600', color: C.tMut, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '10px' }}>What we know</div>
+              {/* MCP signal */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
+                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#27C93F', animation: 'mcpPulse 2s ease-in-out infinite', flexShrink: 0 }}/>
+                <span style={{ fontSize: '12px', color: C.tSec }}>{area.mcp.sessions} MCP sessions · {area.mcp.signal}</span>
+              </div>
+              {/* Sub-skill signals */}
+              {area.subskills.map((s, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <div style={{ width: '14px', height: '14px', borderRadius: '50%', flexShrink: 0,
+                    background: s.done ? C.accent : 'transparent',
+                    border: `1.5px solid ${s.done ? C.accent : s.active ? C.accent : C.border}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '7px', fontWeight: '800', color: '#fff' }}>{s.done ? '✓' : ''}</div>
+                  <span style={{ fontSize: '12px', color: s.done ? C.tPri : s.active ? C.tSec : C.tMut, fontWeight: s.done ? '500' : '400' }}>{s.label}</span>
+                  {s.done && <span style={{ fontSize: '10px', color: C.success, marginLeft: 'auto' }}>verified</span>}
+                  {s.active && <span style={{ fontSize: '10px', color: C.accent, marginLeft: 'auto' }}>in progress</span>}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Progress footer */}
+          <div style={{ marginTop: 'auto', padding: '12px 22px 18px', borderTop: `1px solid ${C.border}`, background: 'rgba(28,25,23,0.015)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '7px' }}>
+              <span style={{ fontSize: '11px', color: C.tMut }}>{area.verified} of {area.skills} skills verified</span>
+              <span style={{ fontSize: '11px', fontWeight: '600', color: C.accent }}>{area.pct}%</span>
+            </div>
+            <div style={{ height: '3px', background: C.border, borderRadius: '2px', overflow: 'hidden', marginBottom: '14px' }}>
+              <div style={{ width: `${area.pct}%`, height: '100%', background: C.accent, borderRadius: '2px' }}/>
+            </div>
+            <button className="btn btn-primary" onClick={onAction} style={{ padding: '8px 18px', fontSize: '13px' }}>Continue →</button>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Upcoming skill card — admin goal + Workday context ── */
+    function UpcomingSkillCard({ area }) {
+      const isLocked = area.status === 'locked';
+      return (
+        <div style={{ background: isLocked ? C.muted : C.surface, border: `1px solid ${C.border}`, borderRadius: '14px',
+          opacity: isLocked ? 0.7 : 1, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: '20px 22px' }}>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <area.Icon/>
+              <span style={{ fontSize: '11px', fontWeight: '500', color: C.tMut, background: C.muted, border: `1px solid ${C.border}`, borderRadius: '6px', padding: '3px 8px' }}>
+                {isLocked ? 'Locked' : 'Up next'}
+              </span>
+            </div>
+            <div style={{ fontSize: '18px', fontWeight: '600', color: isLocked ? C.tSec : C.tPri, letterSpacing: '-0.02em', marginBottom: '4px', lineHeight: '1.2' }}>{area.title}</div>
+            <div style={{ fontSize: '12.5px', color: C.tMut, lineHeight: '1.55', marginBottom: '16px' }}>{area.desc}</div>
+
+            {/* Admin goal */}
+            <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: '14px', marginBottom: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                <svg width="11" height="11" viewBox="0 0 18 18" fill="none">
+                  <circle cx="9" cy="5.5" r="2.8" fill={C.tMut} opacity="0.5"/>
+                  <path d="M2 17 Q4 11.5 9 11.5 Q14 11.5 16 17" stroke={C.tMut} strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.5"/>
+                </svg>
+                <span style={{ fontSize: '10px', fontWeight: '600', color: C.tMut, letterSpacing: '0.07em', textTransform: 'uppercase' }}>{area.assignedBy}</span>
+              </div>
+              <div style={{ fontSize: '12.5px', color: C.tSec, lineHeight: '1.55', marginBottom: '6px' }}>
+                <strong style={{ color: C.tPri }}>Goal:</strong> {area.goal} · {area.deadline}
+              </div>
+              {area.unlockAfter && (
+                <div style={{ fontSize: '11.5px', color: C.tMut }}>Unlocks after {area.unlockAfter}</div>
+              )}
+            </div>
+
+            {/* Workday signal */}
+            {area.workday && (
+              <div style={{ background: C.canvas, borderRadius: '8px', border: `1px solid ${C.border}`, padding: '9px 12px' }}>
+                <div style={{ fontSize: '10px', fontWeight: '600', color: C.tMut, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: '4px' }}>Workday</div>
+                <div style={{ fontSize: '12px', color: C.tSec, fontStyle: 'italic', lineHeight: '1.55' }}>"{area.workday}"</div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Vignette 0: My Plan ── */
+    function VignetteMyPlan({ onStart }) {
+      const areas = [
+        {
+          Icon: IllAIProto, title: 'AI Prototyping', status: 'active', pct: 42,
+          desc: 'Build and iterate with AI tools — prompting, workflows, and APIs.',
+          skills: 4, verified: 1,
+          mcp: { sessions: 12, signal: '3 behavioral patterns detected' },
+          subskills: [
+            { label: 'Prompt Engineering',     done: true  },
+            { label: 'AI Workflow Integration', active: true },
+            { label: 'Claude API Fundamentals' },
+            { label: 'Prototyping & Iteration' },
+          ],
+        },
+        {
+          Icon: IllData, title: 'Data Literacy', status: 'active', pct: 68,
+          desc: 'Read, analyze, and communicate with data confidently.',
+          skills: 4, verified: 2,
+          mcp: { sessions: 8, signal: 'SQL + visualization sessions logged' },
+          subskills: [
+            { label: 'SQL & Data Querying',  done: true  },
+            { label: 'Data Visualization',    done: true  },
+            { label: 'Statistical Analysis',  active: true },
+            { label: 'Python for Data' },
+          ],
+        },
+        {
+          Icon: IllStrategy, title: 'AI Strategy', status: 'upnext', pct: 0,
+          desc: 'Evaluate AI investments, risks, and organizational readiness.',
+          skills: 4, verified: 0,
+          assignedBy: 'Priya Sharma · Meridian AI Program',
+          goal: 'All team leads verified', deadline: 'Q4 2026',
+          unlockAfter: 'AI Prototyping',
+          workday: 'Strategic AI evaluation required for Senior Analyst role progression — flagged in Q1 review.',
+        },
+        {
+          Icon: IllManagement, title: 'Management in AI Era', status: 'locked', pct: 0,
+          desc: 'Lead teams through change as AI reshapes how work gets done.',
+          skills: 4, verified: 0,
+          assignedBy: 'Meridian Financial · L&D',
+          goal: 'Leadership team ready', deadline: 'Q1 2027',
+          unlockAfter: 'AI Strategy',
+          workday: 'Change management skills identified as a growth gap in your last 360 review.',
+        },
+      ];
+
+      return (
+        <div className="scroll vignette" style={{ flex: 1, background: C.canvas, padding: '44px 52px' }}>
+          {/* Header */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '48px' }}>
+            <div>
+              <h1 style={{ fontSize: '44px', fontWeight: '700', letterSpacing: '-0.035em', color: C.tPri, lineHeight: '1.05', marginBottom: '12px' }}>
+                Hi Marcus.
+              </h1>
+              <div style={{ fontSize: '16px', color: C.tMut, marginBottom: '20px', lineHeight: '1.5' }}>
+                Great progress last week — you're on a roll.
+              </div>
+              {/* Stats — plain text, no color */}
+              <div style={{ display: 'flex', gap: '20px' }}>
+                {[
+                  { label: '4-day streak' },
+                  { label: '1 skill verified last week' },
+                  { label: '2 areas active' },
+                ].map((stat, i) => (
+                  <span key={i} style={{ fontSize: '13px', color: C.tMut, borderLeft: i > 0 ? `1px solid rgba(28,25,23,0.12)` : 'none', paddingLeft: i > 0 ? '20px' : 0 }}>
+                    {stat.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <button className="btn btn-primary" onClick={onStart} style={{ padding: '11px 24px', fontSize: '14px', flexShrink: 0, marginTop: '8px' }}>
+              Continue →
+            </button>
+          </div>
+
+          {/* In-progress skill areas */}
+          <div style={{ fontSize: '11px', fontWeight: '600', color: C.tMut, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '14px' }}>In Progress</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '32px' }}>
+            {areas.filter(a => a.status === 'active').map((area, i) => (
+              <ActiveSkillCard key={i} area={area} onAction={onStart}/>
+            ))}
+          </div>
+
+          {/* Upcoming skill areas */}
+          <div style={{ fontSize: '11px', fontWeight: '600', color: C.tMut, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '14px' }}>Coming Up</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            {areas.filter(a => a.status !== 'active').map((area, i) => (
+              <UpcomingSkillCard key={i} area={area}/>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Video Tutorial placeholder ── */
+    function VideoTutorial({ playing, onToggle }) {
+      return (
+        <div onClick={onToggle} style={{ borderRadius: '12px', overflow: 'hidden', border: `1px solid rgba(28,25,23,0.1)`, cursor: 'pointer', position: 'relative', background: '#0D1117', aspectRatio: '16/9' }}>
+          {/* Fake Cursor IDE bg */}
+          <div style={{ position: 'absolute', inset: 0 }}>
+            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '44px', background: '#161B22', borderRight: '1px solid rgba(255,255,255,0.05)' }}/>
+            <div style={{ position: 'absolute', left: '52px', top: '16px', right: '16px' }}>
+              <div style={{ fontSize: '9px', color: '#6E7681', marginBottom: '10px', fontFamily: 'monospace', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Rules for AI</div>
+              {[88, 70, 92, 55].map((w, i) => (
+                <div key={i} style={{ height: '7px', width: `${w}%`, background: i === 0 ? 'rgba(91,95,239,0.45)' : 'rgba(255,255,255,0.08)', borderRadius: '3px', marginBottom: '8px' }}/>
+              ))}
+              <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', margin: '14px 0' }}/>
+              {[65, 80].map((w, i) => (
+                <div key={i} style={{ height: '7px', width: `${w}%`, background: 'rgba(255,255,255,0.06)', borderRadius: '3px', marginBottom: '8px' }}/>
+              ))}
+            </div>
+          </div>
+          {/* Overlay */}
+          <div style={{ position: 'absolute', inset: 0, background: playing ? 'rgba(0,0,0,0.25)' : 'rgba(0,0,0,0.55)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', transition: 'background 200ms ease' }}>
+            <div style={{ width: '46px', height: '46px', borderRadius: '50%', background: 'rgba(255,255,255,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: playing ? '12px' : '0', boxShadow: '0 2px 12px rgba(0,0,0,0.3)', transition: 'all 200ms ease' }}>
+              {playing
+                ? <div style={{ display: 'flex', gap: '4px' }}><div style={{ width: '3px', height: '13px', background: '#1C1917', borderRadius: '2px' }}/><div style={{ width: '3px', height: '13px', background: '#1C1917', borderRadius: '2px' }}/></div>
+                : <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3.5 2.5 L11.5 7 L3.5 11.5 Z" fill="#1C1917"/></svg>
+              }
+            </div>
+            {playing && (
+              <div style={{ width: '110px', height: '2px', background: 'rgba(255,255,255,0.2)', borderRadius: '1px', overflow: 'hidden' }}>
+                <div style={{ width: '38%', height: '100%', background: C.accent, borderRadius: '1px' }}/>
+              </div>
+            )}
+          </div>
+          {/* Caption bar */}
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px 14px 12px', background: 'linear-gradient(transparent, rgba(0,0,0,0.65))' }}>
+            <div style={{ fontSize: '11px', fontWeight: '600', color: 'rgba(255,255,255,0.9)', marginBottom: '2px' }}>Watch: Setting system prompts in Cursor</div>
+            <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)' }}>2 min · Step-by-step tutorial</div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Shared sparkle icon ── */
+    const Sparkle = () => (
+      <svg width="18" height="18" viewBox="0 0 40 40" fill="none">
+        <path d="M16 2 C16 10 10 16 2 16 C10 16 16 22 16 30 C16 22 22 16 30 16 C22 16 16 10 16 2Z" fill={C.accent}/>
+        <path d="M32 6 C32 9 29.5 11.5 27 11.5 C29.5 11.5 32 14 32 17 C32 14 34.5 11.5 37 11.5 C34.5 11.5 32 9 32 6Z" fill={C.accent}/>
+      </svg>
+    );
+
+    /* ── Fake Cursor IDE ── */
+    function CursorIDE({ step }) {
+      const BG='#0D1117', SB='#161B22', BR='rgba(255,255,255,0.07)', TXT='rgba(255,255,255,0.82)', MUT='rgba(255,255,255,0.3)';
+      const BLUE='#58A6FF', GREEN='#3FB950', ORANGE='#FFA657', PURPLE='#D2A8FF';
+      const titles = [
+        'meridian-analysis / main.py',
+        'Settings — Rules for AI',
+        'Settings — Rules for AI',
+        'meridian-analysis / Chat',
+        'Comparison: With vs Without Rules',
+      ];
+
+      const FileTree = () => (
+        <div style={{width:'168px',flexShrink:0,background:SB,borderRight:`1px solid ${BR}`,fontSize:'11.5px',fontFamily:"'SF Mono','Fira Code',monospace"}}>
+          <div style={{padding:'8px 12px 6px',fontSize:'10px',fontWeight:'600',letterSpacing:'0.08em',color:'rgba(255,255,255,0.35)',textTransform:'uppercase'}}>Explorer</div>
+          <div style={{padding:'3px 12px',color:'rgba(255,255,255,0.45)',fontSize:'11px'}}>▾ meridian-analysis</div>
+          {[{n:'main.py',a:true},{n:'analysis.py'},{n:'q3_financials.csv'},{n:'utils.py'},{n:'requirements.txt'}].map((f,i)=>(
+            <div key={i} style={{padding:'3px 12px 3px 22px',cursor:'pointer',background:f.a?'rgba(255,255,255,0.08)':'transparent',color:f.a?TXT:MUT}}>{f.n}</div>
+          ))}
+        </div>
+      );
+
+      const PROMPT = `You are a senior quantitative analyst with 15 years of experience reviewing financial models. You approach every model with healthy skepticism.\n\nWhen data is incomplete or ambiguous, state your assumption before proceeding.\n\nAlways structure your response: risk verdict (Low / Medium / High) → key findings → specific concerns.`;
+
+      const Row = ({tokens=[],pl=0}) => (
+        <div style={{display:'flex',flexWrap:'wrap',paddingLeft:`${pl*14}px`,marginBottom:'1px',lineHeight:'1.75'}}>
+          {tokens.map((t,i)=><span key={i} style={{fontSize:'12px',fontFamily:"'SF Mono','Fira Code',monospace",color:t[1]||TXT,whiteSpace:'pre'}}>{t[0]}</span>)}
+        </div>
+      );
+
+      const screen0 = (
+        <div style={{flex:1,display:'flex',overflow:'hidden'}}>
+          <FileTree/>
+          <div style={{flex:1,overflow:'auto'}}>
+            <div style={{display:'flex',background:'rgba(0,0,0,0.3)',borderBottom:`1px solid ${BR}`,padding:'0 4px'}}>
+              <div style={{padding:'6px 16px',fontSize:'11.5px',color:TXT,borderBottom:`1px solid ${BLUE}`,fontFamily:"'SF Mono','Fira Code',monospace"}}>main.py</div>
+            </div>
+            <div style={{padding:'18px 22px'}}>
+              <Row tokens={[['import ',PURPLE],['pandas ',TXT],['as',PURPLE],[' pd',BLUE]]}/>
+              <Row tokens={[['import ',PURPLE],['anthropic',BLUE]]}/>
+              <Row tokens={[['']]}/>
+              <Row tokens={[['# Load Q3 financial data',GREEN]]}/>
+              <Row tokens={[['df ',TXT],['= ',ORANGE],['pd',TXT],['.',TXT],['read_csv(',TXT],['"q3_financials.csv"',ORANGE],[')',TXT]]}/>
+              <Row tokens={[['']]}/>
+              <Row tokens={[['client ',TXT],['= ',ORANGE],['anthropic',BLUE],['.',TXT],['Anthropic()',TXT]]}/>
+              <Row tokens={[['']]}/>
+              <Row tokens={[['def ',PURPLE],['analyze_model(',TXT],['data: ',BLUE],['pd.DataFrame',TXT],[') -> ',PURPLE],['str',BLUE],[':',TXT]]}/>
+              <Row pl={1} tokens={[['"""Analyze financial model for anomalies."""',GREEN]]}/>
+              <Row pl={1} tokens={[['response ',TXT],['= ',ORANGE],['client',TXT],['.',TXT],['messages',TXT],['.',TXT],['create(',TXT]]}/>
+              <Row pl={2} tokens={[['model',BLUE],['=',ORANGE],['"claude-opus-4-5"',ORANGE],[',',TXT]]}/>
+              <Row pl={2} tokens={[['max_tokens',BLUE],['=',ORANGE],['1024',PURPLE],[',',TXT]]}/>
+              <Row pl={2} tokens={[['messages',BLUE],['=[{',TXT],['"role"',ORANGE],[':',TXT],['"user"',ORANGE],[', ',TXT],['"content"',ORANGE],[': query}]',TXT]]}/>
+              <Row pl={1} tokens={[[')',TXT]]}/>
+              <Row pl={1} tokens={[['return ',PURPLE],['response',TXT],['.',TXT],['content[',TXT],['0',PURPLE],['].text',TXT]]}/>
+              <Row tokens={[['']]}/>
+              <div style={{display:'inline-flex',alignItems:'center'}}>
+                <span style={{fontSize:'12px',fontFamily:"'SF Mono','Fira Code',monospace",color:TXT}}>result = analyze_model(df)</span>
+                <span style={{display:'inline-block',width:'2px',height:'16px',background:TXT,marginLeft:'1px',animation:'blink 0.9s step-end infinite'}}/>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+
+      const SettingsTabs = () => (
+        <div style={{display:'flex',borderBottom:`1px solid ${BR}`,paddingLeft:'16px',background:'rgba(0,0,0,0.2)',flexShrink:0}}>
+          {['General','Editor','AI','Rules for AI','Models'].map(t=>(
+            <div key={t} style={{padding:'9px 16px',fontSize:'12px',cursor:'pointer',fontFamily:'Inter,sans-serif',
+              color:t==='Rules for AI'?TXT:MUT,
+              borderBottom:t==='Rules for AI'?`2px solid ${BLUE}`:'2px solid transparent',
+              marginBottom:'-1px'}}>{t}</div>
+          ))}
+        </div>
+      );
+
+      const screen1 = (
+        <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
+          <SettingsTabs/>
+          <div style={{flex:1,padding:'28px 32px',overflow:'auto'}}>
+            <div style={{maxWidth:'540px'}}>
+              <div style={{fontSize:'16px',fontWeight:'600',color:TXT,marginBottom:'4px',fontFamily:'Inter,sans-serif'}}>Rules for AI</div>
+              <div style={{fontSize:'12px',color:MUT,marginBottom:'20px',lineHeight:'1.6',fontFamily:'Inter,sans-serif'}}>Rules are injected as a system prompt before every AI conversation in this project.</div>
+              <div style={{background:'rgba(255,255,255,0.03)',border:`1px solid ${BR}`,borderRadius:'8px',padding:'14px 16px',minHeight:'130px',display:'flex',alignItems:'flex-start'}}>
+                <span style={{fontSize:'12px',color:'rgba(255,255,255,0.2)',fontStyle:'italic',fontFamily:'Inter,sans-serif'}}>No rules configured. AI will use default behavior.</span>
+              </div>
+              <div style={{marginTop:'14px'}}>
+                <div style={{display:'inline-block',padding:'8px 18px',background:'rgba(255,255,255,0.06)',border:`1px solid ${BR}`,borderRadius:'6px',fontSize:'12px',color:MUT,cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Save</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+
+      const screen2 = (
+        <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
+          <SettingsTabs/>
+          <div style={{flex:1,padding:'28px 32px',overflow:'auto'}}>
+            <div style={{maxWidth:'540px'}}>
+              <div style={{fontSize:'16px',fontWeight:'600',color:TXT,marginBottom:'4px',fontFamily:'Inter,sans-serif'}}>Rules for AI</div>
+              <div style={{fontSize:'12px',color:MUT,marginBottom:'20px',lineHeight:'1.6',fontFamily:'Inter,sans-serif'}}>Rules are injected as a system prompt before every AI conversation in this project.</div>
+              <div style={{background:'rgba(255,255,255,0.03)',border:`1px solid rgba(91,95,239,0.55)`,borderRadius:'8px',padding:'14px 16px',minHeight:'130px',fontSize:'12px',color:TXT,lineHeight:'1.75',whiteSpace:'pre-wrap',fontFamily:"'SF Mono','Fira Code',monospace"}}>
+                {PROMPT}
+              </div>
+              <div style={{marginTop:'10px',display:'flex',alignItems:'center',gap:'10px'}}>
+                <div style={{padding:'8px 18px',background:BLUE,borderRadius:'6px',fontSize:'12px',fontWeight:'600',color:'#fff',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Saved ✓</div>
+                <span style={{fontSize:'11px',color:GREEN,fontFamily:'Inter,sans-serif'}}>● Rules active — applied to all AI chats</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+
+      const screen3 = (
+        <div style={{flex:1,display:'flex',flexDirection:'column',background:'#080D14',overflow:'hidden'}}>
+          <div style={{padding:'10px 16px',borderBottom:`1px solid ${BR}`,display:'flex',alignItems:'center',gap:'9px',background:SB,flexShrink:0}}>
+            <div style={{width:'18px',height:'18px',borderRadius:'50%',background:'rgba(91,95,239,0.8)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'9px',color:'white',fontWeight:'700'}}>C</div>
+            <span style={{fontSize:'12px',color:TXT,fontWeight:'500',fontFamily:'Inter,sans-serif'}}>AI Chat</span>
+            <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:'5px'}}>
+              <div style={{width:'5px',height:'5px',borderRadius:'50%',background:GREEN}}/>
+              <span style={{fontSize:'10px',color:GREEN,fontFamily:'Inter,sans-serif'}}>Rules active</span>
+            </div>
+          </div>
+          <div style={{flex:1,padding:'18px',overflow:'auto',display:'flex',flexDirection:'column',gap:'14px'}}>
+            <div style={{display:'flex',justifyContent:'flex-end'}}>
+              <div style={{background:'rgba(91,95,239,0.22)',border:`1px solid rgba(91,95,239,0.3)`,borderRadius:'12px 12px 3px 12px',padding:'9px 14px',maxWidth:'76%'}}>
+                <span style={{fontSize:'12px',color:TXT,fontFamily:'Inter,sans-serif'}}>Review Q3 financials for Meridian — flag anomalies</span>
+              </div>
+            </div>
+            <div style={{display:'flex',gap:'9px',alignItems:'flex-start'}}>
+              <div style={{width:'22px',height:'22px',borderRadius:'50%',background:'rgba(91,95,239,0.7)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'10px',color:'white',fontWeight:'700',flexShrink:0}}>C</div>
+              <div style={{background:'rgba(255,255,255,0.04)',border:`1px solid ${BR}`,borderRadius:'3px 12px 12px 12px',padding:'12px 14px',flex:1}}>
+                <div style={{fontSize:'12px',fontWeight:'700',color:ORANGE,marginBottom:'9px',fontFamily:'Inter,sans-serif'}}>⚠ Risk Verdict: MEDIUM</div>
+                <div style={{fontSize:'12px',color:TXT,lineHeight:'1.75',marginBottom:'10px',fontFamily:'Inter,sans-serif'}}><span style={{color:BLUE,fontWeight:'600'}}>Key findings: </span>Revenue-to-expense ratio shows 14% deviation from Q2 baseline. Three line items flagged for immediate review.</div>
+                <div style={{fontSize:'12px',fontWeight:'600',color:ORANGE,marginBottom:'7px',fontFamily:'Inter,sans-serif'}}>Specific concerns:</div>
+                {['COGS +18% QoQ — no corresponding revenue increase','AR aging: 3 invoices >90 days, $284K outstanding','OpEx line 4: $42K coded to wrong cost center'].map((c,i)=>(
+                  <div key={i} style={{display:'flex',gap:'7px',marginBottom:'5px'}}>
+                    <span style={{color:ORANGE,fontWeight:'700',fontSize:'11px',flexShrink:0}}>→</span>
+                    <span style={{fontSize:'11.5px',color:MUT,lineHeight:'1.6',fontFamily:'Inter,sans-serif'}}>{c}</span>
+                  </div>
+                ))}
+                <div style={{marginTop:'10px',padding:'8px 10px',background:'rgba(255,255,255,0.04)',borderRadius:'5px',borderLeft:'2px solid rgba(255,255,255,0.15)'}}>
+                  <span style={{fontSize:'10.5px',color:'rgba(255,255,255,0.32)',fontStyle:'italic',fontFamily:'Inter,sans-serif'}}>Assumption: Q2 2026 used as baseline per prior convention.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style={{padding:'10px 16px',borderTop:`1px solid ${BR}`,background:SB,flexShrink:0}}>
+            <div style={{background:'rgba(255,255,255,0.05)',border:`1px solid ${BR}`,borderRadius:'7px',padding:'9px 13px',fontSize:'12px',color:MUT,fontFamily:'Inter,sans-serif'}}>Ask a follow-up...</div>
+          </div>
+        </div>
+      );
+
+      const screen4 = (
+        <div style={{flex:1,display:'flex',overflow:'hidden'}}>
+          <div style={{flex:1,display:'flex',flexDirection:'column',borderRight:`1px solid ${BR}`}}>
+            <div style={{padding:'8px 14px',background:'rgba(5,150,105,0.1)',borderBottom:`1px solid rgba(5,150,105,0.2)`,fontSize:'10.5px',fontWeight:'600',color:GREEN,fontFamily:'Inter,sans-serif'}}>
+              ● With System Prompt Rules
+            </div>
+            <div style={{flex:1,padding:'14px',overflow:'auto'}}>
+              <div style={{padding:'10px 12px',background:'rgba(255,140,0,0.07)',border:`1px solid rgba(255,140,0,0.18)`,borderRadius:'7px',marginBottom:'10px'}}>
+                <div style={{fontSize:'11px',color:ORANGE,fontWeight:'700',marginBottom:'4px',fontFamily:'Inter,sans-serif'}}>⚠ Risk Verdict: MEDIUM</div>
+                <div style={{fontSize:'11px',color:MUT,lineHeight:'1.7',fontFamily:'Inter,sans-serif'}}>Revenue-to-expense 14% deviation from Q2 baseline. COGS +18% QoQ, AR aging >90d on $284K, OpEx misallocation $42K.</div>
+              </div>
+              <div style={{fontSize:'11px',color:MUT,lineHeight:'1.75',fontFamily:'Inter,sans-serif'}}>Assumption stated up front. Every uncertainty flagged. Structured output — verdict first, findings second, line items third.</div>
+            </div>
+          </div>
+          <div style={{flex:1,display:'flex',flexDirection:'column'}}>
+            <div style={{padding:'8px 14px',background:'rgba(255,255,255,0.03)',borderBottom:`1px solid ${BR}`,fontSize:'10.5px',fontWeight:'600',color:MUT,fontFamily:'Inter,sans-serif'}}>
+              ○ Without Rules (default behavior)
+            </div>
+            <div style={{flex:1,padding:'14px',overflow:'auto'}}>
+              <div style={{fontSize:'11px',color:MUT,lineHeight:'1.75',marginBottom:'12px',fontFamily:'Inter,sans-serif'}}>
+                I've reviewed the Q3 financials you mentioned. There appear to be some potential anomalies worth looking into. Costs seem higher compared to previous quarters, and there may be some accounts receivable that are overdue.
+              </div>
+              <div style={{fontSize:'11px',color:'rgba(255,255,255,0.18)',lineHeight:'1.75',fontStyle:'italic',fontFamily:'Inter,sans-serif'}}>
+                Let me know if you'd like me to dig deeper into any specific area. I can help analyze the numbers further if you share more context about what you're looking for.
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+
+      const screens = [screen0, screen1, screen2, screen3, screen4];
+
+      return (
+        <div style={{position:'absolute',inset:0,background:BG,display:'flex',flexDirection:'column'}}>
+          {/* Title bar */}
+          <div style={{height:'38px',background:SB,borderBottom:`1px solid ${BR}`,display:'flex',alignItems:'center',padding:'0 16px',flexShrink:0,gap:'12px'}}>
+            <div style={{display:'flex',gap:'6px'}}>
+              {['#FF5F56','#FFBD2E','#27C93F'].map(c=>(
+                <div key={c} style={{width:'12px',height:'12px',borderRadius:'50%',background:c}}/>
+              ))}
+            </div>
+            <div style={{flex:1,textAlign:'center',fontSize:'12px',color:MUT,fontFamily:'Inter,sans-serif'}}>{titles[step]||titles[0]}</div>
+            <div style={{width:'44px'}}/>
+          </div>
+          {/* Body */}
+          <div style={{flex:1,display:'flex',overflow:'hidden'}}>
+            {/* Activity bar */}
+            <div style={{width:'44px',background:SB,borderRight:`1px solid ${BR}`,flexShrink:0,display:'flex',flexDirection:'column',alignItems:'center',paddingTop:'10px',gap:'7px'}}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <rect x="5" y="3" width="9" height="13" rx="1.5" fill={step<3?'rgba(255,255,255,0.55)':'rgba(255,255,255,0.2)'}/>
+                <rect x="10" y="3" width="4" height="4" rx="0.5" fill="rgba(0,0,0,0.25)"/>
+              </svg>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <circle cx="11" cy="11" r="5" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5"/>
+                <line x1="15" y1="15" x2="19" y2="19" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="4" width="18" height="13" rx="2" fill={step>=3?'rgba(91,95,239,0.65)':'rgba(255,255,255,0.15)'}/>
+                <path d="M7 17 L7 21 L13 17" fill={step>=3?'rgba(91,95,239,0.65)':'rgba(255,255,255,0.15)'}/>
+              </svg>
+              <div style={{marginTop:'auto',marginBottom:'10px'}}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="3" stroke={step===1||step===2?'rgba(255,255,255,0.7)':'rgba(255,255,255,0.22)'} strokeWidth="1.5"/>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+                    stroke={step===1||step===2?'rgba(255,255,255,0.7)':'rgba(255,255,255,0.22)'} strokeWidth="1.5" fill="none"/>
+                </svg>
+              </div>
+            </div>
+            {screens[step]||screens[0]}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Coursera MCP Widget ── */
+    function CourseraWidget({ step, onAdvance, onComplete }) {
+      const [minimized, setMinimized] = React.useState(false);
+      const [tipVisible, setTipVisible] = React.useState(false);
+      const [showVideo, setShowVideo] = React.useState(false);
+      const [videoPlaying, setVideoPlaying] = React.useState(false);
+
+      React.useEffect(() => {
+        setTipVisible(false);
+        setShowVideo(false);
+        setVideoPlaying(false);
+        const t = setTimeout(() => setTipVisible(true), 1400);
+        return () => clearTimeout(t);
+      }, [step]);
+
+      const WIDGET_STEPS = [
+        { label: 'Open Cursor', tip: 'Open Cursor and create a new project — or use your existing Meridian analysis folder.' },
+        { label: 'Go to Settings → Rules for AI', tip: 'Press ⌘+Shift+J to open Settings, then click the "Rules for AI" tab. You\'ll see an empty panel.', hasVideo: true },
+        { label: 'Paste your system prompt', tip: 'Paste the refined prompt from your feedback session. Click Save — it persists across all AI chats.', hasVideo: true },
+        { label: 'Ask about Q3 financials', tip: 'Open a new AI chat and send exactly: "Review Q3 financials for Meridian — flag anomalies"' },
+        { label: 'Compare: with vs without rules', tip: 'Clear your Rules for AI, run the same query, and observe how the response quality drops without the structured rules.' },
+      ];
+      const cur = WIDGET_STEPS[step] || WIDGET_STEPS[0];
+      const isLast = step >= WIDGET_STEPS.length - 1;
+
+      const CoursC = () => (
+        <svg width="18" height="18" viewBox="0 0 100 100" style={{flexShrink:0}}>
+          <circle cx="50" cy="50" r="50" fill="#2255D6"/>
+          <path fill="white" d="M86.4,71 A42,42 0 1,1 86.4,29 L79,29 L79,37.5 L71.7,37.5 A25,25 0 1,0 71.7,62.5 Z"/>
+        </svg>
+      );
+
+      if (minimized) return (
+        <div onClick={() => setMinimized(false)}
+          style={{position:'absolute',bottom:'20px',right:'20px',
+            background:'rgba(10,10,20,0.95)',border:'1px solid rgba(91,95,239,0.45)',
+            borderRadius:'22px',padding:'8px 14px 8px 10px',display:'flex',alignItems:'center',gap:'8px',
+            cursor:'pointer',backdropFilter:'blur(12px)',
+            boxShadow:'0 4px 24px rgba(0,0,0,0.5)',
+            animation:'slideUp 220ms ease both',fontFamily:'Inter,sans-serif',zIndex:10}}>
+          <CoursC/>
+          <div style={{width:'7px',height:'7px',borderRadius:'50%',background:'#27C93F',animation:'mcpPulse 2s ease-in-out infinite'}}/>
+          <span style={{fontSize:'11px',color:'rgba(255,255,255,0.7)',fontWeight:'500'}}>Step {step+1} of {WIDGET_STEPS.length}</span>
+          <span style={{fontSize:'9px',color:'rgba(255,255,255,0.3)'}}>▲</span>
+        </div>
+      );
+
+      return (
+        <div style={{position:'absolute',bottom:'20px',right:'20px',width:'292px',
+          background:'rgba(10,10,20,0.96)',border:'1px solid rgba(91,95,239,0.3)',
+          borderRadius:'14px',overflow:'hidden',
+          boxShadow:'0 8px 36px rgba(0,0,0,0.6)',
+          backdropFilter:'blur(20px)',
+          animation:'slideUp 280ms ease both',
+          fontFamily:'Inter,sans-serif',zIndex:10}}>
+
+          {/* Header */}
+          <div style={{display:'flex',alignItems:'center',gap:'9px',padding:'11px 13px 10px',borderBottom:'1px solid rgba(255,255,255,0.07)'}}>
+            <CoursC/>
+            <div style={{flex:1}}>
+              <div style={{fontSize:'12px',fontWeight:'600',color:'rgba(255,255,255,0.9)',marginBottom:'2px'}}>Coursera</div>
+              <div style={{display:'flex',alignItems:'center',gap:'5px'}}>
+                <div style={{width:'6px',height:'6px',borderRadius:'50%',background:'#27C93F',animation:'mcpPulse 2s ease-in-out infinite'}}/>
+                <span style={{fontSize:'10px',color:'rgba(255,255,255,0.4)',letterSpacing:'0.02em'}}>MCP · watching session</span>
+              </div>
+            </div>
+            <button onClick={() => setMinimized(true)}
+              style={{background:'none',border:'none',cursor:'pointer',color:'rgba(255,255,255,0.28)',padding:'3px',display:'flex',alignItems:'center',transition:'color 150ms ease'}}
+              onMouseEnter={e=>e.currentTarget.style.color='rgba(255,255,255,0.65)'}
+              onMouseLeave={e=>e.currentTarget.style.color='rgba(255,255,255,0.28)'}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <line x1="3" y1="3" x2="11" y2="11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                <line x1="11" y1="3" x2="3" y2="11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </button>
+          </div>
+
+          {/* Progress */}
+          <div style={{padding:'9px 13px 7px'}}>
+            <div style={{display:'flex',justifyContent:'space-between',marginBottom:'5px'}}>
+              <span style={{fontSize:'10px',fontWeight:'600',color:'rgba(255,255,255,0.35)',letterSpacing:'0.08em',textTransform:'uppercase'}}>Lab Progress</span>
+              <span style={{fontSize:'10px',color:'rgba(255,255,255,0.35)'}}>{step+1} / {WIDGET_STEPS.length}</span>
+            </div>
+            <div style={{height:'3px',background:'rgba(255,255,255,0.07)',borderRadius:'2px',overflow:'hidden'}}>
+              <div style={{width:`${((step+0.5)/WIDGET_STEPS.length)*100}%`,height:'100%',background:'#5B5FEF',borderRadius:'2px',transition:'width 400ms ease'}}/>
+            </div>
+          </div>
+
+          {/* Step + tip */}
+          <div style={{padding:'7px 13px 10px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+            <div style={{fontSize:'13px',fontWeight:'600',color:'rgba(255,255,255,0.88)',marginBottom:'5px',lineHeight:'1.35'}}>{cur.label}</div>
+            {tipVisible && (
+              <div style={{fontSize:'11.5px',color:'rgba(255,255,255,0.46)',lineHeight:'1.65',animation:'fadeUp 300ms ease both'}}>{cur.tip}</div>
+            )}
+          </div>
+
+          {/* Video on demand */}
+          {showVideo && (
+            <div style={{padding:'10px 13px',borderBottom:'1px solid rgba(255,255,255,0.06)',animation:'fadeUp 250ms ease both'}}>
+              <VideoTutorial playing={videoPlaying} onToggle={() => setVideoPlaying(v=>!v)}/>
+            </div>
+          )}
+
+          {/* Actions */}
+          <div style={{padding:'10px 13px',display:'flex',flexDirection:'column',gap:'7px'}}>
+            {isLast ? (
+              <button onClick={onComplete}
+                style={{padding:'10px 0',background:'#059669',border:'none',borderRadius:'8px',
+                  fontSize:'13px',fontWeight:'700',color:'white',cursor:'pointer',
+                  animation:'fadeUp 350ms ease both',fontFamily:'inherit',
+                  transition:'filter 150ms ease'}}
+                onMouseEnter={e=>e.currentTarget.style.filter='brightness(1.1)'}
+                onMouseLeave={e=>e.currentTarget.style.filter='none'}>
+                Done — submit for verification →
+              </button>
+            ) : (
+              <>
+                <button onClick={onAdvance}
+                  style={{padding:'9px 0',background:'#5B5FEF',border:'none',borderRadius:'8px',
+                    fontSize:'12px',fontWeight:'600',color:'white',cursor:'pointer',
+                    fontFamily:'inherit',transition:'filter 150ms ease'}}
+                  onMouseEnter={e=>e.currentTarget.style.filter='brightness(1.12)'}
+                  onMouseLeave={e=>e.currentTarget.style.filter='none'}>
+                  Mark done, next step →
+                </button>
+                <div style={{display:'flex',gap:'7px'}}>
+                  <button
+                    style={{flex:1,padding:'7px 0',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'7px',fontSize:'11px',color:'rgba(255,255,255,0.5)',cursor:'pointer',fontFamily:'inherit'}}
+                    onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.1)'}
+                    onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.06)'}>
+                    Got it
+                  </button>
+                  {cur.hasVideo && (
+                    <button onClick={() => setShowVideo(v=>!v)}
+                      style={{flex:1,padding:'7px 0',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'7px',fontSize:'11px',color:'rgba(255,255,255,0.5)',cursor:'pointer',fontFamily:'inherit'}}
+                      onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.1)'}
+                      onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.06)'}>
+                      {showVideo ? 'Hide video' : '▶ Tutorial'}
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Vignette 1: Learn (3-phase) ── */
+    function VignetteLearn({ onSubmit }) {
+      const [learnPhase, setLearnPhase]   = useState('write');  // 'write' | 'feedback' | 'lab'
+      const [conf, setConf]               = useState('getting-there');
+      const [promptText, setPromptText]   = useState("You are a senior quantitative analyst with 15 years of experience reviewing financial models. You approach every model with healthy skepticism...");
+      const [refinedText, setRefinedText] = useState("You are a senior quantitative analyst with 15 years of experience reviewing financial models. You approach every model with healthy skepticism.\n\nWhen data is incomplete or ambiguous, state your assumption before proceeding.\n\nAlways structure your response: risk verdict (Low / Medium / High) → key findings → specific concerns.");
+      const [trackerCollapsed, setTrackerCollapsed] = useState(false);
+      const [labSteps, setLabSteps]       = useState([false, false, false, false, false]);
+      const [videoPlaying, setVideoPlaying] = useState(false);
+      const [labMode, setLabMode]         = useState('steps');  // 'steps' | 'cursor'
+      const [cursorStep, setCursorStep]   = useState(0);
+
+      // Per-phase streaming state
+      const [streamed, setStreamed] = useState('');
+      const [anim, setAnim]         = useState(0); // 0–5 per phase
+
+      const HEADLINES = {
+        write:    "Today you're learning to write prompts that return verdicts, not just analysis.",
+        feedback: "Strong foundation — two things to sharpen.",
+        lab:      "Now apply it in Cursor.",
+      };
+
+      React.useEffect(() => {
+        setStreamed('');
+        setAnim(0);
+        let interval;
+        const hl = HEADLINES[learnPhase] || '';
+        const t0 = setTimeout(() => {
+          setAnim(1);
+          const t1 = setTimeout(() => {
+            setAnim(2);
+            let i = 0;
+            interval = setInterval(() => {
+              i += 2;
+              setStreamed(hl.slice(0, i));
+              if (i >= hl.length) {
+                setStreamed(hl);
+                clearInterval(interval);
+                setTimeout(() => setAnim(3), 120);
+                setTimeout(() => setAnim(4), 380);
+                setTimeout(() => setAnim(5), 640);
+                setTimeout(() => setAnim(6), 920);
+              }
+            }, 18);
+          }, 200);
+          return () => clearTimeout(t1);
+        }, 80);
+        return () => { clearTimeout(t0); clearInterval(interval); };
+      }, [learnPhase]);
+
+      const f = (n) => ({
+        opacity: anim >= n ? 1 : 0,
+        transform: anim >= n ? 'none' : 'translateY(7px)',
+        transition: 'opacity 360ms ease, transform 360ms ease',
+      });
+
+      const Cursor = () => anim === 2
+        ? <span style={{ display:'inline-block', width:'2px', height:'32px', background:C.accent, marginLeft:'2px', verticalAlign:'middle', animation:'blink 0.9s step-end infinite' }}/>
+        : null;
+
+      const ContextBar = () => (
+        <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'44px' }}>
+          <span style={{ fontSize:'11px', fontWeight:'600', color:C.tMut, letterSpacing:'0.04em' }}>AI Prototyping</span>
+          <span style={{ fontSize:'11px', color:'rgba(28,25,23,0.2)' }}>·</span>
+          <span style={{ fontSize:'11px', fontWeight:'500', color:C.tMut }}>Workflow Integration</span>
+          <span style={{ fontSize:'11px', color:'rgba(28,25,23,0.2)' }}>·</span>
+          <span style={{ fontSize:'11px', color:C.tMut }}>Learning Session 1</span>
+        </div>
+      );
+
+      const allDone = labSteps.every(Boolean);
+
+      /* ── WRITE ── */
+      if (learnPhase === 'write') return (
+        <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
+          <div className="scroll vignette" style={{ flex:1, padding:'48px 56px', background:C.surface }}>
+            <ContextBar/>
+            <div style={{ maxWidth:'560px' }}>
+              <div style={{ ...f(1), marginBottom:'20px' }}><Sparkle/></div>
+              <h2 style={{ fontSize:'34px', fontWeight:'700', color:C.tPri, letterSpacing:'-0.03em', lineHeight:'1.2', marginBottom:'16px', minHeight:'84px' }}>
+                {streamed}<Cursor/>
+              </h2>
+              {/* Why it's relevant to Marcus — MCP insight */}
+              <div style={{ ...f(3), marginBottom:'28px' }}>
+                <div style={{ borderRadius:'12px', border:`1px solid ${C.border}`, background:C.muted, borderTop:`2px solid ${C.accent}`, padding:'16px 18px' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:'7px', marginBottom:'12px' }}>
+                    <div style={{ width:'6px', height:'6px', borderRadius:'50%', background:'#27C93F', animation:'mcpPulse 2s ease-in-out infinite', flexShrink:0 }}/>
+                    <span style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase' }}>Why this matters for you · via MCP</span>
+                  </div>
+                  <p style={{ fontSize:'13.5px', lineHeight:'1.7', color:C.tSec, marginBottom:'12px' }}>
+                    Coursera watched <strong>5 of your Claude sessions</strong> at Meridian last week. You keep starting with this:
+                  </p>
+                  <div style={{ padding:'10px 13px', background:C.canvas, borderRadius:'8px', border:`1px solid ${C.border}`, fontSize:'12.5px', color:C.tSec, fontStyle:'italic', lineHeight:'1.65', marginBottom:'12px' }}>
+                    "You are a senior quantitative analyst with 15 years of experience reviewing financial models. You approach every model with healthy skepticism."
+                  </div>
+                  <p style={{ fontSize:'13.5px', lineHeight:'1.7', color:C.tSec, margin:0 }}>
+                    It's getting you solid analysis — but your team needs <strong>risk verdicts</strong>. The prompt doesn't tell Claude how to format its output or what to do when data is ambiguous. That's the gap we're closing today.
+                  </p>
+                </div>
+              </div>
+
+              {/* Here's your task */}
+              <div style={{ ...f(4), borderTop:`1px solid rgba(28,25,23,0.1)`, paddingTop:'24px', marginBottom:'32px' }}>
+                <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase', marginBottom:'10px' }}>Your task · Meridian Financial</div>
+                <p style={{ fontSize:'14px', lineHeight:'1.7', color:C.tSec }}>Rewrite your prompt so Claude leads every response with a structured risk verdict — <strong>Low / Medium / High</strong> — then shows its reasoning. Use the field below.</p>
+              </div>
+              <div style={f(6)}>
+                <div style={{ marginBottom:'28px' }}>
+                  <div style={{ fontSize:'11px', fontWeight:'600', color:C.tMut, letterSpacing:'0.07em', textTransform:'uppercase', marginBottom:'10px' }}>Your System Prompt</div>
+                  <textarea value={promptText} onChange={e => setPromptText(e.target.value)}
+                    style={{ width:'100%', height:'120px', padding:'14px 16px', border:`1px solid rgba(28,25,23,0.12)`, borderRadius:'10px', fontSize:'13.5px', lineHeight:'1.7', color:C.tPri, background:C.canvas, resize:'none', outline:'none', transition:'border-color 150ms ease' }}
+                    onFocus={e => e.target.style.borderColor = C.accent}
+                    onBlur={e => e.target.style.borderColor = 'rgba(28,25,23,0.12)'}/>
+                </div>
+                <div style={{ marginBottom:'32px' }}>
+                  <div style={{ fontSize:'13px', color:C.tMut, marginBottom:'12px' }}>How confident do you feel writing a system prompt from scratch right now?</div>
+                  <div style={{ display:'flex', gap:'8px' }}>
+                    {[{id:'not-yet',l:'Not yet'},{id:'getting-there',l:'Getting there'},{id:'got-it',l:"I've got it"}].map(chip => {
+                      const a = conf === chip.id;
+                      return <button key={chip.id} onClick={() => setConf(chip.id)}
+                        style={{ border:`1px solid ${a ? C.tPri : 'rgba(28,25,23,0.14)'}`, background: a ? C.tPri : 'transparent', fontWeight: a?'600':'400', color: a?'#fff':C.tMut, borderRadius:'8px', padding:'7px 16px', fontSize:'13px', cursor:'pointer', transition:'all 150ms ease' }}>{chip.l}</button>;
+                    })}
+                  </div>
+                </div>
+                <button className="btn btn-primary" onClick={() => setLearnPhase('feedback')} style={{ padding:'13px 28px', fontSize:'14px' }}>Submit prompt →</button>
+              </div>
+            </div>
+          </div>
+          <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)}/>
+        </div>
+      );
+
+      /* ── FEEDBACK ── */
+      if (learnPhase === 'feedback') {
+        const pts = [
+          { ok:true,  text:'Clear persona — "senior quant analyst, 15 years" gives Claude a sharp, specific role to inhabit.' },
+          { ok:false, text:'Missing: behavior under uncertainty — what should it do when data is incomplete or ambiguous?' },
+          { ok:false, text:'Missing: output format — lead with a risk verdict (Low / Medium / High), then detail the reasoning.' },
+        ];
+        return (
+          <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
+            <div className="scroll vignette" style={{ flex:1, padding:'48px 56px', background:C.surface }}>
+              <ContextBar/>
+              <div style={{ maxWidth:'560px' }}>
+                <div style={{ ...f(1), marginBottom:'20px' }}><Sparkle/></div>
+                <h2 style={{ fontSize:'34px', fontWeight:'700', color:C.tPri, letterSpacing:'-0.03em', lineHeight:'1.2', marginBottom:'24px', minHeight:'44px' }}>
+                  {streamed}<Cursor/>
+                </h2>
+                <div style={{ ...f(3), marginBottom:'28px' }}>
+                  {pts.map((pt, i) => (
+                    <div key={i} style={{ display:'flex', gap:'12px', marginBottom:'10px', padding:'14px 16px', borderRadius:'10px',
+                      background: pt.ok ? 'rgba(5,150,105,0.04)' : 'rgba(28,25,23,0.03)',
+                      border:`1px solid ${pt.ok ? 'rgba(5,150,105,0.15)' : 'rgba(28,25,23,0.08)'}` }}>
+                      <span style={{ fontSize:'13px', color: pt.ok ? C.success : C.tMut, fontWeight:'700', flexShrink:0, marginTop:'2px' }}>{pt.ok ? '✓' : '→'}</span>
+                      <span style={{ fontSize:'13.5px', lineHeight:'1.65', color:C.tSec }}>{pt.text}</span>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ ...f(4), borderTop:`1px solid rgba(28,25,23,0.1)`, paddingTop:'24px', marginBottom:'28px' }}>
+                  <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase', marginBottom:'10px' }}>Refined prompt — edit if you'd like</div>
+                  <textarea value={refinedText} onChange={e => setRefinedText(e.target.value)}
+                    style={{ width:'100%', height:'150px', padding:'14px 16px', border:`1px solid rgba(28,25,23,0.12)`, borderRadius:'10px', fontSize:'13.5px', lineHeight:'1.7', color:C.tPri, background:C.canvas, resize:'none', outline:'none', transition:'border-color 150ms ease' }}
+                    onFocus={e => e.target.style.borderColor = C.accent}
+                    onBlur={e => e.target.style.borderColor = 'rgba(28,25,23,0.12)'}/>
+                </div>
+                <div style={f(5)}>
+                  <button className="btn btn-primary" onClick={() => setLearnPhase('lab')} style={{ padding:'13px 28px', fontSize:'14px' }}>Use this prompt — start lab →</button>
+                </div>
+              </div>
+            </div>
+            <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)}/>
+          </div>
+        );
+      }
+
+      /* ── LAB ── */
+      const LAB_STEPS = [
+        { title:'Open Cursor',                                                hint:'Create a new project or open an existing one' },
+        { title:'Go to Settings → Rules for AI',                             hint:'Press Cmd+Shift+J or navigate via the gear icon' },
+        { title:'Paste your system prompt and save',                         hint:'This becomes the persistent context for every AI interaction in this project' },
+        { title:'Ask: "Review Q3 financials for Meridian — flag anomalies"', hint:'Open a new chat and send this exact message' },
+        { title:'Compare the output',                                        hint:'Clear your rules, run the same query, and notice the difference in specificity' },
+      ];
+
+      /* ── Cursor lab mode (full-screen IDE + widget) ── */
+      if (labMode === 'cursor') return (
+        <div style={{ flex:1, position:'relative', overflow:'hidden' }}>
+          <button onClick={() => setLabMode('steps')}
+            style={{ position:'absolute', top:'16px', left:'16px', zIndex:20,
+              background:'rgba(10,10,20,0.85)', border:'1px solid rgba(255,255,255,0.12)',
+              borderRadius:'7px', padding:'6px 12px', fontSize:'11px', fontWeight:'500',
+              color:'rgba(255,255,255,0.55)', cursor:'pointer', backdropFilter:'blur(8px)',
+              display:'flex', alignItems:'center', gap:'5px', fontFamily:'Inter,sans-serif',
+              transition:'color 150ms ease' }}
+            onMouseEnter={e=>e.currentTarget.style.color='rgba(255,255,255,0.9)'}
+            onMouseLeave={e=>e.currentTarget.style.color='rgba(255,255,255,0.55)'}>
+            ← Back
+          </button>
+          <CursorIDE step={cursorStep}/>
+          <CourseraWidget
+            step={cursorStep}
+            onAdvance={() => setCursorStep(s => Math.min(s + 1, 4))}
+            onComplete={onSubmit}
+          />
+        </div>
+      );
+
+      /* ── Steps view (default) ── */
+      return (
+        <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
+          <div className="scroll vignette" style={{ flex:1, padding:'48px 56px', background:C.surface }}>
+            <ContextBar/>
+            <div style={{ maxWidth:'560px' }}>
+              <div style={{ ...f(1), marginBottom:'20px' }}><Sparkle/></div>
+              <h2 style={{ fontSize:'34px', fontWeight:'700', color:C.tPri, letterSpacing:'-0.03em', lineHeight:'1.2', marginBottom:'12px', minHeight:'44px' }}>
+                {streamed}<Cursor/>
+              </h2>
+              <div style={{ ...f(3), marginBottom:'32px' }}>
+                <p style={{ fontSize:'15px', lineHeight:'1.7', color:C.tMut }}>Set your refined system prompt as a persistent rule in Cursor. Coursera will watch your session via MCP and surface hints as you go.</p>
+              </div>
+
+              {/* Steps FIRST */}
+              <div style={f(4)}>
+                <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase', marginBottom:'16px' }}>Steps to follow</div>
+                {LAB_STEPS.map((s, i) => {
+                  const done   = labSteps[i];
+                  const active = !done && (i === 0 || labSteps[i-1]);
+                  return (
+                    <div key={i} onClick={() => { const n=[...labSteps]; n[i]=!n[i]; setLabSteps(n); }}
+                      style={{ display:'flex', gap:'14px', padding:'14px 0', borderBottom: i < LAB_STEPS.length-1 ? `1px solid rgba(28,25,23,0.07)` : 'none', cursor:'pointer', opacity: active||done ? 1 : 0.4, transition:'opacity 200ms ease' }}>
+                      <div style={{ width:'24px', height:'24px', borderRadius:'50%', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center',
+                        fontSize:'11px', fontWeight:'700', marginTop:'2px',
+                        background: done ? C.success : active ? C.accent : 'transparent',
+                        border:`1.5px solid ${done ? C.success : active ? C.accent : 'rgba(28,25,23,0.2)'}`,
+                        color: done||active ? '#fff' : C.tMut, transition:'all 200ms ease' }}>
+                        {done ? '✓' : i+1}
+                      </div>
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontSize:'14px', fontWeight: active||done ? '600' : '400', color: done ? C.tMut : C.tPri, textDecoration: done ? 'line-through' : 'none', textDecorationColor:'rgba(28,25,23,0.3)', marginBottom:'3px', lineHeight:'1.4' }}>{s.title}</div>
+                        <div style={{ fontSize:'12px', color:C.tMut, lineHeight:'1.5' }}>{s.hint}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Video — on demand only */}
+              {videoPlaying && (
+                <div style={{ marginTop:'24px', animation:'fadeUp 300ms ease both' }}>
+                  <VideoTutorial playing={videoPlaying} onToggle={() => setVideoPlaying(v => !v)}/>
+                </div>
+              )}
+
+              {/* Start lab CTA */}
+              <div style={{ ...f(5), marginTop:'36px', paddingTop:'28px', borderTop:`1px solid rgba(28,25,23,0.08)` }}>
+                <div style={{ fontSize:'13px', color:C.tMut, marginBottom:'18px', lineHeight:'1.65' }}>
+                  Coursera shrinks to a floating widget and watches your Cursor session through an MCP connection — providing step-by-step hints in real time.
+                </div>
+                <div style={{ display:'flex', alignItems:'center', gap:'14px' }}>
+                  <button className="btn btn-primary" onClick={() => { setCursorStep(0); setLabMode('cursor'); }} style={{ padding:'13px 28px', fontSize:'14px' }}>
+                    Start Lab in Cursor →
+                  </button>
+                  <button onClick={() => setVideoPlaying(v => !v)}
+                    style={{ background:'none', border:'none', cursor:'pointer', fontSize:'13px', color:C.tMut, textDecoration:'underline', fontFamily:'inherit' }}>
+                    {videoPlaying ? 'Hide video' : 'Watch tutorial first'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)}/>
+        </div>
+      );
+    }
+
+    /* ── Arc ── */
+    function Arc({ size = 120, pct = 1 }) {
+      const r = size/2 - 7, circ = 2*Math.PI*r;
+      return (
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+          <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="5.5"/>
+          <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={C.accent} strokeWidth="5.5"
+            strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={circ*(1-pct)} transform={`rotate(-90 ${size/2} ${size/2})`}/>
+        </svg>
+      );
+    }
+
+    /* ── Vignette 2: Verify ── */
+    function VignetteVerify({ onAddToWallet }) {
+      return (
+        <div className="scroll vignette" style={{ flex: 1, background: '#0A0A0F', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px' }}>
+          <div style={{ display: 'flex', gap: '56px', alignItems: 'center', maxWidth: '960px', width: '100%' }}>
+            {/* Left */}
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '11px', fontWeight: '600', color: C.accent, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '14px' }}>Assessment Complete</div>
+              <h2 style={{ fontSize: '68px', fontWeight: '700', color: '#FFFFFF', letterSpacing: '-0.04em', lineHeight: '1.0', marginBottom: '22px' }}>Skill<br/>Verified.</h2>
+              <p style={{ fontSize: '15px', color: '#9CA3AF', lineHeight: '1.75', marginBottom: '28px', maxWidth: '380px' }}>You were assessed on what you can do, not what you watched. Backed by Coursera and DeepLearning.AI, tied to your verified identity.</p>
+              <div style={{ padding: '18px 20px', borderRadius: '12px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', marginBottom: '24px' }}>
+                <div style={{ fontSize: '10px', fontWeight: '600', color: '#8E8E93', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '12px' }}>What You Demonstrated</div>
+                {['Wrote an effective system prompt for a real Meridian use case', 'Specified role, tone, and domain expertise precisely', 'Defined behavioral constraints for production contexts'].map((item, i) => (
+                  <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', marginBottom: i < 2 ? '10px' : 0 }}>
+                    <span style={{ color: C.success, fontSize: '13px', fontWeight: '700', flexShrink: 0, marginTop: '2px' }}>✓</span>
+                    <span style={{ fontSize: '13px', color: '#E5E7EB', lineHeight: '1.6' }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ fontSize: '22px', fontWeight: '700', color: '#FFFFFF', marginBottom: '6px', letterSpacing: '-0.02em' }}>"This is not a completion badge."</div>
+              <div style={{ fontSize: '14px', color: '#6B7280' }}>Applied assessment. Not video completion.</div>
+            </div>
+
+            {/* Card */}
+            <div className="glow-card" style={{ width: '380px', background: '#FFFFFF', borderRadius: '16px', padding: '32px', flexShrink: 0 }}>
+              <div style={{ display: 'flex', justifyContent: 'center', margin: '0 auto 18px' }}>
+                <IconSeal/>
+              </div>
+              <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                <div className="label caption" style={{ color: C.accent, marginBottom: '5px' }}>Demonstrated</div>
+                <div style={{ fontSize: '22px', fontWeight: '600', color: C.tPri, letterSpacing: '-0.02em', marginBottom: '3px' }}>Prompt Engineering</div>
+                <div style={{ fontSize: '14px', color: C.tSec }}>Foundation Level</div>
+              </div>
+              <div style={{ height: '1px', background: C.border, marginBottom: '16px' }}/>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '16px' }}>
+                {[{ l: 'Verified', v: 'Apr 23, 2026', c: C.tPri }, { l: 'Current for', v: '18 months', c: C.success }, { l: 'Refresh by', v: 'Oct 2027', c: C.tPri }].map((x, i) => (
+                  <div key={i} style={{ background: C.muted, borderRadius: '8px', padding: '10px 8px', textAlign: 'center' }}>
+                    <div className="caption" style={{ fontSize: '10px', marginBottom: '2px' }}>{x.l}</div>
+                    <div style={{ fontSize: '11px', fontWeight: '600', color: x.c, lineHeight: '1.3' }}>{x.v}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="caption" style={{ fontSize: '11px', fontWeight: '600', marginBottom: '4px' }}>Assessed:</div>
+              <div style={{ fontSize: '13px', fontWeight: '500', color: C.tSec, marginBottom: '14px' }}>Coursera Skills Framework + DeepLearning.AI</div>
+              <div style={{ height: '1px', background: C.border, marginBottom: '14px' }}/>
+              <p style={{ fontSize: '13px', lineHeight: '1.65', color: C.tSec, marginBottom: '18px' }}>Can write effective system prompts, chain prompts for multi-step tasks, and debug prompt failures — through applied assessment, not video completion.</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '7px', padding: '9px 12px', borderRadius: '8px', background: 'rgba(91,95,239,0.06)', marginBottom: '18px' }}>
+                <span>🔒</span>
+                <span style={{ fontSize: '12px', fontWeight: '500', color: C.accent }}>Identity verified · Proctored assessment</span>
+              </div>
+              <div style={{ display: 'flex', gap: '9px' }}>
+                <button className="btn btn-accent" onClick={onAddToWallet} style={{ flex: 1, padding: '12px', fontSize: '13px' }}>Add to Wallet</button>
+                <button className="btn" onClick={() => {}} style={{ flex: 1, padding: '12px', fontSize: '13px', background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: '8px', color: C.tPri, fontWeight: '500' }}>Share with Priya →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Skill Chart — admin style ── */
+    function SkillChart() {
+      const [hoverIdx, setHoverIdx] = React.useState(null);
+      const svgRef = React.useRef(null);
+
+      const MONTHS  = ['APR','MAY','JUN','JUL','AUG','SEP','OCT'];
+      const aiPts   = [1, 2, 2, 3, 3, 4, 5];
+      const techPts = [0, 0, 1, 2, 2, 3, 4];
+
+      const SVW=560, SVH=170, SPL=22, SPR=44, SPT=14, SPB=26;
+      const spW = SVW-SPL-SPR, spH = SVH-SPT-SPB;
+      const maxV = 6;
+      const sxP = (i) => SPL + (i/(MONTHS.length-1))*spW;
+      const syP = (v) => SPT + spH - (v/maxV)*spH;
+
+      const smkPath = (pts) => {
+        let d = `M ${sxP(0).toFixed(1)} ${syP(pts[0]).toFixed(1)}`;
+        for (let i=1; i<pts.length; i++) {
+          const cx = ((sxP(i-1)+sxP(i))/2).toFixed(1);
+          d += ` C ${cx} ${syP(pts[i-1]).toFixed(1)} ${cx} ${syP(pts[i]).toFixed(1)} ${sxP(i).toFixed(1)} ${syP(pts[i]).toFixed(1)}`;
+        }
+        return d;
+      };
+
+      const handleMove = (e) => {
+        const svg = svgRef.current; if (!svg) return;
+        const rect = svg.getBoundingClientRect();
+        const svgX = (e.clientX - rect.left) * (SVW / rect.width);
+        let best=0, bestD=Infinity;
+        MONTHS.forEach((_,i) => { const d=Math.abs(svgX-sxP(i)); if(d<bestD){bestD=d;best=i;} });
+        setHoverIdx(bestD<48 ? best : null);
+      };
+
+      return (
+        <div style={{ background: C.canvas, borderRadius:'16px', padding:'22px 26px 18px', border:`1px solid rgba(28,25,23,0.07)`, position:'relative' }}>
+          {/* Summary */}
+          <div style={{ marginBottom:'14px' }}>
+            <div style={{ fontSize:'22px', fontWeight:'700', color:C.tPri, letterSpacing:'-0.025em', lineHeight:'1.2', marginBottom:'4px' }}>
+              5 skills verified — you're ahead of pace.
+            </div>
+            <div style={{ fontSize:'11.5px', color:C.tMut }}>Apr → Oct 2026 · Skills verified over time</div>
+          </div>
+          {/* Legend */}
+          <div style={{ display:'flex', gap:'14px', marginBottom:'8px' }}>
+            {[{color:C.accent,label:'AI Skills'},{color:C.warm,label:'Technical'}].map(({color,label}) => (
+              <div key={label} style={{ display:'flex', alignItems:'center', gap:'5px' }}>
+                <svg width="18" height="6"><line x1="0" y1="3" x2="18" y2="3" stroke={color} strokeWidth="2" strokeLinecap="round"/></svg>
+                <span style={{ fontSize:'10.5px', color:C.tMut }}>{label}</span>
+              </div>
+            ))}
+          </div>
+          {/* SVG */}
+          <div style={{ position:'relative' }}>
+            <svg ref={svgRef} width="100%" viewBox={`0 0 ${SVW} ${SVH}`}
+              style={{ display:'block', overflow:'visible', cursor:'crosshair' }}
+              onMouseMove={handleMove} onMouseLeave={() => setHoverIdx(null)}>
+
+              {/* Grid */}
+              {[0,2,4,6].map(v => (
+                <g key={v}>
+                  <line x1={SPL} y1={syP(v)} x2={SVW-SPR+8} y2={syP(v)}
+                    stroke="rgba(28,25,23,0.07)" strokeWidth={v===0?0.8:0.5} strokeDasharray={v===0?'none':'3 8'}/>
+                  <text x={SPL-5} y={syP(v)+3.5} textAnchor="end" fill="rgba(28,25,23,0.3)"
+                    fontSize="8" fontFamily="system-ui,sans-serif">{v}</text>
+                </g>
+              ))}
+
+              {/* NOW marker */}
+              <line x1={sxP(6)} y1={SPT-4} x2={sxP(6)} y2={SVH-SPB+4}
+                stroke="rgba(28,25,23,0.1)" strokeWidth="1" strokeDasharray="3 5"/>
+              <rect x={sxP(6)-14} y={SPT-16} width="28" height="12" rx="3" fill="rgba(28,25,23,0.07)"/>
+              <text x={sxP(6)} y={SPT-6} textAnchor="middle" fill="rgba(28,25,23,0.45)"
+                fontSize="6.5" fontWeight="600" letterSpacing="0.08em" fontFamily="system-ui,sans-serif">NOW</text>
+
+              {/* Technical line */}
+              <path d={smkPath(techPts)} stroke={C.warm} strokeWidth="2"
+                fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.85"/>
+
+              {/* AI Skills line */}
+              <path d={smkPath(aiPts)} stroke={C.accent} strokeWidth="2.5"
+                fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.92"/>
+
+              {/* End dots + values */}
+              <circle cx={sxP(6)} cy={syP(aiPts[6])}   r="4.5" fill={C.accent}  stroke="#fff" strokeWidth="2"/>
+              <text x={sxP(6)+9} y={syP(aiPts[6])+3.5}   fill={C.tPri} fontSize="8.5" fontWeight="700" fontFamily="system-ui,sans-serif">{aiPts[6]}</text>
+              <circle cx={sxP(6)} cy={syP(techPts[6])} r="4.5" fill={C.warm} stroke="#fff" strokeWidth="2"/>
+              <text x={sxP(6)+9} y={syP(techPts[6])+3.5} fill={C.tPri} fontSize="8.5" fontWeight="700" fontFamily="system-ui,sans-serif">{techPts[6]}</text>
+
+              {/* Hover crosshair */}
+              {hoverIdx !== null && (
+                <line x1={sxP(hoverIdx)} y1={SPT} x2={sxP(hoverIdx)} y2={SVH-SPB}
+                  stroke="rgba(28,25,23,0.18)" strokeWidth="1"/>
+              )}
+
+              {/* X-axis months — ALL CAPS */}
+              {MONTHS.map((m,i) => (
+                <text key={m} x={sxP(i)} y={SVH-SPB+16} textAnchor="middle"
+                  fill={i===6 ? C.tPri : 'rgba(28,25,23,0.38)'}
+                  fontSize="8.5" fontWeight={i===6?'600':'400'}
+                  fontFamily="system-ui,sans-serif">{m}</text>
+              ))}
+            </svg>
+
+            {/* Hover tooltip */}
+            {hoverIdx !== null && (() => {
+              const left = Math.min(Math.max(sxP(hoverIdx)/SVW*100, 10), 78);
+              return (
+                <div style={{ position:'absolute', top:'6px', left:`${left}%`,
+                  background:'white', borderRadius:'10px', padding:'10px 14px',
+                  boxShadow:'0 4px 20px rgba(0,0,0,0.12)', minWidth:'140px',
+                  pointerEvents:'none', zIndex:20, border:`1px solid rgba(28,25,23,0.06)` }}>
+                  <div style={{ fontSize:'10.5px', color:C.tMut, marginBottom:'8px', fontWeight:'500' }}>
+                    {MONTHS[hoverIdx].charAt(0)+MONTHS[hoverIdx].slice(1).toLowerCase()} 2026
+                  </div>
+                  <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'5px' }}>
+                    <span style={{ background:C.accent, color:'white', fontSize:'13px', fontWeight:'700', padding:'2px 8px', borderRadius:'5px' }}>{aiPts[hoverIdx]}</span>
+                    <span style={{ fontSize:'11px', color:C.tSec }}>AI skills</span>
+                  </div>
+                  <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
+                    <span style={{ background:C.warm, color:'white', fontSize:'13px', fontWeight:'700', padding:'2px 8px', borderRadius:'5px' }}>{techPts[hoverIdx]}</span>
+                    <span style={{ fontSize:'11px', color:C.tSec }}>Technical skills</span>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Skill Card (Wallet learner view) ── */
+    function SkillCard({ sk }) {
+      const verified = sk.status === 'verified';
+      const refresh  = sk.status === 'refresh';
+      const inprog   = sk.status === 'progress';
+      return (
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:'14px', overflow:'hidden', marginBottom:'14px' }}>
+          {/* Header */}
+          <div style={{ display:'flex', alignItems:'center', gap:'12px', padding:'14px 18px', borderBottom:`1px solid ${C.border}` }}>
+            <div style={{ width:'22px', height:'22px', borderRadius:'50%', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'10px', fontWeight:'800', color:'#fff',
+              background: verified ? C.accent : inprog ? 'transparent' : refresh ? 'transparent' : C.border,
+              border: inprog ? `2px solid ${C.accent}` : refresh ? `2px solid ${C.warning}` : 'none',
+              color: refresh ? C.warning : '#fff' }}>
+              {verified ? '✓' : refresh ? '↺' : ''}
+            </div>
+            <div style={{ flex:1 }}>
+              <span style={{ fontSize:'15px', fontWeight:'700', color:C.tPri, letterSpacing:'-0.01em' }}>{sk.name}</span>
+              {sk.level && <span style={{ fontSize:'11px', color:C.tMut, marginLeft:'8px' }}>{sk.level}</span>}
+            </div>
+            {(verified || refresh) && (
+              <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
+                <span style={{ fontSize:'11px', color:C.tMut }}>Verified {sk.verified}</span>
+                <div style={{ padding:'3px 10px', borderRadius:'6px',
+                  background: refresh ? 'rgba(217,119,6,0.08)' : 'rgba(5,150,105,0.08)',
+                  border:`1px solid ${refresh ? 'rgba(217,119,6,0.22)' : 'rgba(5,150,105,0.22)'}`,
+                  fontSize:'11px', fontWeight:'600', color: refresh ? C.warning : C.success }}>
+                  {refresh ? '↺ Refresh due' : '✓ Fresh'}
+                </div>
+              </div>
+            )}
+            {inprog && (
+              <div style={{ display:'flex', alignItems:'center', gap:'9px' }}>
+                <div style={{ width:'84px', height:'3px', background:C.border, borderRadius:'2px', overflow:'hidden' }}>
+                  <div style={{ width:`${sk.pct}%`, height:'100%', background:C.accent, borderRadius:'2px' }}/>
+                </div>
+                <span style={{ fontSize:'11px', color:C.accent, fontWeight:'500' }}>{sk.pct}% complete</span>
+              </div>
+            )}
+          </div>
+          {/* 3-column body */}
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1.7fr 1fr' }}>
+            {/* Sub-skills */}
+            <div style={{ padding:'14px 16px', borderRight:`1px solid ${C.border}` }}>
+              <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'10px' }}>Sub-Skills</div>
+              {sk.subskills.map((s,i) => (
+                <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:'7px', marginBottom:'7px' }}>
+                  <div style={{ width:'14px', height:'14px', borderRadius:'50%', flexShrink:0, marginTop:'2px',
+                    background: s.done ? C.accent : 'transparent',
+                    border:`1.5px solid ${s.done ? C.accent : s.active ? C.accent : C.border}`,
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                    fontSize:'7px', fontWeight:'800', color:'#fff' }}>{s.done ? '✓' : ''}</div>
+                  <span style={{ fontSize:'12px', lineHeight:'1.45', color: s.done ? C.tPri : s.active ? C.tSec : C.tMut }}>{s.label}</span>
+                </div>
+              ))}
+            </div>
+            {/* MCP */}
+            <div style={{ padding:'14px 16px', borderRight:`1px solid ${C.border}` }}>
+              <div style={{ display:'flex', alignItems:'center', gap:'6px', marginBottom:'10px' }}>
+                <div style={{ width:'6px', height:'6px', borderRadius:'50%', flexShrink:0,
+                  background: sk.mcp.sessions > 0 ? '#27C93F' : C.tMut,
+                  animation: sk.mcp.sessions > 0 ? 'mcpPulse 2s ease-in-out infinite' : 'none' }}/>
+                <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.08em', textTransform:'uppercase' }}>
+                  Claude MCP · {sk.mcp.sessions > 0 ? `${sk.mcp.sessions} sessions` : 'No sessions yet'}
+                </div>
+              </div>
+              {sk.mcp.quote ? (
+                <>
+                  <div style={{ padding:'9px 11px', background:C.canvas, borderRadius:'7px', border:`1px solid ${C.border}`, fontSize:'11px', color:C.tSec, fontStyle:'italic', lineHeight:'1.65', marginBottom:'8px' }}>
+                    "{sk.mcp.quote}"
+                  </div>
+                  {sk.mcp.usage && (
+                    <div style={{ display:'flex', gap:'6px', alignItems:'flex-start' }}>
+                      <span style={{ color:C.accent, fontSize:'9px', flexShrink:0, marginTop:'3px' }}>●</span>
+                      <span style={{ fontSize:'11.5px', color:C.tMut, lineHeight:'1.55' }}>{sk.mcp.usage}</span>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <span style={{ fontSize:'11.5px', color:C.tMut, fontStyle:'italic' }}>
+                  {sk.mcp.sessions === 0 ? 'Start the lab to connect via MCP' : sk.mcp.usage}
+                </span>
+              )}
+            </div>
+            {/* Learning */}
+            <div style={{ padding:'14px 16px' }}>
+              <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'10px' }}>Learning</div>
+              <div style={{ fontSize:'13px', fontWeight:'600', color:C.tPri, marginBottom:'4px', lineHeight:'1.3' }}>{sk.learning.name}</div>
+              <div style={{ fontSize:'11.5px', color: sk.learning.done ? C.success : C.accent, marginBottom:'4px', fontWeight:'500' }}>
+                {sk.learning.done ? 'Completed' : `${sk.learning.pct}% complete`}
+              </div>
+              {sk.learning.score && (
+                <div style={{ fontSize:'11.5px', color:C.tMut }}>Assessment: {sk.learning.score}</div>
+              )}
+            </div>
+          </div>
+          {/* Workday signal */}
+          {sk.workday && (
+            <div style={{ padding:'9px 18px', display:'flex', alignItems:'center', gap:'10px', borderTop:`1px solid ${C.border}`, background:'rgba(28,25,23,0.015)' }}>
+              <svg width="13" height="13" viewBox="0 0 18 18" fill="none" style={{ flexShrink:0 }}>
+                <circle cx="9" cy="5.5" r="2.8" fill={C.tMut} opacity="0.5"/>
+                <path d="M2 17 Q4 11.5 9 11.5 Q14 11.5 16 17" stroke={C.tMut} strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.5"/>
+              </svg>
+              <span style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.06em', textTransform:'uppercase', flexShrink:0 }}>Workday</span>
+              <span style={{ fontSize:'11.5px', color:C.tSec, fontStyle:'italic', flex:1 }}>"{sk.workday.signal}"</span>
+              <span style={{ fontSize:'10.5px', color:C.tMut, flexShrink:0, whiteSpace:'nowrap' }}>— {sk.workday.source}</span>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    /* ── Vignette 3: Wallet ── */
+    function VignetteWallet({ justVerified = false, onDismiss = () => {} }) {
+      const [view, setView] = useState('6mo');
+      const [showVerify, setShowVerify] = useState(justVerified);
+
+      if (showVerify) return (
+        <VignetteVerify onAddToWallet={() => { setShowVerify(false); onDismiss(); }}/>
+      );
+
+      const day1Skills = [
+        {
+          name:'Prompt Engineering', level:'Foundation', status:'verified', verified:'Apr 2026',
+          subskills:[
+            {label:'Write system prompts', done:true},
+            {label:'Chain prompts for multi-step tasks', active:true},
+            {label:'Debug a failing prompt'},
+            {label:'Meridian risk templates'},
+          ],
+          mcp:{ sessions:5, quote:'You are a senior quantitative analyst with 15 years of experience reviewing financial models. You approach every model with healthy skepticism.', usage:'First Meridian Q3 analysis run — 5 sessions logged' },
+          workday:{ signal:'AI Prototyping track assigned — priority for Q4 readiness', source:'Priya Sharma' },
+          learning:{ name:'Prompt Engineering Foundations', done:true, score:'82%' },
+        },
+        {
+          name:'AI Workflow Integration', status:'progress', pct:60,
+          subskills:[
+            {label:'Identify automation opportunities', active:true},
+            {label:'Build LLM-powered workflows'},
+            {label:'Measure workflow quality'},
+          ],
+          mcp:{ sessions:0 },
+          workday:{ signal:'Required for Q4 AI initiative delivery', source:'Priya Sharma' },
+          learning:{ name:'AI Workflow Design', done:false, pct:60 },
+        },
+      ];
+
+      const sixmoSkills = [
+        {
+          name:'Prompt Engineering', level:'Foundation', status:'verified', verified:'Apr 2026',
+          subskills:[
+            {label:'Write system prompts', done:true},
+            {label:'Chain prompts for multi-step tasks', done:true},
+            {label:'Debug a failing prompt', done:true},
+            {label:'Meridian risk templates', done:true},
+          ],
+          mcp:{ sessions:53, quote:'Act as a Meridian risk model reviewer. For each loan apply our 5-factor rubric and flag tier-2 threshold breaches. Return a structured report with confidence scores.', usage:'Production-grade prompts in daily credit operations' },
+          workday:{ signal:'Strong improvement in AI-assisted analysis quality', source:'Priya Sharma · Apr 2026' },
+          learning:{ name:'Advanced Prompt Engineering', done:true, score:'98%' },
+        },
+        {
+          name:'AI Workflow Integration', level:'Foundation', status:'verified', verified:'May 2026',
+          subskills:[
+            {label:'Identify automation opportunities', done:true},
+            {label:'Build LLM-powered workflows', done:true},
+            {label:'Measure workflow quality', done:true},
+          ],
+          mcp:{ sessions:38, quote:'Step 1: pull anomaly flags → Step 2: cross-reference 90-day baselines → Step 3: rank by exposure → Step 4: draft exec-ready action summary', usage:'Fully automated multi-step pipelines running in daily credit operations' },
+          workday:{ signal:'Reduced manual review time by 40%', source:'Q4 Performance Review' },
+          learning:{ name:'AI Workflow Design', done:true, score:'96%' },
+        },
+        {
+          name:'Claude API Fundamentals', level:'Foundation', status:'verified', verified:'Jun 2026',
+          subskills:[
+            {label:'Authentication & rate limits', done:true},
+            {label:'Message formatting', done:true},
+            {label:'Handle errors & retries', done:true},
+          ],
+          mcp:{ sessions:29, quote:'async def call_claude(prompt): response = await client.messages.create(model="claude-opus-4-5", max_tokens=1024, messages=[...])', usage:'Production Python service live in the risk model automation pipeline' },
+          workday:{ signal:'Shipped to production — running in daily ops', source:'Engineering review · Jun 2026' },
+          learning:{ name:'Claude API Fundamentals', done:true, score:'94%' },
+        },
+        {
+          name:'Prototyping & Iteration', level:'Practitioner', status:'verified', verified:'Aug 2026',
+          subskills:[
+            {label:'Rapid prototype methodology', done:true},
+            {label:'User feedback loops', done:true},
+            {label:'Iteration frameworks', done:true},
+            {label:'Deploy & monitor', done:true},
+          ],
+          mcp:{ sessions:21, quote:'Build a working prototype in 48h, test with 3 real users, iterate once based on friction points, then ship it.', usage:'3 internal AI tools deployed to Meridian ops team' },
+          workday:{ signal:'Led 3 AI prototyping sprints — all shipped on schedule', source:'Priya Sharma · Sep 2026' },
+          learning:{ name:'Rapid Prototyping with AI', done:true, score:'91%' },
+        },
+        {
+          name:'Python for Data Analysis', level:'Foundation', status:'verified', verified:'Sep 2026',
+          subskills:[
+            {label:'pandas & data wrangling', done:true},
+            {label:'Visualization & reporting', done:true},
+            {label:'Statistical operations', done:true},
+          ],
+          mcp:{ sessions:17, quote:'df.groupby("portfolio_segment").agg({"exposure": "sum", "anomaly_flag": "mean"}).sort_values("exposure", ascending=False)', usage:'Core tool in daily portfolio analysis — every reporting cycle' },
+          workday:{ signal:'Data analysis capabilities significantly improved', source:'Peer review · Sep 2026' },
+          learning:{ name:'Python for Data Analysis', done:true, score:'89%' },
+        },
+        {
+          name:'Statistical Modeling', level:'Foundation', status:'refresh', verified:'Oct 2025',
+          subskills:[
+            {label:'Regression analysis', done:true},
+            {label:'Hypothesis testing', done:true},
+            {label:'Model validation', done:true},
+            {label:'ML fundamentals'},
+          ],
+          mcp:{ sessions:8, quote:null, usage:'Last active 6 months ago — usage declining, refresh recommended' },
+          workday:{ signal:'Not used recently — skill decay alert triggered', source:'Workday · Apr 2026' },
+          learning:{ name:'Statistical Modeling', done:true, score:'87%' },
+        },
+      ];
+
+      const skills = view === 'day1' ? day1Skills : sixmoSkills;
+
+      const shareList = view === 'day1'
+        ? [{ icon:'◉', name:'Prompt Engineering', date:'Apr 2026', r:false }]
+        : [
+            { icon:'◉', name:'Prompt Engineering',       date:'Apr 2026', r:false },
+            { icon:'◉', name:'AI Workflow Integration',  date:'May 2026', r:false },
+            { icon:'◉', name:'Claude API Fundamentals',  date:'Jun 2026', r:false },
+            { icon:'◉', name:'Prototyping & Iteration',  date:'Aug 2026', r:false },
+            { icon:'◉', name:'Python for Data Analysis', date:'Sep 2026', r:false },
+            { icon:'⚠', name:'Statistical Modeling',     date:'Oct 2025', r:true  },
+          ];
+
+      return (
+        <div className="scroll vignette" style={{ flex:1, background:C.canvas, padding:'32px 36px' }}>
+          {/* Header */}
+          <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:'24px' }}>
+            <div>
+              <h2 style={{ fontSize:'34px', fontWeight:'700', color:C.tPri, letterSpacing:'-0.03em', marginBottom:'4px' }}>Marcus Chen</h2>
+              <div style={{ fontSize:'14px', color:C.tSec, marginBottom:'4px' }}>Senior Data Analyst · Meridian Financial</div>
+              <div style={{ fontSize:'13px', fontWeight:'500', color:C.accent }}>{view==='day1' ? '1 skill verified · 2 in progress' : '6 skills verified · 1 needs refresh'}</div>
+            </div>
+            <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+              <div style={{ display:'flex', background:C.surface, borderRadius:'8px', padding:'3px', border:`1px solid ${C.border}` }}>
+                {[['day1','Day 1'],['6mo','6 Months In']].map(([v,l]) => (
+                  <button key={v} onClick={() => setView(v)} style={{ padding:'7px 14px', borderRadius:'6px', border:'none', background:view===v ? C.accent : 'transparent', fontSize:'12px', fontWeight:view===v ? '600' : '400', color:view===v ? '#fff' : C.tMut, transition:'all 150ms cubic-bezier(0.4,0,0.2,1)', cursor:'pointer' }}>{l}</button>
+                ))}
+              </div>
+              <button className="btn btn-primary" style={{ padding:'9px 18px', fontSize:'13px' }}>Share skills →</button>
+            </div>
+          </div>
+
+          {/* Two-col */}
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 356px', gap:'20px', alignItems:'start' }}>
+            <div>
+              {view==='6mo' && (
+                <div key="chart" className="fade-slide" style={{ marginBottom:'16px' }}>
+                  <SkillChart/>
+                </div>
+              )}
+
+              <div key={`sk-${view}`} className="fade-slide">
+                {skills.map((sk, i) => <SkillCard key={i} sk={sk}/>)}
+              </div>
+              <div className="caption" style={{ marginTop:'8px', fontSize:'11px' }}>Skills from: Coursera platform · Meridian AI Prototyping program</div>
+            </div>
+
+            {/* Live credential */}
+            <div className="card" style={{ padding:'22px', position:'sticky', top:'20px' }}>
+              <div className="label caption" style={{ marginBottom:'14px' }}>Live Credential Preview</div>
+              <div style={{ border:`1.5px solid ${C.border}`, borderRadius:'10px', padding:'16px', background:C.muted, marginBottom:'14px' }}>
+                <div style={{ fontSize:'13px', fontWeight:'600', color:C.tPri, marginBottom:'1px' }}>Marcus Chen</div>
+                <div style={{ fontSize:'12px', color:C.tSec, marginBottom:'12px' }}>Senior Data Analyst · Meridian Financial</div>
+                <div className="label caption" style={{ marginBottom:'8px' }}>Verified Skills</div>
+                {shareList.map((s,i,arr) => (
+                  <div key={i} style={{ display:'flex', alignItems:'center', padding:'5px 0', borderBottom:i<arr.length-1 ? `1px solid ${C.border}` : 'none' }}>
+                    <span style={{ fontSize:'13px', marginRight:'7px', color:s.r ? C.warning : C.accent }}>{s.icon}</span>
+                    <span style={{ flex:1, fontSize:'12px', color:C.tPri }}>{s.name}</span>
+                    <span className="caption" style={{ fontSize:'11px', marginRight:'6px' }}>{s.date}</span>
+                    <span style={{ fontSize:'12px', color:s.r ? C.warning : C.success }}>{s.r ? '↺' : '✓'}</span>
+                  </div>
+                ))}
+                <div style={{ height:'1px', background:C.border, margin:'10px 0' }}/>
+                <div className="caption" style={{ fontSize:'11px' }}>Verified by: Coursera · DeepLearning.AI</div>
+              </div>
+              <p style={{ fontSize:'12px', color:C.tSec, lineHeight:'1.7', marginBottom:'14px', fontStyle:'italic' }}>"This link is live — it reflects Marcus's current skill status. If a skill lapses, the link updates automatically."</p>
+              <div style={{ display:'flex', gap:'8px' }}>
+                <button className="btn" style={{ flex:1, padding:'10px', fontSize:'12px', background:'transparent', border:`1.5px solid ${C.border}`, borderRadius:'8px', color:C.tPri, fontWeight:'500', transition:'all 120ms cubic-bezier(0.4,0,0.2,1)' }}>Copy link</button>
+                <button className="btn btn-primary" style={{ flex:1, padding:'10px', fontSize:'12px' }}>Download PDF</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── App ── */
+    function App() {
+      const [tab, setTab] = useState(0);
+      const [collapsed, setCollapsed] = useState(true);
+      const [justVerified, setJustVerified] = useState(false);
+      return (
+        <div style={{ height:'100vh', display:'flex', background:C.canvas, padding:'8px', gap:'8px', boxSizing:'border-box' }}>
+          <Sidebar tab={tab} onSelect={setTab} collapsed={collapsed} onToggle={() => setCollapsed(c => !c)}/>
+          <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
+            {tab===0 && <VignetteMyPlan  onStart={() => setTab(1)}/>}
+            {tab===1 && <VignetteLearn   onSubmit={() => { setJustVerified(true); setTab(2); }}/>}
+            {tab===2 && <VignetteWallet  key={String(justVerified)} justVerified={justVerified} onDismiss={() => setJustVerified(false)}/>}
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  </script>
+</body>
+</html>

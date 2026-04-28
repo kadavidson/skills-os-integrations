@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skills OS — Learner Prototype</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0A0A0F;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      padding: 24px 16px;
+    }
+
+    .phone-frame {
+      width: 390px;
+      height: 844px;
+      border-radius: 44px;
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.14),
+        0 0 0 10px #15152a,
+        0 0 0 11px rgba(255,255,255,0.05),
+        0 50px 120px rgba(0,0,0,0.85),
+        0 20px 40px rgba(91,95,239,0.12);
+    }
+
+    .phone-inner {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+    .scroll-area::-webkit-scrollbar { display: none; }
+
+    textarea { resize: none; font-family: inherit; }
+    button { outline: none; -webkit-tap-highlight-color: transparent; }
+
+    /* ── Animations ── */
+    @keyframes materialize {
+      from { opacity: 0; transform: scale(0.93); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes glowPulse {
+      0%   { box-shadow: 0 0 0 2px #5B5FEF, 0 0 28px rgba(91,95,239,0.55), 0 8px 32px rgba(0,0,0,0.4); }
+      50%  { box-shadow: 0 0 0 3px #5B5FEF, 0 0 48px rgba(91,95,239,0.75), 0 8px 32px rgba(0,0,0,0.4); }
+      100% { box-shadow: 0 0 0 2px #5B5FEF, 0 0 20px rgba(91,95,239,0.30), 0 8px 32px rgba(0,0,0,0.4); }
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateX(10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .verify-card {
+      animation:
+        materialize 0.48s cubic-bezier(0.34, 1.4, 0.64, 1) forwards,
+        glowPulse   1.6s ease-in-out 0.55s 1 forwards;
+      box-shadow: 0 0 0 2px #5B5FEF, 0 0 20px rgba(91,95,239,0.30), 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .sheet-up  { animation: slideUp  0.32s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+    .fade-slide { animation: fadeSlide 0.22s ease-out forwards; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    /* ── Color tokens ───────────────────────────────────────── */
+    const C = {
+      bg:      '#0A0A0F',
+      surface: '#FFFFFF',
+      muted:   '#F7F7F9',
+      primary: '#1A1A2E',
+      accent:  '#5B5FEF',
+      warm:    '#FF6B35',
+      tPri:    '#0A0A0F',
+      tSec:    '#6B7280',
+      tMut:    '#9CA3AF',
+      success: '#10B981',
+      warning: '#F59E0B',
+      border:  '#E5E7EB',
+    };
+
+    /* ── Status Bar ─────────────────────────────────────────── */
+    function StatusBar({ dark }) {
+      const fg = dark ? '#FFFFFF' : '#0A0A0F';
+      const bg = dark ? C.bg : C.surface;
+      return (
+        <div style={{ background: bg, padding: '14px 24px 6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
+          <span style={{ fontSize: '15px', fontWeight: '700', color: fg }}>9:41</span>
+          <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+            {/* Signal bars */}
+            <svg width="17" height="12" viewBox="0 0 17 12" fill="none">
+              {[0,1,2,3].map(i => (
+                <rect key={i} x={i * 4.5} y={12 - (i + 1) * 3} width="3" height={(i + 1) * 3} rx="1" fill={fg}/>
+              ))}
+            </svg>
+            {/* WiFi */}
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <circle cx="8" cy="10.5" r="1.2" fill={fg}/>
+              <path d="M5.2 8C6.1 7.1 7 6.7 8 6.7s1.9.4 2.8 1.3" stroke={fg} strokeWidth="1.2" strokeLinecap="round"/>
+              <path d="M2.5 5.3C4.1 3.7 6 2.9 8 2.9s3.9.8 5.5 2.4" stroke={fg} strokeWidth="1.2" strokeLinecap="round"/>
+            </svg>
+            {/* Battery */}
+            <svg width="26" height="13" viewBox="0 0 26 13" fill="none">
+              <rect x="0.6" y="1.5" width="21" height="10" rx="2.5" stroke={fg} strokeWidth="1.2"/>
+              <rect x="2" y="3" width="16" height="7" rx="1.5" fill={fg}/>
+              <path d="M23 4.5v4a2 2 0 000-4z" fill={fg}/>
+            </svg>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Persona Banner ─────────────────────────────────────── */
+    function PersonaBanner({ dark }) {
+      return (
+        <div style={{
+          background: dark ? '#0E0E1A' : C.muted,
+          borderBottom: `1px solid ${dark ? 'rgba(255,255,255,0.07)' : C.border}`,
+          padding: '8px 16px',
+          flexShrink: 0,
+        }}>
+          <div style={{ fontSize: '10px', fontWeight: '700', color: C.accent, letterSpacing: '0.09em', marginBottom: '2px' }}>
+            👤  LEARNER VIEW · Marcus Chen
+          </div>
+          <div style={{ fontSize: '11px', color: dark ? '#9CA3AF' : C.tSec }}>
+            Senior Data Analyst · Meridian Financial
+          </div>
+          <div style={{ fontSize: '11px', color: dark ? '#6B7280' : C.tMut, fontStyle: 'italic', marginTop: '1px' }}>
+            "I have 20 min. I need to actually learn something, not just complete a module."
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Bottom Nav ─────────────────────────────────────────── */
+    function BottomNav({ active, onSelect, dark }) {
+      const tabs = ['Learn', 'Verify', 'Wallet'];
+      return (
+        <div style={{
+          display: 'flex',
+          borderTop: `1px solid ${dark ? 'rgba(255,255,255,0.07)' : C.border}`,
+          background: dark ? C.bg : C.surface,
+          padding: '8px 0 20px',
+          flexShrink: 0,
+        }}>
+          {tabs.map((label, i) => (
+            <button key={i} onClick={() => onSelect(i)} style={{
+              flex: 1, background: 'none', border: 'none', cursor: 'pointer',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', padding: '4px 0',
+            }}>
+              <div style={{
+                width: '6px', height: '6px', borderRadius: '50%',
+                background: active === i ? C.accent : 'transparent',
+                border: `1.5px solid ${active === i ? C.accent : (dark ? '#4B5563' : '#D1D5DB')}`,
+              }}/>
+              <span style={{
+                fontSize: '11px',
+                fontWeight: active === i ? '700' : '400',
+                color: active === i ? C.accent : (dark ? '#6B7280' : C.tMut),
+              }}>{label}</span>
+            </button>
+          ))}
+        </div>
+      );
+    }
+
+    /* ── Vignette 1: Learn ──────────────────────────────────── */
+    function VignetteLearn({ onSubmit }) {
+      const [confidence, setConfidence] = useState('getting-there');
+      const [text, setText] = useState(
+        "You are a senior quantitative analyst with 15 years of experience reviewing financial models. You approach every model with healthy skepticism..."
+      );
+
+      const checks = [
+        { ok: true,  label: 'Role defined clearly' },
+        { ok: true,  label: 'Tone specified (skeptical)' },
+        { ok: true,  label: 'Domain expertise established' },
+        { ok: false, label: 'Missing: output format instructions' },
+        { ok: false, label: 'Missing: what to do when uncertain' },
+        { ok: false, label: 'Missing: escalation behavior' },
+      ];
+
+      const chips = [
+        { id: 'not-yet',       label: 'Not yet' },
+        { id: 'getting-there', label: 'Getting there ●' },
+        { id: 'got-it',        label: "I've got it" },
+      ];
+
+      return (
+        <div className="scroll-area" style={{ background: C.surface }}>
+          {/* Top bar */}
+          <div style={{
+            position: 'sticky', top: 0, zIndex: 10,
+            background: C.surface, borderBottom: `1px solid ${C.border}`,
+            padding: '11px 16px',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}>
+            <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', color: C.accent }}>
+              ← Back
+            </button>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '14px', fontWeight: '700', color: C.tPri }}>Prompt Engineering</div>
+              <div style={{ fontSize: '11px', color: C.tMut }}>Skill 1 of 4</div>
+            </div>
+            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+              {[1,2,3,4,5].map(i => (
+                <div key={i} style={{ width: '7px', height: '7px', borderRadius: '50%', background: i <= 2 ? C.accent : C.border }}/>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ padding: '16px' }}>
+            {/* Agent bubble */}
+            <div style={{ background: C.muted, borderRadius: '16px', padding: '16px', borderLeft: `3px solid ${C.accent}`, marginBottom: '16px' }}>
+              <div style={{ fontSize: '10px', fontWeight: '700', color: C.accent, letterSpacing: '0.1em', marginBottom: '10px' }}>
+                TEACHING AGENT
+              </div>
+              <p style={{ fontSize: '14px', lineHeight: '1.65', color: C.tPri, marginBottom: '10px' }}>
+                Hey Marcus. You have 20 minutes — let's make them count.
+              </p>
+              <p style={{ fontSize: '14px', lineHeight: '1.65', color: C.tPri, marginBottom: '10px' }}>
+                <strong>Today's skill: Write your first system prompt.</strong>
+              </p>
+              <p style={{ fontSize: '14px', lineHeight: '1.65', color: C.tPri, marginBottom: '14px' }}>
+                A system prompt tells Claude who it is and how to behave before your user says anything. It's the most powerful lever you have as a practitioner.
+              </p>
+              {/* Scenario card */}
+              <div style={{ background: C.surface, borderRadius: '12px', padding: '12px', border: `1px solid ${C.border}` }}>
+                <div style={{ fontSize: '10px', fontWeight: '700', color: C.tMut, letterSpacing: '0.08em', marginBottom: '6px' }}>
+                  YOUR SCENARIO · MERIDIAN FINANCIAL
+                </div>
+                <p style={{ fontSize: '13px', lineHeight: '1.6', color: '#374151' }}>
+                  Your team needs Claude to review financial models for errors. Write a system prompt that makes Claude behave like a senior quant analyst — precise, skeptical, and always shows its reasoning.
+                </p>
+              </div>
+            </div>
+
+            {/* Editor */}
+            <div style={{ marginBottom: '12px' }}>
+              <div style={{ fontSize: '10px', fontWeight: '700', color: C.tMut, letterSpacing: '0.08em', marginBottom: '6px' }}>
+                YOUR SYSTEM PROMPT
+              </div>
+              <textarea
+                value={text}
+                onChange={e => setText(e.target.value)}
+                onFocus={e => e.target.style.borderColor = C.accent}
+                onBlur={e => e.target.style.borderColor = C.border}
+                style={{
+                  width: '100%', height: '110px', padding: '12px',
+                  border: `1.5px solid ${C.border}`, borderRadius: '12px',
+                  fontSize: '13px', lineHeight: '1.65', color: C.tPri,
+                  background: C.surface, outline: 'none',
+                  transition: 'border-color 0.15s',
+                }}
+              />
+            </div>
+
+            {/* Live feedback */}
+            <div style={{ background: C.muted, borderRadius: '12px', padding: '12px 14px', marginBottom: '16px' }}>
+              <div style={{ fontSize: '10px', fontWeight: '700', color: C.tMut, letterSpacing: '0.08em', marginBottom: '8px' }}>
+                LIVE FEEDBACK
+              </div>
+              {checks.map((c, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: i < checks.length - 1 ? '5px' : 0 }}>
+                  <span style={{ color: c.ok ? C.success : '#D1D5DB', fontSize: '14px', fontWeight: '700', lineHeight: '1.4', width: '14px', flexShrink: 0 }}>
+                    {c.ok ? '✓' : '○'}
+                  </span>
+                  <span style={{ fontSize: '13px', color: c.ok ? '#374151' : C.tMut, lineHeight: '1.4' }}>
+                    {c.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Confidence check */}
+            <div style={{ marginBottom: '20px' }}>
+              <p style={{ fontSize: '13px', color: C.tSec, fontStyle: 'italic', lineHeight: '1.55', marginBottom: '10px' }}>
+                "How confident do you feel writing a system prompt from scratch right now?"
+              </p>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                {chips.map(chip => {
+                  const active = confidence === chip.id;
+                  return (
+                    <button key={chip.id} onClick={() => setConfidence(chip.id)} style={{
+                      flex: 1, padding: '8px 4px', borderRadius: '24px',
+                      border: `${active ? 2 : 1.5}px solid ${active ? C.warm : C.border}`,
+                      background: active ? 'rgba(255,107,53,0.07)' : C.surface,
+                      fontSize: '12px', fontWeight: active ? '700' : '400',
+                      color: active ? C.warm : C.tSec,
+                      cursor: 'pointer', transition: 'all 0.15s',
+                    }}>
+                      {chip.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* CTA */}
+            <button onClick={onSubmit} style={{
+              width: '100%', padding: '15px', borderRadius: '12px', border: 'none',
+              background: C.primary, color: '#FFFFFF',
+              fontSize: '15px', fontWeight: '700', cursor: 'pointer',
+              marginBottom: '24px',
+            }}>
+              Submit for skill check →
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Skill Arc ──────────────────────────────────────────── */
+    function SkillArc({ pct = 1, size = 72 }) {
+      const r = size / 2 - 5;
+      const circ = 2 * Math.PI * r;
+      return (
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+          <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="3.5"/>
+          <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={C.accent} strokeWidth="3.5"
+            strokeLinecap="round"
+            strokeDasharray={circ}
+            strokeDashoffset={circ * (1 - pct)}
+            transform={`rotate(-90 ${size/2} ${size/2})`}
+          />
+        </svg>
+      );
+    }
+
+    /* ── Vignette 2: Verify ─────────────────────────────────── */
+    function VignetteVerify({ onAddToWallet }) {
+      return (
+        <div className="scroll-area" style={{ background: C.bg }}>
+          <div style={{ padding: '20px 20px 32px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+
+            {/* Title */}
+            <div style={{ textAlign: 'center', marginBottom: '22px' }}>
+              <div style={{ fontSize: '11px', fontWeight: '700', color: C.accent, letterSpacing: '0.1em', marginBottom: '8px' }}>
+                ASSESSMENT COMPLETE
+              </div>
+              <h2 style={{ fontSize: '30px', fontWeight: '700', color: '#FFFFFF', letterSpacing: '-0.5px' }}>
+                Skill Verified
+              </h2>
+            </div>
+
+            {/* Verification card */}
+            <div className="verify-card" style={{ width: '100%', background: '#FFFFFF', borderRadius: '20px', padding: '20px', marginBottom: '22px' }}>
+
+              {/* Arc + title row */}
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
+                <div style={{ position: 'relative', width: '72px', height: '72px', flexShrink: 0, marginRight: '14px' }}>
+                  <SkillArc pct={1} size={72}/>
+                  <div style={{
+                    position: 'absolute', inset: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '26px', color: C.accent,
+                  }}>◉</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '10px', fontWeight: '700', color: C.accent, letterSpacing: '0.1em', marginBottom: '3px' }}>
+                    DEMONSTRATED
+                  </div>
+                  <div style={{ fontSize: '19px', fontWeight: '700', color: C.tPri, letterSpacing: '-0.3px', lineHeight: '1.2' }}>
+                    Prompt Engineering
+                  </div>
+                  <div style={{ fontSize: '13px', color: C.tSec }}>Foundation Level</div>
+                  <div style={{ fontSize: '11px', color: C.success, fontWeight: '600', marginTop: '2px' }}>18 months current</div>
+                </div>
+              </div>
+
+              <div style={{ height: '1px', background: C.border, marginBottom: '14px' }}/>
+
+              {/* Meta grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '7px', marginBottom: '14px' }}>
+                {[
+                  { label: 'Verified',    value: 'Apr 23, 2026', color: C.tPri },
+                  { label: 'Current for', value: '18 months',    color: C.success },
+                  { label: 'Refresh by',  value: 'Oct 2027',     color: C.tPri },
+                ].map((item, i) => (
+                  <div key={i} style={{ background: C.muted, borderRadius: '10px', padding: '9px 7px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '10px', color: C.tMut, marginBottom: '2px' }}>{item.label}</div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: item.color, lineHeight: '1.3' }}>{item.value}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ fontSize: '11px', color: C.tMut, fontWeight: '600', marginBottom: '3px' }}>Assessed:</div>
+              <div style={{ fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '14px' }}>
+                Coursera Skills Framework + DeepLearning.AI
+              </div>
+
+              <div style={{ height: '1px', background: C.border, marginBottom: '14px' }}/>
+
+              <div style={{ fontSize: '11px', fontWeight: '700', color: C.tSec, marginBottom: '6px' }}>WHAT THIS PROVES</div>
+              <p style={{ fontSize: '13px', lineHeight: '1.65', color: '#374151', marginBottom: '14px' }}>
+                Marcus can write effective system prompts, chain prompts for multi-step tasks, and debug prompt failures in production contexts — demonstrated through applied assessment, not video completion.
+              </p>
+
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '7px',
+                padding: '8px 12px', borderRadius: '8px',
+                background: 'rgba(91,95,239,0.07)',
+              }}>
+                <span style={{ fontSize: '13px' }}>🔒</span>
+                <span style={{ fontSize: '12px', fontWeight: '600', color: C.accent }}>
+                  Identity verified · Proctored assessment
+                </span>
+              </div>
+            </div>
+
+            {/* Key copy */}
+            <div style={{ textAlign: 'center', marginBottom: '24px', padding: '0 6px' }}>
+              <div style={{ fontSize: '17px', fontWeight: '700', color: '#FFFFFF', marginBottom: '8px', letterSpacing: '-0.2px' }}>
+                "This is not a completion badge."
+              </div>
+              <p style={{ fontSize: '13px', color: '#9CA3AF', lineHeight: '1.65' }}>
+                You were assessed on what you can do, not what you watched. This credential is backed by Coursera and DeepLearning.AI and tied to your verified identity.
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div style={{ width: '100%', display: 'flex', gap: '10px' }}>
+              <button onClick={onAddToWallet} style={{
+                flex: 1, padding: '14px 10px', borderRadius: '12px', border: 'none',
+                background: C.accent, color: '#FFFFFF',
+                fontSize: '13px', fontWeight: '700', cursor: 'pointer',
+              }}>
+                Add to Skills Wallet
+              </button>
+              <button style={{
+                flex: 1, padding: '14px 10px', borderRadius: '12px',
+                border: '1.5px solid rgba(255,255,255,0.14)',
+                background: 'rgba(255,255,255,0.06)', color: '#FFFFFF',
+                fontSize: '13px', fontWeight: '600', cursor: 'pointer',
+              }}>
+                Share with Priya →
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Sparkline ──────────────────────────────────────────── */
+    function Sparkline() {
+      const pts = [8, 14, 20, 28, 33, 42, 52, 58, 66, 73, 81, 91];
+      const W = 350, H = 44, pad = 4, maxY = 91;
+      const xs = pts.map((_, i) => pad + (i / (pts.length - 1)) * (W - 2 * pad));
+      const ys = pts.map(v => H - pad - (v / maxY) * (H - 2 * pad));
+      const line = xs.map((x, i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${ys[i].toFixed(1)}`).join(' ');
+      const area = `${line} L${xs[xs.length-1]},${H} L${xs[0]},${H} Z`;
+      return (
+        <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ overflow: 'visible', display: 'block' }}>
+          <defs>
+            <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={C.accent} stopOpacity="0.2"/>
+              <stop offset="100%" stopColor={C.accent} stopOpacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d={area} fill="url(#sg)"/>
+          <path d={line} fill="none" stroke={C.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <circle cx={xs[xs.length-1]} cy={ys[ys.length-1]} r="3.5" fill={C.accent}/>
+        </svg>
+      );
+    }
+
+    /* ── Vignette 3: Wallet ─────────────────────────────────── */
+    function VignetteWallet() {
+      const [view, setView] = useState('day1');
+      const [showShare, setShowShare] = useState(false);
+
+      const day1Skills = [
+        { icon: '◉', name: 'Prompt Engineering',      sub: 'Verified Apr 2026', badge: 'fresh',   pct: null },
+        { icon: '◐', name: 'AI Workflow Integration',  sub: 'In progress',       badge: null,       pct: 60 },
+        { icon: '◐', name: 'Claude API Fundamentals',  sub: 'In progress',       badge: null,       pct: 35 },
+        { icon: '○', name: 'Prototyping & Iteration',  sub: 'Not started',       badge: null,       pct: null },
+      ];
+      const sixMoSkills = [
+        { icon: '◉', name: 'Prompt Engineering',       sub: 'Verified Apr 2026', badge: 'fresh' },
+        { icon: '◉', name: 'AI Workflow Integration',  sub: 'Verified May 2026', badge: 'fresh' },
+        { icon: '◉', name: 'Claude API Fundamentals',  sub: 'Verified Jun 2026', badge: 'fresh' },
+        { icon: '◉', name: 'Prototyping & Iteration',  sub: 'Verified Aug 2026', badge: 'fresh' },
+        { icon: '◉', name: 'Python for Data Analysis', sub: 'Verified Sep 2026', badge: 'fresh' },
+        { icon: '⚠', name: 'Statistical Modeling',     sub: 'Verified Oct 2025', badge: 'refresh' },
+      ];
+      const shareSkills = [
+        { icon: '◉', name: 'Prompt Engineering',       date: 'Apr 2026', r: false },
+        { icon: '◉', name: 'AI Workflow Integration',  date: 'May 2026', r: false },
+        { icon: '◉', name: 'Claude API Fundamentals',  date: 'Jun 2026', r: false },
+        { icon: '◉', name: 'Prototyping & Iteration',  date: 'Aug 2026', r: false },
+        { icon: '◉', name: 'Python for Data Analysis', date: 'Sep 2026', r: false },
+        { icon: '⚠', name: 'Statistical Modeling',     date: 'Oct 2025', r: true },
+      ];
+
+      const skills = view === 'day1' ? day1Skills : sixMoSkills;
+
+      function SkillRow({ s }) {
+        const isFresh   = s.badge === 'fresh';
+        const isRefresh = s.badge === 'refresh';
+        const isNone    = s.icon === '○';
+        const iconColor = isRefresh ? C.warning : isFresh ? C.accent : isNone ? '#D1D5DB' : C.tMut;
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', padding: '9px 0', borderBottom: '1px solid #F3F4F6' }}>
+            <span style={{ fontSize: '15px', marginRight: '10px', flexShrink: 0, color: iconColor }}>
+              {s.icon}
+            </span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: '13px', fontWeight: '600', color: isNone ? C.tMut : C.tPri, marginBottom: '1px' }}>
+                {s.name}
+              </div>
+              {s.pct != null ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '11px', color: C.tMut }}>{s.sub}</span>
+                  <div style={{ width: '48px', height: '3px', background: C.border, borderRadius: '2px', overflow: 'hidden' }}>
+                    <div style={{ width: `${s.pct}%`, height: '100%', background: C.accent, borderRadius: '2px' }}/>
+                  </div>
+                  <span style={{ fontSize: '11px', color: C.accent, fontWeight: '700' }}>{s.pct}%</span>
+                </div>
+              ) : (
+                <div style={{ fontSize: '11px', color: C.tMut }}>{s.sub}</div>
+              )}
+            </div>
+            {(isFresh || isRefresh) && (
+              <div style={{
+                padding: '3px 8px', borderRadius: '24px', flexShrink: 0,
+                background: isRefresh ? 'rgba(245,158,11,0.10)' : 'rgba(16,185,129,0.10)',
+                border: `1px solid ${isRefresh ? 'rgba(245,158,11,0.30)' : 'rgba(16,185,129,0.30)'}`,
+                fontSize: '11px', fontWeight: '700',
+                color: isRefresh ? C.warning : C.success,
+              }}>
+                {isRefresh ? '↺ Refresh' : '✓ Fresh'}
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      return (
+        <div className="scroll-area" style={{ background: C.surface, position: 'relative' }}>
+          <div style={{ padding: '16px' }}>
+
+            {/* Header */}
+            <div style={{ marginBottom: '14px' }}>
+              <div style={{ fontSize: '21px', fontWeight: '700', color: C.tPri, letterSpacing: '-0.4px', marginBottom: '2px' }}>
+                Marcus Chen
+              </div>
+              <div style={{ fontSize: '13px', color: C.tSec, marginBottom: '4px' }}>
+                Senior Data Analyst · Meridian Financial
+              </div>
+              <div style={{ fontSize: '13px', fontWeight: '600', color: C.accent }}>
+                {view === 'day1' ? '1 skill verified · 2 in progress' : '6 skills verified · 1 needs refresh'}
+              </div>
+            </div>
+
+            {/* Toggle */}
+            <div style={{ display: 'flex', background: C.muted, borderRadius: '10px', padding: '3px', marginBottom: '14px' }}>
+              {[['day1', 'Day 1'], ['6mo', '6 Months In']].map(([v, l]) => (
+                <button key={v} onClick={() => setView(v)} style={{
+                  flex: 1, padding: '7px 4px', borderRadius: '8px', border: 'none',
+                  background: view === v ? '#FFFFFF' : 'transparent',
+                  boxShadow: view === v ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                  fontSize: '12px', fontWeight: view === v ? '700' : '400',
+                  color: view === v ? C.tPri : C.tMut,
+                  cursor: 'pointer', transition: 'all 0.18s',
+                }}>{l}</button>
+              ))}
+            </div>
+
+            {/* Sparkline — 6mo only */}
+            {view === '6mo' && (
+              <div className="fade-slide" style={{ marginBottom: '14px' }}>
+                <div style={{ fontSize: '10px', fontWeight: '700', color: C.tMut, letterSpacing: '0.08em', marginBottom: '6px' }}>
+                  SKILL GROWTH — APR → OCT 2026
+                </div>
+                <Sparkline/>
+              </div>
+            )}
+
+            {/* Skills list — key forces re-render & re-fires animation on toggle */}
+            <div key={view} className="fade-slide">
+              {skills.map((s, i) => <SkillRow key={i} s={s}/>)}
+            </div>
+
+            <div style={{ fontSize: '11px', color: C.tMut, marginTop: '10px', marginBottom: '16px', fontStyle: 'italic' }}>
+              Skills from: Coursera platform · Meridian AI Prototyping program
+            </div>
+
+            {/* Share CTA */}
+            <button onClick={() => setShowShare(true)} style={{
+              width: '100%', padding: '14px', borderRadius: '12px', border: 'none',
+              background: C.primary, color: '#FFFFFF',
+              fontSize: '14px', fontWeight: '700', cursor: 'pointer',
+              marginBottom: '8px',
+            }}>
+              Share skills →
+            </button>
+          </div>
+
+          {/* Bottom sheet overlay */}
+          {showShare && (
+            <div
+              onClick={e => { if (e.target === e.currentTarget) setShowShare(false); }}
+              style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'flex-end', zIndex: 50 }}
+            >
+              <div className="sheet-up" style={{ width: '100%', background: '#FFFFFF', borderRadius: '20px 20px 0 0', padding: '16px 16px 32px' }}>
+                <div style={{ width: '36px', height: '4px', background: C.border, borderRadius: '2px', margin: '0 auto 16px' }}/>
+
+                <div style={{ fontSize: '15px', fontWeight: '700', color: C.tPri, marginBottom: '1px' }}>
+                  Marcus Chen · Senior Data Analyst
+                </div>
+                <div style={{ fontSize: '13px', color: C.tSec, marginBottom: '14px' }}>
+                  Meridian Financial Services
+                </div>
+                <div style={{ fontSize: '10px', fontWeight: '700', color: C.tMut, letterSpacing: '0.08em', marginBottom: '8px' }}>
+                  VERIFIED SKILLS
+                </div>
+
+                {shareSkills.map((s, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', padding: '7px 0', borderBottom: i < shareSkills.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
+                    <span style={{ fontSize: '14px', marginRight: '8px', color: s.r ? C.warning : C.accent }}>{s.icon}</span>
+                    <span style={{ flex: 1, fontSize: '13px', color: C.tPri }}>{s.name}</span>
+                    <span style={{ fontSize: '12px', color: C.tMut, marginRight: '8px' }}>{s.date}</span>
+                    <span style={{ fontSize: '13px', color: s.r ? C.warning : C.success }}>{s.r ? '↺' : '✓'}</span>
+                  </div>
+                ))}
+
+                <div style={{ height: '1px', background: C.border, margin: '12px 0' }}/>
+                <div style={{ fontSize: '12px', color: C.tMut, marginBottom: '14px' }}>
+                  Verified by: Coursera · DeepLearning.AI · Identity verified · Live credential link
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '14px' }}>
+                  <button style={{ flex: 1, padding: '12px', border: `1.5px solid ${C.border}`, borderRadius: '10px', background: '#FFFFFF', fontSize: '13px', fontWeight: '600', color: C.tPri, cursor: 'pointer' }}>
+                    Copy link
+                  </button>
+                  <button style={{ flex: 1, padding: '12px', border: 'none', borderRadius: '10px', background: C.primary, fontSize: '13px', fontWeight: '600', color: '#FFFFFF', cursor: 'pointer' }}>
+                    Download PDF
+                  </button>
+                </div>
+
+                <p style={{ fontSize: '12px', color: C.tMut, lineHeight: '1.65', fontStyle: 'italic', textAlign: 'center' }}>
+                  "This link is live — it reflects Marcus's current skill status. If a skill lapses, the link updates automatically. Employers see real-time proof, not a static certificate."
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    /* ── App ────────────────────────────────────────────────── */
+    function App() {
+      const [tab, setTab] = useState(0);
+      const dark = tab === 1;
+
+      return (
+        <div className="phone-frame" style={{ background: dark ? C.bg : C.surface }}>
+          <div className="phone-inner">
+            <StatusBar dark={dark}/>
+            <PersonaBanner dark={dark}/>
+            {tab === 0 && <VignetteLearn onSubmit={() => setTab(1)}/>}
+            {tab === 1 && <VignetteVerify onAddToWallet={() => setTab(2)}/>}
+            {tab === 2 && <VignetteWallet/>}
+            <BottomNav active={tab} onSelect={setTab} dark={dark}/>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  </script>
+</body>
+</html>

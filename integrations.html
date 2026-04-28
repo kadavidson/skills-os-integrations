@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coursera — Integrations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root { height: 100%; overflow: hidden; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F5F4F1;
+      color: #1C1917;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, textarea { font-family: inherit; }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes widgetSlideIn {
+      from { opacity: 0; transform: translateX(14px) scale(0.96); }
+      to   { opacity: 1; transform: translateX(0) scale(1); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .fade-up    { animation: fadeSlideUp  0.28s cubic-bezier(0.4,0,0.2,1) both; }
+    .fade-up-d1 { animation: fadeSlideUp  0.28s cubic-bezier(0.4,0,0.2,1) 0.08s both; }
+    .fade-up-d2 { animation: fadeSlideUp  0.28s cubic-bezier(0.4,0,0.2,1) 0.16s both; }
+    .widget-in  { animation: widgetSlideIn 0.38s cubic-bezier(0.34,1.15,0.64,1) 0.5s both; }
+    .fade-in    { animation: fadeIn 0.3s ease both; }
+
+    .scroll { overflow-y: auto; overflow-x: hidden; }
+    .scroll::-webkit-scrollbar { width: 4px; }
+    .scroll::-webkit-scrollbar-track { background: transparent; }
+    .scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 2px; }
+
+    .slack-scroll::-webkit-scrollbar { width: 0px; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+  const { useState, useEffect, useRef } = React;
+
+  /* ── Design tokens ─────────────────────────────────────── */
+  const C = {
+    accent:     '#5B5FEF',
+    accentLt:   'rgba(91,95,239,0.08)',
+    warm:       '#E76F3A',
+    success:    '#059669',
+    warning:    '#D97706',
+    border:     '#E8E5E0',
+    muted:      '#F0EDE8',
+    canvas:     '#F5F4F1',
+    surface:    '#FFFFFF',
+    tPri:       '#1C1917',
+    tSec:       '#57534E',
+    tMut:       '#A8A29E',
+    coursera:   '#0057C5',
+    courseraLt: 'rgba(0,87,197,0.06)',
+  };
+
+  /* ── Icons ─────────────────────────────────────────────── */
+  /* Real Slack 4-colour hashtag logo */
+  function IconSlack({ size = 16 }) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 80 80" fill="none">
+        {/* Green — top-left L */}
+        <rect x="18" y="4"  width="14" height="28" rx="7" fill="#2EB67D"/>
+        <rect x="4"  y="18" width="28" height="14" rx="7" fill="#2EB67D"/>
+        {/* Cyan — top-right L */}
+        <rect x="48" y="4"  width="14" height="28" rx="7" fill="#36C5F0"/>
+        <rect x="48" y="18" width="28" height="14" rx="7" fill="#36C5F0"/>
+        {/* Yellow — bottom-right L */}
+        <rect x="48" y="48" width="14" height="28" rx="7" fill="#ECB22E"/>
+        <rect x="48" y="48" width="28" height="14" rx="7" fill="#ECB22E"/>
+        {/* Red — bottom-left L */}
+        <rect x="18" y="48" width="14" height="28" rx="7" fill="#E01E5A"/>
+        <rect x="4"  y="48" width="28" height="14" rx="7" fill="#E01E5A"/>
+      </svg>
+    );
+  }
+
+  function IconClaude({ size = 16, color = 'currentColor' }) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="9" stroke={color} strokeWidth="1.4" fill="none"/>
+        <circle cx="9"  cy="10" r="1.6" fill={color}/>
+        <circle cx="15" cy="10" r="1.6" fill={color}/>
+        <circle cx="12" cy="14.5" r="1.6" fill={color}/>
+        <line x1="9" y1="10" x2="15"  y2="10"   stroke={color} strokeWidth="0.9" opacity="0.45"/>
+        <line x1="9" y1="10" x2="12"  y2="14.5" stroke={color} strokeWidth="0.9" opacity="0.45"/>
+        <line x1="15" y1="10" x2="12" y2="14.5" stroke={color} strokeWidth="0.9" opacity="0.45"/>
+      </svg>
+    );
+  }
+
+  function IconWorkday({ size = 16, color = 'currentColor' }) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="6.5" r="3.5" stroke={color} strokeWidth="1.4" fill="none"/>
+        <circle cx="5"  cy="18" r="2.5" stroke={color} strokeWidth="1.4" fill="none"/>
+        <circle cx="19" cy="18" r="2.5" stroke={color} strokeWidth="1.4" fill="none"/>
+        <path d="M3 22 Q5 15.5 12 15.5 Q19 15.5 21 22"
+          stroke={color} strokeWidth="1.2" fill="none" strokeLinecap="round" opacity="0.5"/>
+      </svg>
+    );
+  }
+
+  /* ── Top Navigator ─────────────────────────────────────── */
+  function Navigator({ active, onSelect }) {
+    const tabs = [
+      { id: 'slack',   label: 'Slack',   Icon: IconSlack },
+      { id: 'claude',  label: 'Claude',  Icon: IconClaude },
+      { id: 'workday', label: 'Workday', Icon: IconWorkday },
+    ];
+    return (
+      <div style={{
+        height: '54px', background: C.surface,
+        borderBottom: `1px solid ${C.border}`,
+        display: 'flex', alignItems: 'center',
+        padding: '0 20px', gap: '6px', flexShrink: 0,
+      }}>
+        {/* Brand */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginRight: '16px' }}>
+          <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '700', color: '#fff', flexShrink: 0 }}>C</div>
+          <div>
+            <div style={{ fontSize: '13px', fontWeight: '600', color: C.tPri, lineHeight: '1.2' }}>Coursera</div>
+            <div style={{ fontSize: '10px', fontWeight: '600', color: C.tMut, letterSpacing: '0.07em', textTransform: 'uppercase' }}>Integrations</div>
+          </div>
+        </div>
+
+        <div style={{ width: '1px', height: '24px', background: C.border, marginRight: '8px' }}/>
+
+        {/* Tabs */}
+        {tabs.map(({ id, label, Icon }) => {
+          const isActive = active === id;
+          return (
+            <button key={id} onClick={() => onSelect(id)} style={{
+              display: 'flex', alignItems: 'center', gap: '7px',
+              padding: '7px 14px', borderRadius: '8px', border: 'none',
+              background: isActive ? C.accent : 'transparent',
+              color: isActive ? '#fff' : C.tSec,
+              fontSize: '13px', fontWeight: isActive ? '600' : '400',
+              cursor: 'pointer', transition: 'all 140ms cubic-bezier(0.4,0,0.2,1)',
+            }}>
+              <Icon size={14}/>
+              {label}
+              <div style={{
+                width: '6px', height: '6px', borderRadius: '50%',
+                background: isActive ? 'rgba(255,255,255,0.55)' : C.success,
+              }}/>
+            </button>
+          );
+        })}
+
+        <div style={{ flex: 1 }}/>
+
+        <button style={{
+          display: 'flex', alignItems: 'center', gap: '6px',
+          padding: '7px 14px', borderRadius: '8px',
+          border: `1.5px dashed ${C.border}`, background: 'transparent',
+          color: C.tMut, fontSize: '13px', fontWeight: '500', cursor: 'pointer',
+        }}>
+          <span style={{ fontSize: '15px', lineHeight: 1, marginTop: '-1px' }}>+</span> Connect
+        </button>
+      </div>
+    );
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     SLACK VIEW — Weekly Manager Digest
+  ══════════════════════════════════════════════════════════ */
+  function SlackView() {
+    const [activeChart, setActiveChart]       = useState('prototyping');
+    const [activeSubSkill, setActiveSubSkill] = useState(null);
+    const [hoverIdx, setHoverIdx]             = useState(null);
+    const chartSvgRef = useRef(null);
+
+    const MONTHS           = ['Oct','Nov','Dec','Jan','Feb','Mar','Apr'];
+    const MONTH_YR_LABELS  = ['Oct 2025','Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026'];
+    const TOOLTIP_MEMBERS  = ['Lena M.','Aisha O.','Marcus C.','Sophie K.','David L.','James P.','Emma T.','Yuki W.','Nadia F.','Sam B.','Alex R.','Carlos V.','Mei L.','Raj P.','Zara H.'];
+
+    const AREA_META = [
+      { id: 'prototyping', label: 'AI Prototyping', pct: 67, delta: 45 },
+      { id: 'data',        label: 'Data Literacy',  pct: 73, delta: 45 },
+      { id: 'strategy',    label: 'AI Strategy',    pct: 27, delta: 22 },
+      { id: 'management',  label: 'Management',     pct: 7,  delta: 7  },
+    ];
+    const TAB_COLORS = {
+      prototyping: { bg: '#9CDEEC', text: '#1C1917' },
+      data:        { bg: '#FF4800', text: '#FFFFFF' },
+      strategy:    { bg: '#510825', text: '#FFFFFF' },
+      management:  { bg: '#0065FF', text: '#FFFFFF' },
+    };
+    const CHART_STYLES = {
+      prototyping: { bg:'#9CDEEC', linePrimary:'#1C1917',                lineSub:'rgba(28,25,23,0.18)',    dimText:'rgba(28,25,23,0.45)',   valText:'#1C1917',                  gridStroke:'rgba(28,25,23,0.1)',    nowFill:'rgba(28,25,23,0.1)',    nowText:'rgba(28,25,23,0.75)' },
+      data:        { bg:'#FF4800', linePrimary:'#FFFFFF',                lineSub:'rgba(255,255,255,0.22)', dimText:'rgba(255,255,255,0.5)', valText:'white',                    gridStroke:'rgba(255,255,255,0.15)',nowFill:'rgba(255,255,255,0.2)', nowText:'white' },
+      strategy:    { bg:'#510825', linePrimary:'#FF4800',                lineSub:'rgba(255,255,255,0.18)', dimText:'rgba(255,255,255,0.45)',valText:'rgba(255,255,255,0.95)',    gridStroke:'rgba(255,255,255,0.12)',nowFill:'rgba(255,255,255,0.15)',nowText:'white' },
+      management:  { bg:'#0065FF', linePrimary:'rgba(255,255,255,0.95)',lineSub:'rgba(255,255,255,0.2)',  dimText:'rgba(255,255,255,0.5)', valText:'white',                    gridStroke:'rgba(255,255,255,0.18)',nowFill:'rgba(255,255,255,0.2)', nowText:'white' },
+    };
+    const AREA_TRENDS = {
+      prototyping: {
+        summary: (p,d) => `AI Prototyping is tracking at ${p}% team readiness — up ${d}% since October.`,
+        companyAvg: [1,2,3,4,5,6,7],
+        skills: [
+          { label:'Prompt Engineering',     pts:[3,4,6,8,10,11,13] },
+          { label:'AI Workflow Integration', pts:[1,3,5,7,9,10,12]  },
+          { label:'Claude API Fundamentals', pts:[1,2,3,4,5,6,7]   },
+          { label:'Prototyping & Iteration', pts:[0,1,1,2,3,4,6]   },
+        ],
+      },
+      data: {
+        summary: (p,d) => `Data Literacy is your strongest area at ${p}% — up ${d}% since October.`,
+        companyAvg: [3,4,5,6,7,8,9],
+        skills: [
+          { label:'Interpret AI Outputs', pts:[5,6,7,8,9,10,11] },
+          { label:'Validate Results',     pts:[3,5,6,7,8,9,11]  },
+          { label:'Data Visualization',   pts:[3,4,5,6,7,8,10]  },
+        ],
+      },
+      strategy: {
+        summary: (p,d) => `AI Strategy is an early-stage area at ${p}% — up ${d}% since October.`,
+        companyAvg: [0,0,0.5,1,2,2.5,3],
+        skills: [
+          { label:'AI Evaluation',        pts:[0,0,1,2,3,4,5] },
+          { label:'AI Governance & Risk', pts:[0,0,0,1,1,2,3] },
+          { label:'AI Roadmapping',       pts:[0,0,0,0,1,1,2] },
+        ],
+      },
+      management: {
+        summary: (p,d) => `Management skills are just getting started at ${p}% — focus area for Q2.`,
+        companyAvg: [0,0,0,0,0.5,0.5,1],
+        skills: [
+          { label:'Change Management', pts:[0,0,0,0,0,1,1] },
+          { label:'Coaching for AI',   pts:[0,0,0,0,0,1,1] },
+          { label:'Culture Building',  pts:[0,0,0,0,0,0,1] },
+        ],
+      },
+    };
+
+    const SVW=560, SVH=155, SPL=26, SPR=42, SPT=14, SPB=22;
+    const spW=SVW-SPL-SPR, spH=SVH-SPT-SPB;
+    const sxP = (i) => SPL + (i/6)*spW;
+    const syP = (v) => SPT + spH - (v/15)*spH;
+    const mkPath = (pts) => {
+      let d=`M ${sxP(0).toFixed(1)} ${syP(pts[0]).toFixed(1)}`;
+      for(let i=1;i<pts.length;i++){
+        const cx=((sxP(i-1)+sxP(i))/2).toFixed(1);
+        d+=` C ${cx} ${syP(pts[i-1]).toFixed(1)} ${cx} ${syP(pts[i]).toFixed(1)} ${sxP(i).toFixed(1)} ${syP(pts[i]).toFixed(1)}`;
+      }
+      return d;
+    };
+    const handleChartMove = (e) => {
+      if(!chartSvgRef.current) return;
+      const rect=chartSvgRef.current.getBoundingClientRect();
+      const x=(e.clientX-rect.left)/rect.width*SVW;
+      let nearest=0, minDist=Infinity;
+      for(let i=0;i<7;i++){const d=Math.abs(x-sxP(i));if(d<minDist){minDist=d;nearest=i;}}
+      setHoverIdx(nearest);
+    };
+    const handleChartLeave = () => setHoverIdx(null);
+
+    return (
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+
+        {/* ── Slack Sidebar ── */}
+        <div style={{
+          width: '258px', flexShrink: 0,
+          background: '#4A154B',
+          display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        }}>
+          {/* Workspace header */}
+          <div style={{ padding: '14px 16px 12px', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: '#1A2A50', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '800', color: '#fff' }}>M</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ fontSize: '15px', fontWeight: '700', color: '#fff' }}>Meridian</span>
+                <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 5l3 3 3-3" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </div>
+            </div>
+            <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><path d="M7 1.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zm0 2.5v3l2 1.2" stroke="rgba(255,255,255,0.55)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </div>
+          </div>
+
+          {/* Sidebar nav */}
+          <div className="scroll slack-scroll" style={{ flex: 1, padding: '10px 0' }}>
+
+            {/* Channels */}
+            <div style={{ padding: '2px 16px 4px', fontSize: '11px', fontWeight: '700', color: 'rgba(255,255,255,0.38)', letterSpacing: '0.07em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              Channels <span style={{ cursor: 'pointer' }}>+</span>
+            </div>
+            {['general', 'design-team', 'ai-prototyping', 'skills-updates'].map(ch => (
+              <div key={ch} style={{ padding: '5px 16px', fontSize: '14px', color: ch === 'ai-prototyping' ? '#fff' : 'rgba(255,255,255,0.5)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', background: ch === 'ai-prototyping' ? 'rgba(255,255,255,0.1)' : 'transparent', borderRadius: '4px', margin: '0 8px 1px' }}>
+                <span style={{ opacity: 0.5, fontSize: '14px' }}>#</span>
+                <span style={{ fontWeight: ch === 'ai-prototyping' ? '500' : '400' }}>{ch}</span>
+                {ch === 'skills-updates' && <div style={{ marginLeft: 'auto', minWidth: '18px', height: '18px', borderRadius: '9px', background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: '700', color: '#fff' }}>3</div>}
+              </div>
+            ))}
+
+            {/* DMs */}
+            <div style={{ padding: '12px 16px 4px', fontSize: '11px', fontWeight: '700', color: 'rgba(255,255,255,0.38)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>Direct Messages</div>
+            {[
+              { name: 'Milee Yu', initials: 'MY', color: '#6366F1' },
+              { name: 'Marcus Chen', initials: 'MC', color: C.warm },
+              { name: 'Olwen Puralena', initials: 'OP', color: '#059669' },
+              { name: 'Kari Hedberg (you)', initials: 'KH', color: '#8B8FFF' },
+            ].map(dm => (
+              <div key={dm.name} style={{ padding: '4px 16px', fontSize: '14px', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', borderRadius: '4px', margin: '0 8px 1px' }}>
+                <div style={{ width: '18px', height: '18px', borderRadius: '4px', background: dm.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: '700', color: '#fff', flexShrink: 0 }}>{dm.initials}</div>
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{dm.name}</span>
+              </div>
+            ))}
+
+            {/* Apps */}
+            <div style={{ padding: '12px 16px 4px', fontSize: '11px', fontWeight: '700', color: 'rgba(255,255,255,0.38)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>Apps</div>
+            {[
+              { name: 'Coursera Skills', color: C.accent,  letter: 'C', active: true },
+              { name: 'Workday',         color: '#BF3507', letter: 'W', active: false },
+              { name: 'Jirabot',         color: '#4A90D9', letter: 'J', active: false },
+            ].map(app => (
+              <div key={app.name} style={{ padding: '5px 16px', fontSize: '14px', color: app.active ? '#fff' : 'rgba(255,255,255,0.5)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', background: app.active ? 'rgba(91,95,239,0.28)' : 'transparent', borderRadius: '4px', margin: '0 8px 1px', fontWeight: app.active ? '500' : '400' }}>
+                <div style={{ width: '18px', height: '18px', borderRadius: '4px', background: app.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: '700', color: '#fff', flexShrink: 0 }}>{app.letter}</div>
+                {app.name}
+              </div>
+            ))}
+          </div>
+
+          {/* User footer */}
+          <div style={{ padding: '10px 16px', borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', gap: '9px' }}>
+            <div style={{ position: 'relative', flexShrink: 0 }}>
+              <div style={{ width: '30px', height: '30px', borderRadius: '6px', background: '#6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', color: '#fff' }}>PS</div>
+              <div style={{ position: 'absolute', bottom: '-2px', right: '-2px', width: '9px', height: '9px', borderRadius: '50%', background: '#059669', border: '2px solid #4A154B' }}/>
+            </div>
+            <div>
+              <div style={{ fontSize: '13px', fontWeight: '600', color: '#fff' }}>Priya Sharma</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.38)' }}>Active</div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Main message area ── */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#fff', overflow: 'hidden' }}>
+
+          {/* Channel header */}
+          <div style={{ padding: '12px 20px', borderBottom: '1px solid #EBEBEB', display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+            <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '700', color: '#fff', flexShrink: 0 }}>C</div>
+            <div>
+              <div style={{ fontSize: '15px', fontWeight: '700', color: '#1A1A1A' }}>Coursera Skills</div>
+              <div style={{ fontSize: '12px', color: '#8E8E93' }}>App · Weekly team digest + skill alerts</div>
+            </div>
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+              {['Home', 'Messages', 'About'].map((t, i) => (
+                <button key={t} style={{ padding: '6px 13px', borderRadius: '6px', border: '1px solid', borderColor: i === 1 ? '#1A1A1A' : '#E0E0E0', background: i === 1 ? '#1A1A1A' : 'transparent', fontSize: '12px', fontWeight: i === 1 ? '600' : '400', color: i === 1 ? '#fff' : '#6B7280', cursor: 'pointer' }}>{t}</button>
+              ))}
+            </div>
+          </div>
+
+          {/* Messages */}
+          <div className="scroll fade-in" style={{ flex: 1, padding: '22px 24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+            {/* Date divider */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ flex: 1, height: '1px', background: '#EBEBEB' }}/>
+              <span style={{ fontSize: '12px', fontWeight: '500', color: '#8E8E93', flexShrink: 0 }}>Monday, April 27</span>
+              <div style={{ flex: 1, height: '1px', background: '#EBEBEB' }}/>
+            </div>
+
+            {/* Main bot message */}
+            <div className="fade-up" style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: '700', color: '#fff', flexShrink: 0 }}>C</div>
+              <div style={{ flex: 1, maxWidth: '640px' }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '5px' }}>
+                  <span style={{ fontSize: '14px', fontWeight: '700', color: '#1A1A1A' }}>Coursera Skills</span>
+                  <span style={{ fontSize: '11px', fontWeight: '600', color: '#8E8E93', background: '#F0F0F0', padding: '1px 5px', borderRadius: '3px' }}>APP</span>
+                  <span style={{ fontSize: '12px', color: '#8E8E93' }}>9:00 AM</span>
+                </div>
+
+                <p style={{ fontSize: '14px', color: '#1A1A1A', lineHeight: '1.65', marginBottom: '10px' }}>
+                  Hey Priya — here's your <strong>weekly team snapshot</strong> for <strong>AI Prototyping</strong>. 👋
+                </p>
+
+                {/* ─ The Coursera Widget ─ */}
+                {(() => {
+                  const cs           = CHART_STYLES[activeChart];
+                  const chartArea    = AREA_META.find(a => a.id === activeChart);
+                  const chartTrends  = AREA_TRENDS[activeChart];
+                  const aggPts       = MONTHS.map((_,i) => chartTrends.skills.reduce((s,sk)=>s+sk.pts[i],0)/chartTrends.skills.length);
+                  const primaryPts   = activeSubSkill !== null ? chartTrends.skills[activeSubSkill].pts : aggPts;
+                  const primaryEndVal = Math.round(primaryPts[6]*10)/10;
+                  return (
+                    <div style={{ marginBottom: '8px' }}>
+                      {/* Skill area tabs */}
+                      <div style={{ display: 'flex', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
+                        {AREA_META.map(a => {
+                          const isActive = a.id === activeChart;
+                          const tc = TAB_COLORS[a.id];
+                          return (
+                            <div key={a.id} onClick={() => { setActiveChart(a.id); setActiveSubSkill(null); setHoverIdx(null); }} style={{
+                              padding: '5px 14px', borderRadius: '20px', fontSize: '12px',
+                              fontWeight: isActive ? '700' : '400',
+                              background: isActive ? tc.bg : 'transparent',
+                              border: isActive ? '1px solid transparent' : '1px solid rgba(28,25,23,0.12)',
+                              color: isActive ? tc.text : '#57534E', cursor: 'pointer',
+                              transition: 'all 150ms',
+                            }}>{a.label}</div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Chart card */}
+                      <div style={{ background: cs.bg, borderRadius: '16px', padding: '20px 22px 16px' }}>
+                        <p style={{ margin: '0 0 3px', fontSize: '21px', fontWeight: '700', color: cs.valText, lineHeight: '1.25', letterSpacing: '-0.025em' }}>
+                          {chartTrends.summary(chartArea.pct, chartArea.delta)}
+                        </p>
+                        <p style={{ margin: '0 0 10px', fontSize: '12px', color: cs.dimText }}>Oct 2025 → Apr 2026 · 15 members</p>
+
+                        {/* Legend */}
+                        <div style={{ display: 'flex', gap: '14px', marginBottom: '6px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <svg width="18" height="8"><line x1="0" y1="4" x2="18" y2="4" stroke={cs.linePrimary} strokeWidth="2.5" strokeLinecap="round" opacity="0.92"/></svg>
+                            <span style={{ fontSize: '10px', color: cs.dimText }}>Your team</span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <svg width="18" height="8"><line x1="0" y1="4" x2="18" y2="4" stroke={cs.linePrimary} strokeWidth="1.5" strokeDasharray="4 3" strokeLinecap="round" opacity="0.5"/></svg>
+                            <span style={{ fontSize: '10px', color: cs.dimText }}>Company avg</span>
+                          </div>
+                        </div>
+
+                        {/* SVG chart with hover */}
+                        <div style={{ position: 'relative' }}>
+                          <svg ref={chartSvgRef} onMouseMove={handleChartMove} onMouseLeave={handleChartLeave}
+                            width="100%" viewBox={`0 0 ${SVW} ${SVH}`} style={{ display: 'block', overflow: 'visible', cursor: 'crosshair' }}>
+                            {[0,5,10,15].map(v => (
+                              <g key={v}>
+                                <line x1={SPL} y1={syP(v)} x2={SVW-SPR+6} y2={syP(v)} stroke={cs.gridStroke} strokeWidth={v===0?1:0.6} strokeDasharray={v===0?'none':'3 7'}/>
+                                <text x={SPL-4} y={syP(v)+3.5} textAnchor="end" fill={cs.dimText} fontSize="8" fontFamily="system-ui,sans-serif">{v}</text>
+                              </g>
+                            ))}
+                            <line x1={sxP(6)} y1={SPT-4} x2={sxP(6)} y2={SVH-SPB+4} stroke={cs.gridStroke} strokeWidth="1" strokeDasharray="3 4"/>
+                            <rect x={sxP(6)-14} y={SPT-15} width="28" height="11" rx="3" fill={cs.nowFill}/>
+                            <text x={sxP(6)} y={SPT-6} textAnchor="middle" fill={cs.nowText} fontSize="7" fontWeight="600" letterSpacing="0.04em" fontFamily="system-ui,sans-serif">NOW</text>
+                            {chartTrends.skills.map(({pts},j) => (
+                              <path key={j} d={mkPath(pts)} stroke={cs.lineSub} strokeWidth="1" fill="none" strokeLinecap="round"/>
+                            ))}
+                            <path d={mkPath(chartTrends.companyAvg)} stroke={cs.linePrimary} strokeWidth="1.5" strokeDasharray="4 5" fill="none" strokeLinecap="round" opacity="0.4"/>
+                            <path d={mkPath(primaryPts)} stroke={cs.linePrimary} strokeWidth="2.5" fill="none" strokeLinecap="round" opacity="0.92"/>
+                            <circle cx={sxP(6)} cy={syP(primaryEndVal)} r="5" fill={cs.linePrimary} opacity="0.92"/>
+                            <text x={sxP(6)+10} y={syP(primaryEndVal)+3.5} fill={cs.valText} fontSize="9" fontWeight="700" fontFamily="system-ui,sans-serif">{primaryEndVal}</text>
+                            {hoverIdx !== null && <line x1={sxP(hoverIdx)} y1={SPT} x2={sxP(hoverIdx)} y2={SVH-SPB} stroke={cs.linePrimary} strokeWidth="1" opacity="0.35"/>}
+                            {MONTHS.map((m,i) => (
+                              <text key={m} x={sxP(i)} y={SVH-SPB+13} textAnchor="middle"
+                                fill={i===6?cs.valText:cs.dimText} fontSize="8" fontWeight={i===6?'600':'400'}
+                                fontFamily="system-ui,sans-serif">{m.toUpperCase()}</text>
+                            ))}
+                          </svg>
+
+                          {/* Hover tooltip */}
+                          {hoverIdx !== null && (() => {
+                            const count      = Math.round(primaryPts[hoverIdx]);
+                            const coAvgPct   = Math.round(chartTrends.companyAvg[hoverIdx]/15*100);
+                            const names      = TOOLTIP_MEMBERS.slice(0,count);
+                            const leftPct    = sxP(hoverIdx)/SVW*100;
+                            const clampedLeft = Math.min(Math.max(leftPct,12),82);
+                            return (
+                              <div style={{ position:'absolute', top:'8px', left:`${clampedLeft}%`, transform:'translateX(-50%)',
+                                background:'white', borderRadius:'10px', padding:'10px 14px',
+                                boxShadow:'0 4px 24px rgba(0,0,0,0.14)', minWidth:'170px', pointerEvents:'none', zIndex:20 }}>
+                                <div style={{ fontSize:'11px', color:C.tMut, marginBottom:'8px', fontWeight:'500' }}>{MONTH_YR_LABELS[hoverIdx]}</div>
+                                <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'5px' }}>
+                                  <span style={{ background:'#1C1917', color:'white', fontSize:'14px', fontWeight:'700', padding:'2px 9px', borderRadius:'6px', letterSpacing:'-0.02em', minWidth:'30px', textAlign:'center' }}>{count}</span>
+                                  <span style={{ fontSize:'12px', color:C.tSec }}>your team at goal</span>
+                                </div>
+                                <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:names.length?'10px':0 }}>
+                                  <span style={{ background:C.canvas, color:C.tSec, fontSize:'13px', fontWeight:'600', padding:'2px 9px', borderRadius:'6px', letterSpacing:'-0.02em', minWidth:'30px', textAlign:'center', border:'1px dashed rgba(28,25,23,0.2)' }}>{coAvgPct}%</span>
+                                  <span style={{ fontSize:'12px', color:C.tMut }}>company average</span>
+                                </div>
+                                {names.length>0 && (
+                                  <div style={{ display:'flex', flexWrap:'wrap', gap:'4px', paddingTop:'6px', borderTop:'1px solid rgba(28,25,23,0.06)' }}>
+                                    {names.slice(0,6).map(n=><span key={n} style={{ fontSize:'10px', color:C.tSec, background:C.canvas, padding:'2px 7px', borderRadius:'10px', whiteSpace:'nowrap' }}>{n}</span>)}
+                                    {count>6 && <span style={{ fontSize:'10px', color:C.tMut, alignSelf:'center' }}>+{count-6} more</span>}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </div>
+
+                        {/* SUB SKILLS pills */}
+                        <div style={{ display:'flex', alignItems:'center', gap:'6px', marginTop:'10px', paddingTop:'10px', borderTop:`1px solid ${cs.gridStroke}`, flexWrap:'wrap' }}>
+                          <span style={{ fontSize:'9px', fontWeight:'700', letterSpacing:'0.1em', color:cs.dimText, textTransform:'uppercase', flexShrink:0, marginRight:'2px' }}>Sub Skills</span>
+                          {chartTrends.skills.map(({label,pts},j) => {
+                            const isAct = activeSubSkill===j;
+                            return (
+                              <button key={label} onClick={()=>setActiveSubSkill(isAct?null:j)} style={{
+                                display:'flex', alignItems:'center', gap:'5px', padding:'4px 10px', borderRadius:'16px', cursor:'pointer',
+                                border:`1px solid ${isAct?cs.valText:cs.gridStroke}`, background:isAct?cs.nowFill:'transparent',
+                                transition:'all 130ms', opacity:isAct?1:0.75,
+                              }}>
+                                <span style={{ fontSize:'11px', color:cs.valText, fontWeight:isAct?'700':'400', whiteSpace:'nowrap' }}>{label}</span>
+                                <span style={{ fontSize:'10px', color:cs.dimText, fontWeight:'600' }}>{pts[6]}/15</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Bottom stats */}
+                      <div style={{ display:'flex', alignItems:'center', padding:'10px 0 4px', flexWrap:'wrap' }}>
+                        {[{count:4,label:'fully ready'},{count:8,label:'building'},{count:3,label:'need focus'}].map(({count,label},i) => (
+                          <React.Fragment key={label}>
+                            {i>0 && <span style={{ fontSize:'12px', color:'#A8A29E', margin:'0 10px' }}>·</span>}
+                            <span style={{ fontSize:'12px', color:'#1A1A1A' }}><span style={{ fontWeight:'700' }}>{count}</span>{' '}<span style={{ color:'#6B7280' }}>{label}</span></span>
+                          </React.Fragment>
+                        ))}
+                        <span style={{ fontSize:'12px', color:'#A8A29E', margin:'0 10px' }}>|</span>
+                        <span style={{ fontSize:'12px', color:'#6B7280' }}>Q2 goal: L2+ · 4/15 ready</span>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                <p style={{ fontSize: '12px', color: '#8E8E93' }}>
+                  Sent every Monday at 9 AM. <span style={{ color: C.accent, cursor: 'pointer' }}>Change settings</span>
+                </p>
+              </div>
+            </div>
+
+            {/* Previous week - dimmed */}
+            <div className="fade-up-d1" style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', opacity: 0.5 }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: '700', color: '#fff', flexShrink: 0 }}>C</div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '4px' }}>
+                  <span style={{ fontSize: '14px', fontWeight: '700', color: '#1A1A1A' }}>Coursera Skills</span>
+                  <span style={{ fontSize: '11px', fontWeight: '600', color: '#8E8E93', background: '#F0F0F0', padding: '1px 5px', borderRadius: '3px' }}>APP</span>
+                  <span style={{ fontSize: '12px', color: '#8E8E93' }}>Apr 20</span>
+                </div>
+                <p style={{ fontSize: '14px', color: '#1A1A1A', lineHeight: '1.6' }}>
+                  Last week: 8/15 at goal (53%). Coverage up +7% from Week 2. <span style={{ color: C.accent, cursor: 'pointer' }}>View report →</span>
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Input bar */}
+          <div style={{ padding: '10px 18px 14px', borderTop: '1px solid #EBEBEB', flexShrink: 0 }}>
+            <div style={{ border: '1px solid #E0E0E0', borderRadius: '8px', padding: '10px 14px', background: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '14px', color: '#B0B0B0', flex: 1 }}>Message Coursera Skills</span>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <span style={{ fontSize: '14px', color: '#B0B0B0', cursor: 'pointer' }}>😊</span>
+                <span style={{ fontSize: '14px', color: '#B0B0B0', cursor: 'pointer' }}>📎</span>
+                <span style={{ fontSize: '14px', color: '#B0B0B0', cursor: 'pointer' }}>@</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Claude asterisk logo ── */
+  function ClaudeAsterisk({ size = 20, color = '#CF7A65' }) {
+    const arms = 8;
+    const spokes = Array.from({ length: arms }, (_, i) => {
+      const a = (i * 360 / arms) * Math.PI / 180;
+      const r1 = size * 0.22, r2 = size * 0.48;
+      return { x1: size/2 + Math.cos(a)*r1, y1: size/2 + Math.sin(a)*r1, x2: size/2 + Math.cos(a)*r2, y2: size/2 + Math.sin(a)*r2 };
+    });
+    return (
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} fill="none">
+        {spokes.map((s, i) => (
+          <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
+            stroke={color} strokeWidth={size * 0.115} strokeLinecap="round"/>
+        ))}
+      </svg>
+    );
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     CLAUDE VIEW — In-Conversation Learner Widget
+  ══════════════════════════════════════════════════════════ */
+  function ClaudeView() {
+    const [widgetVisible, setWidgetVisible]     = useState(false);
+    const [practiceOpen, setPracticeOpen]       = useState(false);
+    const [practiceInput, setPracticeInput]     = useState('');
+    const [practiceSubmitted, setPracticeSubmitted] = useState(false);
+
+    useEffect(() => {
+      const t = setTimeout(() => setWidgetVisible(true), 900);
+      return () => clearTimeout(t);
+    }, []);
+
+    /* Claude.ai palette */
+    const cl = {
+      bg:        '#F2F0ED',
+      surface:   '#FFFFFF',
+      border:    '#E5E2DD',
+      tPri:      '#1A1A1A',
+      tSec:      '#6B6860',
+      asterisk:  '#CF7A65',
+      userMsg:   '#E9E6E1',
+      inputBg:   '#FFFFFF',
+      iconColor: '#6B6860',
+    };
+
+    const sideIcons = [
+      /* pen/compose */
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15.5 3.5l5 5L7 22H2v-5L15.5 3.5z" stroke={cl.iconColor} strokeWidth="1.6" strokeLinejoin="round"/></svg>,
+      /* search */
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke={cl.iconColor} strokeWidth="1.6"/><path d="M16.5 16.5L21 21" stroke={cl.iconColor} strokeWidth="1.6" strokeLinecap="round"/></svg>,
+      /* person */
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke={cl.iconColor} strokeWidth="1.6"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke={cl.iconColor} strokeWidth="1.6" strokeLinecap="round"/></svg>,
+      /* bag/briefcase */
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="2" y="8" width="20" height="13" rx="2" stroke={cl.iconColor} strokeWidth="1.6"/><path d="M8 8V6a4 4 0 018 0v2" stroke={cl.iconColor} strokeWidth="1.6"/></svg>,
+      /* code */
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 6l-4 12" stroke={cl.iconColor} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+      /* home */
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 11.5L12 4l9 7.5V21H15v-5h-6v5H3V11.5z" stroke={cl.iconColor} strokeWidth="1.6" strokeLinejoin="round"/></svg>,
+      /* tag */
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12.5 3H21v8.5L13 20a2 2 0 01-2.8 0l-6.2-6.2a2 2 0 010-2.8L12.5 3z" stroke={cl.iconColor} strokeWidth="1.6" strokeLinejoin="round"/><circle cx="16.5" cy="7.5" r="1.5" fill={cl.iconColor}/></svg>,
+      /* star */
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2l3 6.5H22l-5.5 4 2 6.5L12 15l-6.5 4 2-6.5L2 8.5h7L12 2z" stroke={cl.iconColor} strokeWidth="1.6" strokeLinejoin="round"/></svg>,
+    ];
+
+    return (
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden', background: cl.bg }}>
+
+        {/* ── Claude icon-strip sidebar ── */}
+        <div style={{ width: '44px', flexShrink: 0, background: cl.bg, borderRight: `1px solid ${cl.border}`, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px 0', gap: '2px' }}>
+          {/* Expand handle */}
+          <div style={{ width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '7px', cursor: 'pointer', marginBottom: '6px', color: cl.iconColor }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="7" height="14" rx="2" stroke={cl.iconColor} strokeWidth="1.6"/><path d="M14 8h6M14 12h6M14 16h4" stroke={cl.iconColor} strokeWidth="1.6" strokeLinecap="round"/></svg>
+          </div>
+          {sideIcons.map((icon, i) => (
+            <div key={i} style={{ width: '34px', height: '34px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px', cursor: 'pointer', background: i === 4 ? 'rgba(0,0,0,0.06)' : 'transparent' }}>
+              {icon}
+            </div>
+          ))}
+          <div style={{ flex: 1 }}/>
+          {/* User avatar */}
+          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#C084B0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: '700', color: '#fff', cursor: 'pointer' }}>MC</div>
+        </div>
+
+        {/* ── Claude Main ── */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+
+          {/* Top bar */}
+          <div style={{ padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+            {/* Coursera context chip — matches the screenshot's workspace chip */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px', borderRadius: '20px', background: 'rgba(0,0,0,0.06)', border: `1px solid ${cl.border}`, fontSize: '12px', fontWeight: '500', color: cl.tSec, cursor: 'pointer' }}>
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="11" rx="2" stroke={cl.tSec} strokeWidth="1.4"/><path d="M5 7h6M5 10h4" stroke={cl.tSec} strokeWidth="1.3" strokeLinecap="round"/></svg>
+              Meridian · AI Prototyping
+            </div>
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+              {/* share/export icons */}
+              {[
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="3" stroke={cl.iconColor} strokeWidth="1.5"/><circle cx="6" cy="12" r="3" stroke={cl.iconColor} strokeWidth="1.5"/><circle cx="18" cy="19" r="3" stroke={cl.iconColor} strokeWidth="1.5"/><path d="M8.6 13.7l6.8 3.6M15.4 6.7L8.6 10.3" stroke={cl.iconColor} strokeWidth="1.5"/></svg>,
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12M7 8l5-5 5 5" stroke={cl.iconColor} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke={cl.iconColor} strokeWidth="1.6" strokeLinecap="round"/></svg>,
+              ].map((icon, i) => (
+                <div key={i} style={{ width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '7px', cursor: 'pointer', background: 'rgba(0,0,0,0.04)' }}>{icon}</div>
+              ))}
+            </div>
+          </div>
+
+          {/* Conversation */}
+          <div className="scroll fade-in" style={{ flex: 1, padding: '8px 0 20px', overflowX: 'hidden' }}>
+            <div style={{ maxWidth: '680px', margin: '0 auto', padding: '0 24px' }}>
+
+              {/* User message */}
+              <div className="fade-up" style={{ marginBottom: '20px', display: 'flex', justifyContent: 'flex-end' }}>
+                <div style={{ maxWidth: '500px', background: cl.userMsg, borderRadius: '18px 18px 4px 18px', padding: '12px 16px' }}>
+                  <p style={{ fontSize: '14px', lineHeight: '1.68', color: cl.tPri }}>
+                    Can you write an update message for my team on how they're doing with the AI skills program?
+                  </p>
+                </div>
+              </div>
+
+              {/* Claude response */}
+              <div className="fade-up-d1" style={{ marginBottom: '20px', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#F5EDE9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+                  <ClaudeAsterisk size={18} color={cl.asterisk}/>
+                </div>
+
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: '14px', lineHeight: '1.78', color: cl.tPri, marginBottom: '12px' }}>
+                    Here's a draft you can send:
+                  </p>
+
+                  {/* Claude's draft message */}
+                  <div style={{ background: 'rgba(0,0,0,0.03)', border: `1px solid ${cl.border}`, borderRadius: '10px', padding: '14px 16px', marginBottom: '12px', fontSize: '14px', lineHeight: '1.75', color: cl.tPri }}>
+                    <p style={{ margin: '0 0 10px' }}>Hi team —</p>
+                    <p style={{ margin: '0 0 10px' }}>Quick update on where we stand with the AI skills program. We're making progress across the board, and several of you are tracking ahead of goal. A few areas still need attention before Q2 closes — I'll follow up individually where relevant.</p>
+                    <p style={{ margin: 0 }}>Keep the momentum going. Let me know if you have questions. — Priya</p>
+                  </div>
+
+                  {/* ─ Coursera Coaching Widget ─ */}
+                  {widgetVisible && (
+                    <div className="widget-in" style={{
+                      marginBottom: '14px',
+                      border: `1.5px solid rgba(0,87,197,0.18)`,
+                      borderLeft: `3px solid ${C.coursera}`,
+                      borderRadius: '0 12px 12px 0',
+                      background: '#F0F5FC',
+                      overflow: 'hidden',
+                    }}>
+                      {/* Widget header */}
+                      <div style={{ padding: '11px 16px 10px', borderBottom: '1px solid rgba(0,87,197,0.1)', display: 'flex', alignItems: 'center', gap: '7px' }}>
+                        <div style={{ width: '18px', height: '18px', borderRadius: '4px', background: C.coursera, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: '800', color: '#fff', flexShrink: 0 }}>C</div>
+                        <span style={{ fontSize: '11px', fontWeight: '700', color: C.coursera, letterSpacing: '0.04em', textTransform: 'uppercase' }}>Coursera · Prompt Engineering</span>
+                        <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: '600', color: C.coursera, background: 'rgba(0,87,197,0.09)', padding: '2px 7px', borderRadius: '8px' }}>Skill 1 of 4</span>
+                      </div>
+
+                      {!practiceOpen ? (
+                        /* ── Default state: before/after coaching ── */
+                        <div style={{ padding: '12px 16px' }}>
+                          <p style={{ fontSize: '14px', fontWeight: '700', color: cl.tPri, margin: '0 0 3px' }}>
+                            That draft is generic because the prompt was generic.
+                          </p>
+                          <p style={{ fontSize: '12px', color: cl.tSec, margin: '0 0 12px', lineHeight: '1.55' }}>
+                            Prompt Engineering is the skill of giving AI tools enough context to do precise work. Here's what changes when you apply it:
+                          </p>
+
+                          {/* Before / After */}
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '12px' }}>
+                            <div style={{ background: 'rgba(220,38,38,0.04)', border: '1px solid rgba(220,38,38,0.14)', borderRadius: '8px', padding: '10px 12px' }}>
+                              <div style={{ fontSize: '10px', fontWeight: '700', color: '#DC2626', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Your prompt</div>
+                              <div style={{ fontSize: '12px', color: cl.tPri, lineHeight: '1.55', fontStyle: 'italic' }}>"write an update for my team on the AI skills program"</div>
+                            </div>
+                            <div style={{ background: 'rgba(5,150,105,0.04)', border: '1px solid rgba(5,150,105,0.16)', borderRadius: '8px', padding: '10px 12px' }}>
+                              <div style={{ fontSize: '10px', fontWeight: '700', color: '#059669', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Stronger version</div>
+                              <div style={{ fontSize: '12px', color: cl.tPri, lineHeight: '1.55', fontStyle: 'italic' }}>"Write a 3-sentence update from me to my 15-person data team: we're at 67% AI readiness (up from 45%), Lily and Aisha lead the group. 3 members still need 2 more skills before Q2 closes June 30. Tone: direct but encouraging."</div>
+                            </div>
+                          </div>
+
+                          <p style={{ fontSize: '12px', color: cl.tSec, margin: '0 0 12px', lineHeight: '1.55' }}>
+                            Strong prompts include: <strong>who</strong> you are, <strong>who reads it</strong>, <strong>real numbers</strong>, and the <strong>tone</strong> you want. Practice it right now:
+                          </p>
+
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <button onClick={() => setPracticeOpen(true)} style={{ padding: '7px 14px', borderRadius: '6px', background: C.coursera, border: 'none', color: '#fff', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}>
+                              Try an exercise →
+                            </button>
+                            <button style={{ padding: '7px 11px', borderRadius: '6px', background: 'transparent', border: '1px solid rgba(0,87,197,0.2)', color: C.coursera, fontSize: '12px', fontWeight: '500', cursor: 'pointer' }}>
+                              See full skill
+                            </button>
+                            <button style={{ marginLeft: 'auto', background: 'transparent', border: 'none', color: '#B0ACA7', fontSize: '18px', cursor: 'pointer', padding: '2px 6px', lineHeight: 1 }}>×</button>
+                          </div>
+                        </div>
+                      ) : !practiceSubmitted ? (
+                        /* ── Practice state: rewrite a vague prompt ── */
+                        <div style={{ padding: '12px 16px' }}>
+                          <p style={{ fontSize: '13px', fontWeight: '600', color: C.coursera, margin: '0 0 8px' }}>Exercise: Rewrite this prompt to get a useful, specific answer</p>
+                          <div style={{ background: 'rgba(0,0,0,0.04)', border: `1px solid ${cl.border}`, borderRadius: '8px', padding: '10px 12px', marginBottom: '10px', fontSize: '13px', color: cl.tPri, fontStyle: 'italic', lineHeight: '1.55' }}>
+                            "help me prepare for my 1:1 with a struggling team member"
+                          </div>
+                          <textarea
+                            value={practiceInput}
+                            onChange={e => setPracticeInput(e.target.value)}
+                            placeholder="Your improved version…"
+                            style={{ width: '100%', border: `1.5px solid rgba(0,87,197,0.22)`, borderRadius: '8px', padding: '10px 12px', fontSize: '13px', color: cl.tPri, background: '#fff', resize: 'none', outline: 'none', minHeight: '76px', lineHeight: '1.55', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                          />
+                          <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                            <button
+                              onClick={() => practiceInput.trim() && setPracticeSubmitted(true)}
+                              style={{ padding: '7px 16px', borderRadius: '6px', background: practiceInput.trim() ? C.coursera : 'rgba(0,87,197,0.3)', border: 'none', color: '#fff', fontSize: '13px', fontWeight: '600', cursor: practiceInput.trim() ? 'pointer' : 'default' }}>
+                              Get feedback →
+                            </button>
+                            <button onClick={() => setPracticeOpen(false)} style={{ padding: '7px 11px', borderRadius: '6px', background: 'transparent', border: `1px solid ${cl.border}`, color: cl.tSec, fontSize: '12px', cursor: 'pointer' }}>
+                              Back
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        /* ── Feedback state ── */
+                        <div style={{ padding: '12px 16px' }}>
+                          <p style={{ fontSize: '13px', fontWeight: '700', color: '#059669', margin: '0 0 10px' }}>Nice work — here's how it compares</p>
+                          <div style={{ background: 'rgba(0,87,197,0.05)', border: `1px solid rgba(0,87,197,0.14)`, borderRadius: '8px', padding: '10px 12px', marginBottom: '8px' }}>
+                            <div style={{ fontSize: '10px', fontWeight: '700', color: C.coursera, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>Your version</div>
+                            <div style={{ fontSize: '13px', color: cl.tPri, fontStyle: 'italic', lineHeight: '1.55' }}>{practiceInput}</div>
+                          </div>
+                          <div style={{ background: 'rgba(5,150,105,0.04)', border: '1px solid rgba(5,150,105,0.16)', borderRadius: '8px', padding: '10px 12px', marginBottom: '10px' }}>
+                            <div style={{ fontSize: '10px', fontWeight: '700', color: '#059669', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>Model answer</div>
+                            <div style={{ fontSize: '13px', color: cl.tPri, fontStyle: 'italic', lineHeight: '1.55' }}>"I have a 30-min 1:1 tomorrow with Marcus, a senior analyst who hasn't started Prototyping & Iteration — his only missing Q2 skill. High performer otherwise. Write 3 open questions to start the conversation, and a script for raising the gap without making it feel like a performance issue."</div>
+                          </div>
+                          <p style={{ fontSize: '12px', color: cl.tSec, margin: '0 0 12px', lineHeight: '1.55' }}>
+                            Strong prompts name the <strong>person</strong>, the <strong>specific constraint</strong>, the <strong>outcome</strong>, and the <strong>tone risk</strong>. Did yours hit those?
+                          </p>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <button style={{ padding: '7px 14px', borderRadius: '6px', background: C.coursera, border: 'none', color: '#fff', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}>
+                              Continue on Coursera →
+                            </button>
+                            <button onClick={() => { setPracticeOpen(false); setPracticeInput(''); setPracticeSubmitted(false); }} style={{ padding: '7px 11px', borderRadius: '6px', background: 'transparent', border: `1px solid ${cl.border}`, color: cl.tSec, fontSize: '12px', cursor: 'pointer' }}>
+                              Done
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <p style={{ fontSize: '14px', lineHeight: '1.78', color: cl.tPri }}>
+                    Want me to regenerate with the specific numbers — current coverage, top performers, who needs attention?
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Input — Claude.ai style */}
+          <div style={{ padding: '0 24px 20px', flexShrink: 0 }}>
+            <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+              <div style={{ background: cl.inputBg, border: `1px solid ${cl.border}`, borderRadius: '14px', padding: '12px 16px 10px', boxShadow: '0 1px 6px rgba(0,0,0,0.07)' }}>
+                <div style={{ fontSize: '14px', color: '#B0ACA7', marginBottom: '10px' }}>Reply to Claude…</div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  {/* Left tools */}
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <div style={{ width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '6px', cursor: 'pointer', color: cl.tSec, fontSize: '18px', fontWeight: '300' }}>+</div>
+                  </div>
+                  {/* Right — model + send */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '4px 8px', borderRadius: '6px', background: 'rgba(0,0,0,0.04)', cursor: 'pointer' }}>
+                      <span style={{ fontSize: '12px', color: cl.tSec, fontWeight: '500' }}>Sonnet 4.6</span>
+                      <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 5l3 3 3-3" stroke={cl.tSec} strokeWidth="1.5" strokeLinecap="round"/></svg>
+                    </div>
+                    {/* Voice */}
+                    <div style={{ width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" stroke={cl.tSec} strokeWidth="1.5"/><path d="M5 12a7 7 0 0014 0M12 19v3" stroke={cl.tSec} strokeWidth="1.5" strokeLinecap="round"/></svg>
+                    </div>
+                    {/* Send */}
+                    <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: '#1A1A1A', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 4v16M5 11l7-7 7 7" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     WORKDAY VIEW — Team Skills Widget in Workday
+  ══════════════════════════════════════════════════════════ */
+  function WorkdayView() {
+    const [activeChart, setActiveChart]       = useState('prototyping');
+    const [activeSubSkill, setActiveSubSkill] = useState(null);
+    const [hoverIdx, setHoverIdx]             = useState(null);
+    const chartSvgRef = useRef(null);
+
+    const MONTHS           = ['Oct','Nov','Dec','Jan','Feb','Mar','Apr'];
+    const MONTH_YR_LABELS  = ['Oct 2025','Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026'];
+    const TOOLTIP_MEMBERS  = ['Lena M.','Aisha O.','Marcus C.','Sophie K.','David L.','James P.','Emma T.','Yuki W.','Nadia F.','Sam B.','Alex R.','Carlos V.','Mei L.','Raj P.','Zara H.'];
+    const AREA_META = [
+      { id:'prototyping', label:'AI Prototyping', pct:67, delta:45 },
+      { id:'data',        label:'Data Literacy',  pct:73, delta:45 },
+      { id:'strategy',    label:'AI Strategy',    pct:27, delta:22 },
+      { id:'management',  label:'Management',     pct:7,  delta:7  },
+    ];
+    const TAB_COLORS = {
+      prototyping:{ bg:'#9CDEEC', text:'#1C1917' },
+      data:       { bg:'#FF4800', text:'#FFFFFF' },
+      strategy:   { bg:'#510825', text:'#FFFFFF' },
+      management: { bg:'#0065FF', text:'#FFFFFF' },
+    };
+    const CHART_STYLES = {
+      prototyping:{ bg:'#9CDEEC', linePrimary:'#1C1917',                lineSub:'rgba(28,25,23,0.18)',    dimText:'rgba(28,25,23,0.45)',   valText:'#1C1917',               gridStroke:'rgba(28,25,23,0.1)',    nowFill:'rgba(28,25,23,0.1)',    nowText:'rgba(28,25,23,0.75)' },
+      data:       { bg:'#FF4800', linePrimary:'#FFFFFF',                lineSub:'rgba(255,255,255,0.22)', dimText:'rgba(255,255,255,0.5)', valText:'white',                 gridStroke:'rgba(255,255,255,0.15)',nowFill:'rgba(255,255,255,0.2)', nowText:'white' },
+      strategy:   { bg:'#510825', linePrimary:'#FF4800',                lineSub:'rgba(255,255,255,0.18)', dimText:'rgba(255,255,255,0.45)',valText:'rgba(255,255,255,0.95)', gridStroke:'rgba(255,255,255,0.12)',nowFill:'rgba(255,255,255,0.15)',nowText:'white' },
+      management: { bg:'#0065FF', linePrimary:'rgba(255,255,255,0.95)',lineSub:'rgba(255,255,255,0.2)',   dimText:'rgba(255,255,255,0.5)', valText:'white',                 gridStroke:'rgba(255,255,255,0.18)',nowFill:'rgba(255,255,255,0.2)', nowText:'white' },
+    };
+    const AREA_TRENDS = {
+      prototyping:{ summary:(p,d)=>`AI Prototyping is tracking at ${p}% team readiness — up ${d}% since October.`, companyAvg:[1,2,3,4,5,6,7],
+        skills:[{label:'Prompt Engineering',pts:[3,4,6,8,10,11,13]},{label:'AI Workflow Integration',pts:[1,3,5,7,9,10,12]},{label:'Claude API Fundamentals',pts:[1,2,3,4,5,6,7]},{label:'Prototyping & Iteration',pts:[0,1,1,2,3,4,6]}] },
+      data:       { summary:(p,d)=>`Data Literacy is your strongest area at ${p}% — up ${d}% since October.`,      companyAvg:[3,4,5,6,7,8,9],
+        skills:[{label:'Interpret AI Outputs',pts:[5,6,7,8,9,10,11]},{label:'Validate Results',pts:[3,5,6,7,8,9,11]},{label:'Data Visualization',pts:[3,4,5,6,7,8,10]}] },
+      strategy:   { summary:(p,d)=>`AI Strategy is an early-stage area at ${p}% — up ${d}% since October.`,       companyAvg:[0,0,0.5,1,2,2.5,3],
+        skills:[{label:'AI Evaluation',pts:[0,0,1,2,3,4,5]},{label:'AI Governance & Risk',pts:[0,0,0,1,1,2,3]},{label:'AI Roadmapping',pts:[0,0,0,0,1,1,2]}] },
+      management: { summary:(p,d)=>`Management skills are just getting started at ${p}% — focus area for Q2.`,   companyAvg:[0,0,0,0,0.5,0.5,1],
+        skills:[{label:'Change Management',pts:[0,0,0,0,0,1,1]},{label:'Coaching for AI',pts:[0,0,0,0,0,1,1]},{label:'Culture Building',pts:[0,0,0,0,0,0,1]}] },
+    };
+
+    const SVW=560, SVH=155, SPL=26, SPR=42, SPT=14, SPB=22;
+    const spW=SVW-SPL-SPR, spH=SVH-SPT-SPB;
+    const sxP=(i)=>SPL+(i/6)*spW;
+    const syP=(v)=>SPT+spH-(v/15)*spH;
+    const mkPath=(pts)=>{
+      let d=`M ${sxP(0).toFixed(1)} ${syP(pts[0]).toFixed(1)}`;
+      for(let i=1;i<pts.length;i++){const cx=((sxP(i-1)+sxP(i))/2).toFixed(1);d+=` C ${cx} ${syP(pts[i-1]).toFixed(1)} ${cx} ${syP(pts[i]).toFixed(1)} ${sxP(i).toFixed(1)} ${syP(pts[i]).toFixed(1)}`;}
+      return d;
+    };
+    const handleChartMove=(e)=>{
+      if(!chartSvgRef.current)return;
+      const rect=chartSvgRef.current.getBoundingClientRect();
+      const x=(e.clientX-rect.left)/rect.width*SVW;
+      let nearest=0,minDist=Infinity;
+      for(let i=0;i<7;i++){const d=Math.abs(x-sxP(i));if(d<minDist){minDist=d;nearest=i;}}
+      setHoverIdx(nearest);
+    };
+    const handleChartLeave=()=>setHoverIdx(null);
+
+    const members = [
+      { name: 'Aiko Okafor',   role: 'Data Analyst',        skills: 3, color: C.accent },
+      { name: 'Marcus Chen',   role: 'Senior Data Analyst',  skills: 1, color: C.warm },
+      { name: 'Lily Monroe',   role: 'ML Engineer',          skills: 4, color: '#059669' },
+      { name: 'David Kim',     role: 'Data Scientist',       skills: 2, color: C.accent },
+      { name: 'Rina Taguchi',  role: 'Data Analyst',         skills: 3, color: '#6366F1' },
+    ];
+
+    return (
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+
+        {/* ── Workday Sidebar ── */}
+        <div style={{ width: '216px', flexShrink: 0, background: '#1B3A6B', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          {/* Workday logo header */}
+          <div style={{ padding: '16px 16px 14px', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {/* Workday logo mark */}
+            <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#1B3A6B', border: '1.5px solid rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <svg width="26" height="22" viewBox="0 0 52 44" fill="none">
+                {/* Orange arc */}
+                <path d="M8 20 Q26 -4 44 20" stroke="#F36B21" strokeWidth="7" fill="none" strokeLinecap="round"/>
+                {/* White W */}
+                <path d="M4 28 L11 42 L18 30 L25 42 L32 30 L39 42 L46 28" stroke="#fff" strokeWidth="5.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <div style={{ fontSize: '15px', fontWeight: '700', color: '#fff', letterSpacing: '-0.2px' }}>Workday</div>
+              <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', marginTop: '1px' }}>Meridian Financial</div>
+            </div>
+          </div>
+          <div style={{ padding: '8px' }}>
+            {[
+              { label: 'Home', active: false },
+              { label: 'Tasks', active: false },
+              { label: 'My Team', active: true },
+              { label: 'Pay', active: false },
+              { label: 'Benefits', active: false },
+              { label: 'Talent', active: false },
+            ].map(({ label, active }) => (
+              <div key={label} style={{ padding: '8px 11px', fontSize: '13px', fontWeight: active ? '600' : '400', color: active ? '#fff' : 'rgba(255,255,255,0.55)', background: active ? 'rgba(243,107,33,0.25)' : 'transparent', borderLeft: active ? '3px solid #F36B21' : '3px solid transparent', borderRadius: active ? '0 6px 6px 0' : '6px', marginBottom: '2px', cursor: 'pointer' }}>{label}</div>
+            ))}
+          </div>
+          <div style={{ flex: 1 }}/>
+          <div style={{ padding: '12px 14px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#F36B21', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', color: '#fff', flexShrink: 0 }}>PS</div>
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: '600', color: '#fff' }}>Priya Sharma</div>
+              <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)' }}>Manager</div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Workday Main ── */}
+        <div className="scroll" style={{ flex: 1, background: '#F3F2F0', padding: '24px' }}>
+          <div style={{ marginBottom: '22px' }}>
+            <div style={{ fontSize: '24px', fontWeight: '700', color: '#1A1A1A', marginBottom: '4px' }}>My Team</div>
+            <div style={{ fontSize: '14px', color: '#6B7280' }}>Priya Sharma · Senior Data Science Manager · Meridian Financial · 8 direct reports</div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '16px', alignItems: 'start' }}>
+
+            {/* Left column */}
+            <div>
+              {/* Skill OS Widget */}
+              {(() => {
+                const cs          = CHART_STYLES[activeChart];
+                const chartArea   = AREA_META.find(a=>a.id===activeChart);
+                const chartTrends = AREA_TRENDS[activeChart];
+                const aggPts      = MONTHS.map((_,i)=>chartTrends.skills.reduce((s,sk)=>s+sk.pts[i],0)/chartTrends.skills.length);
+                const primaryPts  = activeSubSkill!==null?chartTrends.skills[activeSubSkill].pts:aggPts;
+                const primaryEndVal = Math.round(primaryPts[6]*10)/10;
+                return (
+                  <div className="fade-up" style={{ background:'#fff', border:'1px solid #E0E0E0', borderRadius:'10px', marginBottom:'14px', boxShadow:'0 1px 4px rgba(0,0,0,0.06)' }}>
+                    {/* Widget header */}
+                    <div style={{ padding:'14px 18px', borderBottom:'1px solid #F0F0F0', display:'flex', alignItems:'center', gap:'10px' }}>
+                      <div style={{ width:'30px', height:'30px', borderRadius:'7px', background:C.accent, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'14px', fontWeight:'700', color:'#fff', flexShrink:0 }}>C</div>
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontSize:'14px', fontWeight:'600', color:'#1A1A1A' }}>Coursera · {chartArea.label}</div>
+                        <div style={{ fontSize:'11px', color:'#8E8E93' }}>Connected · Updates daily</div>
+                      </div>
+                      <div style={{ display:'flex', alignItems:'center', gap:'5px' }}>
+                        <div style={{ width:'7px', height:'7px', borderRadius:'50%', background:'#059669' }}/>
+                        <span style={{ fontSize:'11px', fontWeight:'600', color:'#059669' }}>Live</span>
+                      </div>
+                    </div>
+
+                    <div style={{ padding:'14px 18px' }}>
+                      {/* Skill area tabs */}
+                      <div style={{ display:'flex', gap:'6px', marginBottom:'12px', flexWrap:'wrap' }}>
+                        {AREA_META.map(a=>{
+                          const isActive=a.id===activeChart;
+                          const tc=TAB_COLORS[a.id];
+                          return (
+                            <div key={a.id} onClick={()=>{setActiveChart(a.id);setActiveSubSkill(null);setHoverIdx(null);}} style={{
+                              padding:'4px 12px', borderRadius:'20px', fontSize:'12px',
+                              fontWeight:isActive?'700':'400',
+                              background:isActive?tc.bg:'transparent',
+                              border:isActive?'1px solid transparent':'1px solid rgba(28,25,23,0.12)',
+                              color:isActive?tc.text:'#57534E', cursor:'pointer', transition:'all 150ms',
+                            }}>{a.label}</div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Chart card */}
+                      <div style={{ background:cs.bg, borderRadius:'14px', padding:'18px 18px 14px', marginBottom:'12px' }}>
+                        <p style={{ margin:'0 0 2px', fontSize:'18px', fontWeight:'700', color:cs.valText, lineHeight:'1.25', letterSpacing:'-0.025em' }}>
+                          {chartTrends.summary(chartArea.pct,chartArea.delta)}
+                        </p>
+                        <p style={{ margin:'0 0 8px', fontSize:'11px', color:cs.dimText }}>Oct 2025 → Apr 2026 · 15 members</p>
+                        <div style={{ display:'flex', gap:'12px', marginBottom:'5px' }}>
+                          <div style={{ display:'flex', alignItems:'center', gap:'4px' }}>
+                            <svg width="16" height="8"><line x1="0" y1="4" x2="16" y2="4" stroke={cs.linePrimary} strokeWidth="2.5" strokeLinecap="round" opacity="0.92"/></svg>
+                            <span style={{ fontSize:'10px', color:cs.dimText }}>Your team</span>
+                          </div>
+                          <div style={{ display:'flex', alignItems:'center', gap:'4px' }}>
+                            <svg width="16" height="8"><line x1="0" y1="4" x2="16" y2="4" stroke={cs.linePrimary} strokeWidth="1.5" strokeDasharray="4 3" strokeLinecap="round" opacity="0.5"/></svg>
+                            <span style={{ fontSize:'10px', color:cs.dimText }}>Company avg</span>
+                          </div>
+                        </div>
+                        <div style={{ position:'relative' }}>
+                          <svg ref={chartSvgRef} onMouseMove={handleChartMove} onMouseLeave={handleChartLeave}
+                            width="100%" viewBox={`0 0 ${SVW} ${SVH}`} style={{ display:'block', overflow:'visible', cursor:'crosshair' }}>
+                            {[0,5,10,15].map(v=>(
+                              <g key={v}>
+                                <line x1={SPL} y1={syP(v)} x2={SVW-SPR+6} y2={syP(v)} stroke={cs.gridStroke} strokeWidth={v===0?1:0.6} strokeDasharray={v===0?'none':'3 7'}/>
+                                <text x={SPL-4} y={syP(v)+3.5} textAnchor="end" fill={cs.dimText} fontSize="8" fontFamily="system-ui,sans-serif">{v}</text>
+                              </g>
+                            ))}
+                            <line x1={sxP(6)} y1={SPT-4} x2={sxP(6)} y2={SVH-SPB+4} stroke={cs.gridStroke} strokeWidth="1" strokeDasharray="3 4"/>
+                            <rect x={sxP(6)-14} y={SPT-15} width="28" height="11" rx="3" fill={cs.nowFill}/>
+                            <text x={sxP(6)} y={SPT-6} textAnchor="middle" fill={cs.nowText} fontSize="7" fontWeight="600" letterSpacing="0.04em" fontFamily="system-ui,sans-serif">NOW</text>
+                            {chartTrends.skills.map(({pts},j)=>(
+                              <path key={j} d={mkPath(pts)} stroke={cs.lineSub} strokeWidth="1" fill="none" strokeLinecap="round"/>
+                            ))}
+                            <path d={mkPath(chartTrends.companyAvg)} stroke={cs.linePrimary} strokeWidth="1.5" strokeDasharray="4 5" fill="none" strokeLinecap="round" opacity="0.4"/>
+                            <path d={mkPath(primaryPts)} stroke={cs.linePrimary} strokeWidth="2.5" fill="none" strokeLinecap="round" opacity="0.92"/>
+                            <circle cx={sxP(6)} cy={syP(primaryEndVal)} r="5" fill={cs.linePrimary} opacity="0.92"/>
+                            <text x={sxP(6)+10} y={syP(primaryEndVal)+3.5} fill={cs.valText} fontSize="9" fontWeight="700" fontFamily="system-ui,sans-serif">{primaryEndVal}</text>
+                            {hoverIdx!==null && <line x1={sxP(hoverIdx)} y1={SPT} x2={sxP(hoverIdx)} y2={SVH-SPB} stroke={cs.linePrimary} strokeWidth="1" opacity="0.35"/>}
+                            {MONTHS.map((m,i)=>(
+                              <text key={m} x={sxP(i)} y={SVH-SPB+13} textAnchor="middle"
+                                fill={i===6?cs.valText:cs.dimText} fontSize="8" fontWeight={i===6?'600':'400'}
+                                fontFamily="system-ui,sans-serif">{m.toUpperCase()}</text>
+                            ))}
+                          </svg>
+                          {hoverIdx!==null && (()=>{
+                            const count=Math.round(primaryPts[hoverIdx]);
+                            const coAvgPct=Math.round(chartTrends.companyAvg[hoverIdx]/15*100);
+                            const names=TOOLTIP_MEMBERS.slice(0,count);
+                            const leftPct=sxP(hoverIdx)/SVW*100;
+                            const cl=Math.min(Math.max(leftPct,12),82);
+                            return (
+                              <div style={{ position:'absolute', top:'8px', left:`${cl}%`, transform:'translateX(-50%)',
+                                background:'white', borderRadius:'10px', padding:'10px 14px',
+                                boxShadow:'0 4px 24px rgba(0,0,0,0.14)', minWidth:'160px', pointerEvents:'none', zIndex:20 }}>
+                                <div style={{ fontSize:'11px', color:C.tMut, marginBottom:'7px', fontWeight:'500' }}>{MONTH_YR_LABELS[hoverIdx]}</div>
+                                <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'4px' }}>
+                                  <span style={{ background:'#1C1917', color:'white', fontSize:'13px', fontWeight:'700', padding:'2px 8px', borderRadius:'5px', minWidth:'28px', textAlign:'center' }}>{count}</span>
+                                  <span style={{ fontSize:'11px', color:C.tSec }}>your team at goal</span>
+                                </div>
+                                <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:names.length?'8px':0 }}>
+                                  <span style={{ background:C.canvas, color:C.tSec, fontSize:'12px', fontWeight:'600', padding:'2px 8px', borderRadius:'5px', minWidth:'28px', textAlign:'center', border:'1px dashed rgba(28,25,23,0.2)' }}>{coAvgPct}%</span>
+                                  <span style={{ fontSize:'11px', color:C.tMut }}>company avg</span>
+                                </div>
+                                {names.length>0 && (
+                                  <div style={{ display:'flex', flexWrap:'wrap', gap:'3px', paddingTop:'6px', borderTop:'1px solid rgba(28,25,23,0.06)' }}>
+                                    {names.slice(0,5).map(n=><span key={n} style={{ fontSize:'10px', color:C.tSec, background:C.canvas, padding:'2px 6px', borderRadius:'8px', whiteSpace:'nowrap' }}>{n}</span>)}
+                                    {count>5 && <span style={{ fontSize:'10px', color:C.tMut, alignSelf:'center' }}>+{count-5} more</span>}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </div>
+                        {/* SUB SKILLS */}
+                        <div style={{ display:'flex', alignItems:'center', gap:'5px', marginTop:'10px', paddingTop:'9px', borderTop:`1px solid ${cs.gridStroke}`, flexWrap:'wrap' }}>
+                          <span style={{ fontSize:'9px', fontWeight:'700', letterSpacing:'0.1em', color:cs.dimText, textTransform:'uppercase', flexShrink:0, marginRight:'2px' }}>Sub Skills</span>
+                          {chartTrends.skills.map(({label,pts},j)=>{
+                            const isAct=activeSubSkill===j;
+                            return (
+                              <button key={label} onClick={()=>setActiveSubSkill(isAct?null:j)} style={{
+                                display:'flex', alignItems:'center', gap:'4px', padding:'3px 9px', borderRadius:'14px', cursor:'pointer',
+                                border:`1px solid ${isAct?cs.valText:cs.gridStroke}`, background:isAct?cs.nowFill:'transparent',
+                                transition:'all 120ms', opacity:isAct?1:0.75,
+                              }}>
+                                <span style={{ fontSize:'11px', color:cs.valText, fontWeight:isAct?'700':'400', whiteSpace:'nowrap' }}>{label}</span>
+                                <span style={{ fontSize:'10px', color:cs.dimText, fontWeight:'600' }}>{pts[6]}/15</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Bottom stats */}
+                      <div style={{ display:'flex', alignItems:'center', marginBottom:'12px', flexWrap:'wrap' }}>
+                        {[{count:4,label:'fully ready'},{count:8,label:'building'},{count:3,label:'need focus'}].map(({count,label},i)=>(
+                          <React.Fragment key={label}>
+                            {i>0 && <span style={{ fontSize:'12px', color:'#A8A29E', margin:'0 8px' }}>·</span>}
+                            <span style={{ fontSize:'12px', color:'#1A1A1A' }}><span style={{ fontWeight:'700' }}>{count}</span>{' '}<span style={{ color:'#6B7280' }}>{label}</span></span>
+                          </React.Fragment>
+                        ))}
+                        <span style={{ fontSize:'12px', color:'#A8A29E', margin:'0 8px' }}>|</span>
+                        <span style={{ fontSize:'12px', color:'#6B7280' }}>Q2 goal: L2+ · 4/15 ready</span>
+                      </div>
+
+                      <div style={{ display:'flex', gap:'8px', paddingTop:'12px', borderTop:'1px solid #F0F0F0' }}>
+                        <button style={{ padding:'8px 16px', borderRadius:'6px', background:C.accent, border:'none', color:'#fff', fontSize:'13px', fontWeight:'600', cursor:'pointer' }}>Open in Coursera →</button>
+                        <button style={{ padding:'8px 14px', borderRadius:'6px', background:'transparent', border:'1px solid #E0E0E0', color:'#6B7280', fontSize:'13px', fontWeight:'500', cursor:'pointer' }}>Export to Workday</button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Team members */}
+              <div className="fade-up-d1" style={{ background: '#fff', border: '1px solid #E0E0E0', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+                <div style={{ padding: '14px 18px', borderBottom: '1px solid #F0F0F0', fontSize: '14px', fontWeight: '600', color: '#1A1A1A' }}>Team Members</div>
+                {members.map((m, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 18px', borderBottom: i < members.length - 1 ? '1px solid #F5F5F5' : 'none' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: m.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', color: '#fff', flexShrink: 0 }}>
+                      {m.name.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '13px', fontWeight: '500', color: '#1A1A1A' }}>{m.name}</div>
+                      <div style={{ fontSize: '11px', color: '#8E8E93' }}>{m.role}</div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                      {Array.from({ length: 4 }, (_, j) => (
+                        <div key={j} style={{ width: '10px', height: '10px', borderRadius: '50%', background: j < m.skills ? m.color : '#E0E0E0' }}/>
+                      ))}
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#8E8E93', width: '58px', textAlign: 'right', flexShrink: 0 }}>{m.skills}/4 skills</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right column — info panel */}
+            <div>
+              <div className="fade-up-d2" style={{ background: '#fff', border: '1px solid #E0E0E0', borderRadius: '10px', padding: '18px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', marginBottom: '12px' }}>
+                <div style={{ fontSize: '13px', fontWeight: '600', color: '#1A1A1A', marginBottom: '12px' }}>Q2 Progress</div>
+                <div style={{ marginBottom: '14px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#6B7280', marginBottom: '5px' }}>
+                    <span>Team at L2+</span>
+                    <span style={{ fontWeight: '600', color: C.accent }}>9 / 15</span>
+                  </div>
+                  <div style={{ height: '8px', background: '#E0E0E0', borderRadius: '4px', overflow: 'hidden' }}>
+                    <div style={{ width: '60%', height: '100%', background: C.accent, borderRadius: '4px' }}/>
+                  </div>
+                </div>
+                <div style={{ fontSize: '12px', color: '#6B7280', lineHeight: '1.6' }}>
+                  6 members still need to complete at least 2 more skill verifications before Q2 closes on June 30.
+                </div>
+              </div>
+
+              <div className="fade-up-d2" style={{ background: 'rgba(231,111,58,0.05)', border: '1px solid rgba(231,111,58,0.2)', borderRadius: '10px', padding: '16px' }}>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '15px', lineHeight: 1.3 }}>⚡</span>
+                  <div style={{ fontSize: '13px', fontWeight: '600', color: C.warm }}>Action needed</div>
+                </div>
+                <p style={{ fontSize: '12px', color: '#6B7280', lineHeight: '1.6', marginBottom: '12px' }}>
+                  Marcus Chen hasn't started Prototyping & Iteration. This skill is required for his Q2 rubric goal.
+                </p>
+                <button style={{ width: '100%', padding: '8px', borderRadius: '6px', background: C.warm, border: 'none', color: '#fff', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}>
+                  Send reminder →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     APP
+  ══════════════════════════════════════════════════════════ */
+  function App() {
+    const [active, setActive] = useState('slack');
+    return (
+      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <Navigator active={active} onSelect={setActive}/>
+        <div key={active} style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+          {active === 'slack'   && <SlackView/>}
+          {active === 'claude'  && <ClaudeView/>}
+          {active === 'workday' && <WorkdayView/>}
+        </div>
+      </div>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
