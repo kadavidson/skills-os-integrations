@@ -60,6 +60,7 @@
     p { color: var(--text-2); }
     strong { color: var(--text); font-weight: 600; }
     em { font-style: italic; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--text-2); }
 
     ul { list-style: none; padding: 0; }
     ul li { padding-left: 1.2em; position: relative; color: var(--text-2); margin-bottom: 5px; font-size: 14px; }
@@ -74,32 +75,25 @@
 
     .section-label {
       display: block;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-3);
-      margin-bottom: 16px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-3); margin-bottom: 16px;
     }
 
     /* ── NAV ── */
     nav {
       position: sticky; top: 0; z-index: 100;
-      background: rgba(250,250,249,0.92);
-      backdrop-filter: blur(12px);
+      background: rgba(250,250,249,0.92); backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
     .nav-inner {
       max-width: 900px; margin: 0 auto; padding: 0 28px;
-      display: flex; align-items: center; justify-content: space-between;
-      height: 50px;
+      display: flex; align-items: center; justify-content: space-between; height: 50px;
     }
     .nav-brand { font-size: 13px; font-weight: 600; color: var(--text); text-decoration: none; }
     .nav-links { display: flex; gap: 2px; list-style: none; }
     .nav-links a {
       font-size: 12px; color: var(--text-2); text-decoration: none;
-      padding: 4px 9px; border-radius: 6px;
-      transition: color 0.12s, background 0.12s;
+      padding: 4px 9px; border-radius: 6px; transition: color 0.12s, background 0.12s;
     }
     .nav-links a:hover, .nav-links a.active { color: var(--text); background: var(--surface-2); }
 
@@ -110,43 +104,30 @@
       font-size: 12px; font-weight: 500; color: var(--text-3);
       letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 24px;
     }
-    .hero-eyebrow::before {
-      content: ''; display: block; width: 22px; height: 1px; background: var(--border-2);
-    }
-    .hero-sub {
-      font-size: clamp(16px, 2.2vw, 19px); color: var(--text-2);
-      max-width: 640px; margin: 18px 0 14px; line-height: 1.55;
-    }
+    .hero-eyebrow::before { content: ''; display: block; width: 22px; height: 1px; background: var(--border-2); }
+    .hero-sub { font-size: clamp(16px, 2.2vw, 19px); color: var(--text-2); max-width: 640px; margin: 18px 0 14px; line-height: 1.55; }
     .hero-context { font-size: 13px; color: var(--text-3); }
 
     /* ── FLAG BADGES ── */
     .flag {
       display: inline-flex; align-items: center; gap: 4px;
-      font-size: 12px; font-weight: 500;
-      padding: 3px 9px; border-radius: 20px; white-space: nowrap;
+      font-size: 12px; font-weight: 500; padding: 3px 9px; border-radius: 20px; white-space: nowrap;
     }
     .flag-ux  { background: var(--ux-bg);  color: var(--ux-text);  border: 1px solid var(--ux-light);  }
     .flag-eng { background: var(--eng-bg); color: var(--eng-text); border: 1px solid var(--eng-light); }
     .flag-biz { background: var(--biz-bg); color: var(--biz-text); border: 1px solid var(--biz-light); }
-
     .flags-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
 
     /* ── TRACKS ── */
     .process-intro { max-width: 680px; margin: 14px 0 44px; font-size: 17px; color: var(--text-2); line-height: 1.6; }
 
-    .tracks-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
-    }
-    .track {
-      border-radius: var(--radius-lg); overflow: hidden;
-      box-shadow: var(--shadow); border: 1px solid var(--border);
-    }
+    .tracks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .track { border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border); }
     .track-header {
-      display: flex; align-items: center; gap: 9px;
-      padding: 13px 18px;
+      display: flex; align-items: center; gap: 9px; padding: 13px 18px;
       font-size: 10px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
     }
-    .track-eng .track-header  { background: var(--eng-bg); color: var(--eng-text); border-bottom: 1px solid var(--eng-light); }
+    .track-eng  .track-header { background: var(--eng-bg); color: var(--eng-text); border-bottom: 1px solid var(--eng-light); }
     .track-design .track-header { background: var(--ux-bg);  color: var(--ux-text);  border-bottom: 1px solid var(--ux-light);  }
 
     .track-steps { background: var(--surface); }
@@ -159,88 +140,62 @@
     }
     .track-eng   .step-badge { background: var(--eng-bg); color: var(--eng-text); }
     .track-design .step-badge { background: var(--ux-bg);  color: var(--ux-text);  }
-
     .step-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 9px; }
 
-    .diverge-table {
-      width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px;
-    }
+    .diverge-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
     .diverge-table th {
       font-size: 10px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase;
       color: var(--text-3); padding: 5px 8px; text-align: left;
       background: var(--surface-2); border: 1px solid var(--border);
     }
-    .diverge-table td {
-      padding: 6px 8px; border: 1px solid var(--border);
-      color: var(--text-2); vertical-align: top; line-height: 1.4;
-    }
+    .diverge-table td { padding: 6px 8px; border: 1px solid var(--border); color: var(--text-2); vertical-align: top; line-height: 1.4; }
 
     /* ── CONVERGENCE ── */
-    .convergence-visual {
-      display: flex; height: 44px; margin: 2px 0 0;
-    }
-    .cv-left {
-      flex: 1;
-      border-right: 2px solid var(--border-2);
-      border-bottom: 2px solid var(--border-2);
-      border-radius: 0 0 10px 0;
-    }
-    .cv-right {
-      flex: 1;
-      border-left: 2px solid var(--border-2);
-      border-bottom: 2px solid var(--border-2);
-      border-radius: 0 0 0 10px;
-    }
-    .cv-dot {
-      width: 10px; height: 10px; background: var(--border-2);
-      border-radius: 50%; margin: 0 auto; transform: translateY(44px);
-      position: relative; top: -5px;
-    }
-
+    .convergence-visual { display: flex; height: 44px; margin: 2px 0 0; }
+    .cv-left  { flex: 1; border-right: 2px solid var(--border-2); border-bottom: 2px solid var(--border-2); border-radius: 0 0 10px 0; }
+    .cv-right { flex: 1; border-left:  2px solid var(--border-2); border-bottom: 2px solid var(--border-2); border-radius: 0 0 0 10px; }
     .merge-line { width: 2px; height: 28px; background: var(--border-2); margin: 2px auto 0; }
-    .merge-arrow-head {
-      width: 0; height: 0;
-      border-left: 7px solid transparent;
-      border-right: 7px solid transparent;
-      border-top: 9px solid var(--border-2);
-      margin: 0 auto;
-    }
+    .merge-arrow-head { width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 9px solid var(--border-2); margin: 0 auto; }
 
     /* ── ALIGN & LOCK ── */
     .align-lock-node {
-      background: var(--surface);
-      border: 2px solid var(--text);
-      border-radius: var(--radius-lg);
-      padding: 26px 30px;
-      max-width: 580px;
-      margin: 8px auto 0;
-      box-shadow: var(--shadow-md);
+      background: var(--surface); border: 2px solid var(--text);
+      border-radius: var(--radius-lg); padding: 26px 30px;
+      max-width: 580px; margin: 8px auto 0; box-shadow: var(--shadow-md);
     }
-    .al-eyebrow {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--text-3); margin-bottom: 6px;
-    }
-    .al-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 14px; }
+    .al-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
+    .al-title   { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 14px; }
 
     .contract-box {
-      background: var(--surface-2); border-radius: 8px;
-      padding: 14px 16px; margin-top: 14px; border-left: 3px solid var(--text);
+      background: var(--surface-2); border-radius: 8px; padding: 14px 16px; margin-top: 14px; border-left: 3px solid var(--text);
     }
-    .contract-box strong {
-      display: block; font-size: 10px; text-transform: uppercase;
-      letter-spacing: 0.09em; margin-bottom: 5px;
-    }
+    .contract-box strong { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 5px; }
     .contract-box p { font-size: 13px; line-height: 1.55; }
+    .contract-box p + p { margin-top: 8px; }
 
-    /* ── POST-MERGE PILL ── */
-    .post-merge-pill {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--surface-2); border: 1px solid var(--border);
-      border-radius: 20px; padding: 5px 14px;
-      font-size: 12px; font-weight: 500; color: var(--text-2);
-      margin: 16px auto 0; display: flex; justify-content: center;
-      max-width: 200px;
+    .merge-line { width: 2px; height: 28px; background: var(--border-2); margin: 2px auto 0; }
+    .merge-arrow-head { width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 9px solid var(--border-2); margin: 0 auto; }
+    .post-merge-pill { display: flex; justify-content: center; margin: 10px auto 0; max-width: 220px; }
+
+    /* ── FIGMA ROLE CALLOUT ── */
+    .figma-role-box {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 24px 28px; margin: 28px 0 32px;
     }
+    .figma-role-box h3 { margin-bottom: 12px; }
+    .figma-role-box p { font-size: 15px; line-height: 1.65; margin-bottom: 14px; }
+    .figma-split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+    .figma-split-col { background: var(--surface-2); border-radius: 8px; padding: 14px 16px; }
+    .figma-split-col .col-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .figma-split-col.is { color: #166534; background: #F0FDF4; border: 1px solid #BBF7D0; }
+    .figma-split-col.is .col-label { color: #166534; }
+    .figma-split-col.not { color: #991B1B; background: #FEF2F2; border: 1px solid #FECACA; }
+    .figma-split-col.not .col-label { color: #991B1B; }
+    .figma-split-col ul li { font-size: 13px; color: inherit; }
+    .figma-split-col ul li::before { color: inherit; opacity: 0.5; }
 
     /* ── DESIGN IN CODE ── */
     .dic-table-wrapper { overflow-x: auto; margin: 28px 0; }
@@ -250,85 +205,48 @@
       color: var(--text-3); padding: 10px 14px; text-align: left;
       background: var(--surface-2); border: 1px solid var(--border);
     }
-    .dic-table td {
-      padding: 10px 14px; border: 1px solid var(--border);
-      color: var(--text-2); vertical-align: top;
-    }
+    .dic-table td { padding: 10px 14px; border: 1px solid var(--border); color: var(--text-2); vertical-align: top; }
 
     .workflow-steps { display: flex; flex-direction: column; max-width: 560px; margin: 28px 0; }
     .wf-step { display: flex; gap: 14px; }
     .wf-connector { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 26px; }
     .wf-dot {
-      width: 26px; height: 26px; border-radius: 50%;
-      background: var(--text); color: white;
-      font-size: 11px; font-weight: 700;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      width: 26px; height: 26px; border-radius: 50%; background: var(--text); color: white;
+      font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
     .wf-line { width: 2px; flex: 1; min-height: 20px; background: var(--border); }
     .wf-step:last-child .wf-line { display: none; }
     .wf-content { padding-bottom: 22px; }
     .wf-content p { font-size: 13px; color: var(--text-3); margin-top: 2px; }
 
-    .why-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); padding: 24px 28px; margin-top: 28px;
-    }
-    .why-card .why-label {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--text-3); margin-bottom: 8px;
-    }
+    .why-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px 28px; margin-top: 28px; }
+    .why-card .why-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
     .why-card p { font-size: 15px; line-height: 1.65; }
 
     /* ── DAILY LOG ── */
-    .trigger-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-      gap: 10px; margin: 22px 0;
-    }
-    .trigger-item {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 13px 15px;
-      display: flex; align-items: center; gap: 10px;
-    }
+    .trigger-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin: 22px 0; }
+    .trigger-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 13px 15px; display: flex; align-items: center; gap: 10px; }
     .trigger-item .t-icon { font-size: 15px; flex-shrink: 0; }
     .trigger-item .t-text { font-size: 13px; color: var(--text-2); line-height: 1.35; }
 
-    .truth-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 10px; margin: 20px 0 24px;
-    }
-    .truth-item {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 14px 16px;
-    }
+    .truth-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin: 20px 0 24px; }
+    .truth-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
     .truth-item .ti-emoji { font-size: 18px; margin-bottom: 7px; display: block; }
     .truth-item .ti-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
     .truth-item .ti-desc  { font-size: 12px; color: var(--text-3); line-height: 1.4; }
 
-    .the-rule {
-      background: var(--text); color: white;
-      border-radius: var(--radius); padding: 20px 24px; margin-top: 24px;
-    }
-    .the-rule strong {
-      color: white; display: block; font-size: 10px;
-      letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 7px;
-    }
+    .the-rule { background: var(--text); color: white; border-radius: var(--radius); padding: 20px 24px; margin-top: 24px; }
+    .the-rule strong { color: white; display: block; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 7px; }
     .the-rule p { color: rgba(255,255,255,0.78); font-size: 15px; line-height: 1.6; }
 
     /* ── RETRO ── */
     .retro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 28px; }
-    .retro-col {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); overflow: hidden;
-    }
-    .retro-col-header {
-      display: flex; align-items: center; gap: 9px;
-      padding: 14px 20px; border-bottom: 1px solid var(--border);
-    }
-    .retro-col.keep .retro-col-header { background: #F0FDF4; }
+    .retro-col { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .retro-col-header { display: flex; align-items: center; gap: 9px; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+    .retro-col.keep   .retro-col-header { background: #F0FDF4; }
     .retro-col.change .retro-col-header { background: #FFF7ED; }
-    .retro-col-icon { font-size: 15px; }
+    .retro-col-icon  { font-size: 15px; }
     .retro-col-title { font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-2); }
-
     .retro-items { padding: 0 20px; }
     .retro-item { padding: 13px 0; border-bottom: 1px solid var(--border); }
     .retro-item:last-child { border-bottom: none; }
@@ -337,56 +255,32 @@
 
     /* ── OPEN QUESTIONS ── */
     .questions-list { display: flex; flex-direction: column; gap: 10px; margin: 28px 0; }
-    .q-item {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 16px 18px;
-      display: flex; gap: 14px; align-items: flex-start;
-    }
-    .q-num { font-size: 11px; font-weight: 700; color: var(--text-3); flex-shrink: 0; padding-top: 2px; width: 18px; }
+    .q-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; }
+    .q-num  { font-size: 11px; font-weight: 700; color: var(--text-3); flex-shrink: 0; padding-top: 2px; width: 18px; }
     .q-text { font-size: 14px; color: var(--text-2); line-height: 1.55; }
 
-    .cta-block {
-      background: var(--surface-2); border-radius: var(--radius-lg);
-      padding: 32px 36px; margin-top: 36px; text-align: center;
-    }
-    .cta-block p { font-size: 15px; color: var(--text-2); max-width: 520px; margin: 0 auto 20px; line-height: 1.6; }
+    .cta-block { text-align: left; background: transparent; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px 28px; margin-top: 36px; }
+    .cta-block p { font-size: 15px; color: var(--text-2); margin-bottom: 14px; }
     .cta-button {
       display: inline-flex; align-items: center; gap: 6px;
       background: var(--text); color: white; font-family: 'Inter', sans-serif;
       font-size: 13px; font-weight: 600; padding: 9px 18px;
-      border-radius: 8px; text-decoration: none; border: none; cursor: pointer;
-      transition: opacity 0.12s;
+      border-radius: 8px; text-decoration: none; border: none; cursor: pointer; transition: opacity 0.12s;
     }
     .cta-button:hover { opacity: 0.8; }
 
     /* ── STICKY BOARD ── */
     #sticky-board { background: #F0EBE3; }
-    .sticky-grid {
-      display: flex; flex-wrap: wrap; gap: 20px;
-      min-height: 200px; padding: 8px 2px 4px; margin: 32px 0 0;
-    }
+    .sticky-grid { display: flex; flex-wrap: wrap; gap: 20px; min-height: 200px; padding: 8px 2px 4px; margin: 32px 0 0; }
     .sticky-card {
-      width: 196px; min-height: 168px;
-      padding: 15px 14px 11px;
-      border-radius: 2px;
-      box-shadow: 2px 5px 16px rgba(0,0,0,0.13), 0 1px 2px rgba(0,0,0,0.06);
-      transform: rotate(var(--rot, -1.2deg));
-      transition: transform 0.15s, box-shadow 0.15s;
-      display: flex; flex-direction: column;
-      position: relative; z-index: 1;
+      width: 196px; min-height: 168px; padding: 15px 14px 11px;
+      border-radius: 2px; box-shadow: 2px 5px 16px rgba(0,0,0,0.13), 0 1px 2px rgba(0,0,0,0.06);
+      transform: rotate(var(--rot, -1.2deg)); transition: transform 0.15s, box-shadow 0.15s;
+      display: flex; flex-direction: column; position: relative; z-index: 1;
     }
-    .sticky-card:hover {
-      transform: rotate(0deg) scale(1.04) !important;
-      box-shadow: 3px 8px 24px rgba(0,0,0,0.18);
-      z-index: 10;
-    }
-    .sticky-card .s-name {
-      font-size: 10px; font-weight: 700; color: rgba(0,0,0,0.4);
-      text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px;
-    }
-    .sticky-card .s-text {
-      font-size: 13px; color: rgba(0,0,0,0.78); flex: 1; line-height: 1.5;
-    }
+    .sticky-card:hover { transform: rotate(0deg) scale(1.04) !important; box-shadow: 3px 8px 24px rgba(0,0,0,0.18); z-index: 10; }
+    .sticky-card .s-name { font-size: 10px; font-weight: 700; color: rgba(0,0,0,0.4); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
+    .sticky-card .s-text { font-size: 13px; color: rgba(0,0,0,0.78); flex: 1; line-height: 1.5; }
     .sticky-card .s-date { font-size: 10px; color: rgba(0,0,0,0.28); margin-top: 10px; }
     .sc-yellow { background: #FEF08A; }
     .sc-pink   { background: #FBCFE8; }
@@ -395,8 +289,7 @@
     .sc-orange { background: #FDB68A; }
 
     .add-sticky-card {
-      width: 196px; min-height: 168px;
-      border: 2px dashed rgba(0,0,0,0.18); border-radius: 2px;
+      width: 196px; min-height: 168px; border: 2px dashed rgba(0,0,0,0.18); border-radius: 2px;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       gap: 7px; cursor: pointer; background: transparent;
       color: rgba(0,0,0,0.32); font-size: 13px; font-weight: 500;
@@ -407,51 +300,39 @@
     .add-sticky-card .plus-icon { font-size: 30px; font-weight: 300; line-height: 1; }
 
     .sticky-form-card {
-      width: 256px; min-height: 168px;
-      border-radius: 2px; padding: 14px;
-      box-shadow: 2px 5px 16px rgba(0,0,0,0.13);
-      display: flex; flex-direction: column; gap: 9px;
-      transform: rotate(-0.8deg);
+      width: 256px; min-height: 168px; border-radius: 2px; padding: 14px;
+      box-shadow: 2px 5px 16px rgba(0,0,0,0.13); display: flex; flex-direction: column; gap: 9px; transform: rotate(-0.8deg);
     }
     .sticky-form-card.hidden { display: none; }
     .s-color-row { display: flex; gap: 7px; }
-    .s-color-dot {
-      width: 20px; height: 20px; border-radius: 50%; cursor: pointer;
-      border: 2px solid transparent; transition: transform 0.12s, border-color 0.12s;
-    }
+    .s-color-dot { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.12s, border-color 0.12s; }
     .s-color-dot:hover { transform: scale(1.18); }
     .s-color-dot.sel { border-color: rgba(0,0,0,0.45); }
-    .sticky-form-card input,
-    .sticky-form-card textarea {
+    .sticky-form-card input, .sticky-form-card textarea {
       border: none; background: transparent; font-family: 'Inter', sans-serif;
       font-size: 13px; color: rgba(0,0,0,0.75); resize: none; outline: none; width: 100%;
     }
     .sticky-form-card input { border-bottom: 1px solid rgba(0,0,0,0.14); padding-bottom: 4px; }
     .sticky-form-card textarea { height: 70px; line-height: 1.5; }
-    .sticky-form-card input::placeholder,
-    .sticky-form-card textarea::placeholder { color: rgba(0,0,0,0.28); }
+    .sticky-form-card input::placeholder, .sticky-form-card textarea::placeholder { color: rgba(0,0,0,0.28); }
     .s-form-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
     .s-char { font-size: 11px; color: rgba(0,0,0,0.28); }
     .s-post-btn {
       font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
       background: rgba(0,0,0,0.72); color: white;
-      border: none; border-radius: 5px; padding: 5px 11px; cursor: pointer;
-      transition: background 0.12s;
+      border: none; border-radius: 5px; padding: 5px 11px; cursor: pointer; transition: background 0.12s;
     }
     .s-post-btn:hover { background: rgba(0,0,0,0.88); }
 
     .sticky-share-row {
-      margin-top: 28px; padding-top: 20px;
-      border-top: 1px dashed rgba(0,0,0,0.15);
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 12px;
+      margin-top: 28px; padding-top: 20px; border-top: 1px dashed rgba(0,0,0,0.15);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
     }
     .sticky-share-note { font-size: 13px; color: rgba(0,0,0,0.42); }
     .sticky-share-btn {
       font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
       background: rgba(0,0,0,0.1); color: rgba(0,0,0,0.65);
-      border: none; border-radius: 6px; padding: 7px 14px; cursor: pointer;
-      transition: background 0.12s;
+      border: none; border-radius: 6px; padding: 7px 14px; cursor: pointer; transition: background 0.12s;
     }
     .sticky-share-btn:hover { background: rgba(0,0,0,0.18); }
     .sticky-share-btn.copied { background: #86EFAC; color: rgba(0,0,0,0.7); }
@@ -460,14 +341,10 @@
     footer { border-top: 1px solid var(--border); padding: 36px 0; }
     .footer-inner {
       max-width: 900px; margin: 0 auto; padding: 0 28px;
-      display: flex; justify-content: space-between; align-items: center;
-      flex-wrap: wrap; gap: 12px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
     }
     .footer-inner p { font-size: 13px; color: var(--text-3); line-height: 1.6; }
-    .footer-link {
-      font-size: 13px; color: var(--text); font-weight: 500;
-      text-decoration: underline; text-underline-offset: 3px;
-    }
+    .footer-link { font-size: 13px; color: var(--text); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 680px) {
@@ -476,13 +353,12 @@
       #hero { padding: 64px 0 56px; }
       .tracks-grid { grid-template-columns: 1fr; }
       .retro-grid  { grid-template-columns: 1fr; }
+      .figma-split { grid-template-columns: 1fr; }
       .nav-links   { display: none; }
       .convergence-visual { display: none; }
       .merge-line  { height: 20px; }
       .align-lock-node { padding: 20px 18px; }
-      .cta-block   { padding: 24px 20px; }
     }
-
     @media (max-width: 480px) {
       .trigger-grid { grid-template-columns: 1fr 1fr; }
       .truth-grid   { grid-template-columns: 1fr 1fr; }
@@ -513,8 +389,8 @@
   <div class="container">
     <div class="hero-eyebrow">Adaptive AI Team · Coursera · May 2026</div>
     <h1>From prototype<br>to production —<br>a new way to work</h1>
-    <p class="hero-sub">After 2 months of AI-native, non-waterfall design and development, here's what we learned — and the process we're proposing next.</p>
-    <p class="hero-context">A proposal, not a prescription. Built with the Adaptive AI team, May 2026.</p>
+    <p class="hero-sub">After 2 months of AI-native, non-waterfall design and development, here's what we learned — and how design fits into the new way of working.</p>
+    <p class="hero-context">Built with the Adaptive AI team, May 2026. The design team's implementation guide for the AI-first PDLC RFC.</p>
   </div>
 </section>
 
@@ -544,11 +420,8 @@
 
       <!-- ENG TRACK -->
       <div class="track track-eng">
-        <div class="track-header">
-          <span>⚙️</span><span>ENG TRACK — starts immediately</span>
-        </div>
+        <div class="track-header"><span>⚙️</span><span>ENG TRACK — starts immediately</span></div>
         <div class="track-steps">
-
           <div class="track-step">
             <span class="step-badge">Eng 01</span>
             <div class="step-title">Core Capabilities</div>
@@ -558,7 +431,6 @@
               <li>No waiting for design to "finish"</li>
             </ul>
           </div>
-
           <div class="track-step">
             <span class="step-badge">Eng 02</span>
             <div class="step-title">Feasibility Spikes</div>
@@ -568,17 +440,13 @@
               <li>Feeds directly back into design's options</li>
             </ul>
           </div>
-
         </div>
       </div>
 
       <!-- DESIGN TRACK -->
       <div class="track track-design">
-        <div class="track-header">
-          <span>🎨</span><span>DESIGN TRACK — runs in parallel</span>
-        </div>
+        <div class="track-header"><span>🎨</span><span>DESIGN TRACK — runs in parallel</span></div>
         <div class="track-steps">
-
           <div class="track-step">
             <span class="step-badge">Design 01</span>
             <div class="step-title">AI Prototype + Flag</div>
@@ -590,15 +458,12 @@
             </div>
             <p style="font-size: 12px; color: var(--text-3); margin-top: 9px;">A flag = needs divergence before dev builds it. No flag = dev can start. The prototype is a question generator, not the source of truth.</p>
           </div>
-
           <div class="track-step">
             <span class="step-badge">Design 02</span>
             <div class="step-title">Diverge by Track</div>
             <p style="font-size: 13px; margin-bottom: 9px;">Each flag becomes a parallel mini-exploration with the right owner. <em>Protected time</em> — not resolved in standup.</p>
             <table class="diverge-table">
-              <thead>
-                <tr><th>Track</th><th>Owner</th><th>Output</th></tr>
-              </thead>
+              <thead><tr><th>Track</th><th>Owner</th><th>Output</th></tr></thead>
               <tbody>
                 <tr>
                   <td><span class="flag flag-ux" style="font-size:11px;">🟠 UX</span></td>
@@ -618,17 +483,13 @@
               </tbody>
             </table>
           </div>
-
         </div>
       </div>
 
     </div><!-- /tracks-grid -->
 
-    <!-- CONVERGENCE ARROWS -->
-    <div class="convergence-visual">
-      <div class="cv-left"></div>
-      <div class="cv-right"></div>
-    </div>
+    <!-- CONVERGENCE -->
+    <div class="convergence-visual"><div class="cv-left"></div><div class="cv-right"></div></div>
     <div class="merge-line"></div>
     <div class="merge-arrow-head"></div>
 
@@ -639,20 +500,20 @@
       <ul>
         <li>Options shared async with leadership <em>before</em> the sync</li>
         <li>One named decision-maker per open question</li>
-        <li>Decision documented in source of truth before UX flows are built</li>
+        <li>Decision documented in the repo before UX flows are built</li>
         <li>After this: <strong>locked</strong>. A change = new flag, new cycle.</li>
       </ul>
       <div class="contract-box">
         <strong>The contract</strong>
-        <p>Things can change. That's expected. But the source of truth updates before dev acts on it. A decision made in Slack doesn't exist until it's in the doc.</p>
+        <p>Things can change. That's expected. But the source of truth updates before dev acts on it. A decision made in Slack doesn't exist until it's in the repo.</p>
+        <p>Decisions land in the initiative's <code>prds/</code> folder — the same behavior contract the RFC's drift-detection tooling runs against. Figma frames are linked from the PRD for specific visual call-outs. The repo is the source of truth; Figma is a linked reference.</p>
       </div>
     </div>
 
-    <!-- ARROW DOWN TO NEXT PHASE -->
     <div class="merge-line" style="margin-top: 16px;"></div>
     <div class="merge-arrow-head"></div>
     <div class="post-merge-pill" style="display:flex; justify-content:center; margin: 10px auto 0; max-width:220px;">
-      <span>🛠️ Next: Design in Code</span>
+      <span style="font-size:12px; color: var(--text-3);">🛠️ Next: Design in Code</span>
     </div>
 
   </div>
@@ -666,6 +527,31 @@
     <h2>Design in code</h2>
     <p style="margin-top: 12px; max-width: 620px;">After Align &amp; Lock, designers stay in the work through shipping — using AI tools to make changes directly in the codebase.</p>
 
+    <!-- FIGMA ROLE -->
+    <div class="figma-role-box">
+      <h3>What's changing about Figma's role</h3>
+      <p>Exhaustive hi-fi Figma is no longer the handoff. Figma is a collaboration space — a place to explore options during the Diverge phase, and to capture specific visual call-outs that the prototype or design system can't express on their own (a layout treatment, an edge state, a motion intent). Those frames get linked directly from the PRD in the repo. Figma doesn't own the behavior contract — the repo does.</p>
+      <div class="figma-split">
+        <div class="figma-split-col is">
+          <div class="col-label">Figma is for</div>
+          <ul>
+            <li>Exploring UX options (Diverge phase)</li>
+            <li>Screenshots of specific visual decisions linked from the PRD</li>
+            <li>Design system component work</li>
+          </ul>
+        </div>
+        <div class="figma-split-col not">
+          <div class="col-label">Figma is not for</div>
+          <ul>
+            <li>Exhaustive hi-fi handoff</li>
+            <li>The primary artifact for dev to build from</li>
+            <li>The source of truth</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom: 16px;">The split — what designers own in code</h3>
     <div class="dic-table-wrapper">
       <table class="dic-table">
         <thead>
@@ -676,26 +562,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>All copy / UX writing</td>
-            <td>Component architecture</td>
-            <td>Visual component tweaks spec'd in Figma</td>
-          </tr>
-          <tr>
-            <td>Color tokens, spacing, type</td>
-            <td>Data + state management</td>
-            <td>Animation timing</td>
-          </tr>
-          <tr>
-            <td>Image / icon swaps</td>
-            <td>API integration</td>
-            <td>Responsive breakpoints</td>
-          </tr>
-          <tr>
-            <td>Minor layout adjustments</td>
-            <td>Complex interactions</td>
-            <td>—</td>
-          </tr>
+          <tr><td>All copy / UX writing</td><td>Component architecture</td><td>Visual component tweaks already in PRD</td></tr>
+          <tr><td>Color tokens, spacing, type</td><td>Data + state management</td><td>Animation timing</td></tr>
+          <tr><td>Image / icon swaps</td><td>API integration</td><td>Responsive breakpoints</td></tr>
+          <tr><td>Minor layout adjustments</td><td>Complex interactions</td><td>—</td></tr>
         </tbody>
       </table>
     </div>
@@ -704,7 +574,7 @@
     <div class="workflow-steps">
       <div class="wf-step">
         <div class="wf-connector"><div class="wf-dot">1</div><div class="wf-line"></div></div>
-        <div class="wf-content"><h4>Decision is locked in Align &amp; Lock</h4></div>
+        <div class="wf-content"><h4>Decision is locked in Align &amp; Lock — captured in <code>prds/</code> in the repo</h4></div>
       </div>
       <div class="wf-step">
         <div class="wf-connector"><div class="wf-dot">2</div><div class="wf-line"></div></div>
@@ -724,13 +594,14 @@
       <div class="wf-step">
         <div class="wf-connector"><div class="wf-dot">5</div><div class="wf-line"></div></div>
         <div class="wf-content">
-          <h4>Eng reviews for technical correctness</h4>
-          <p>Designer reviews for visual accuracy</p>
+          <h4>Eng reviews for technical correctness, designer reviews for visual accuracy</h4>
         </div>
       </div>
       <div class="wf-step">
         <div class="wf-connector"><div class="wf-dot">6</div></div>
-        <div class="wf-content"><h4>Merge. PR links back to Figma spec.</h4></div>
+        <div class="wf-content">
+          <h4>Merge. PR links back to the relevant PRD file and any Figma frame for that specific call-out.</h4>
+        </div>
       </div>
     </div>
 
@@ -752,44 +623,44 @@
     <div class="trigger-grid">
       <div class="trigger-item"><span class="t-icon">🔒</span><span class="t-text">A decision is locked</span></div>
       <div class="trigger-item"><span class="t-icon">✅</span><span class="t-text">A flag is resolved</span></div>
-      <div class="trigger-item"><span class="t-icon">🔄</span><span class="t-text">A design changes</span></div>
+      <div class="trigger-item"><span class="t-icon">📄</span><span class="t-text">A PRD changes</span></div>
       <div class="trigger-item"><span class="t-icon">🚀</span><span class="t-text">A PR merges</span></div>
     </div>
 
     <ol style="max-width: 600px; margin-bottom: 28px;">
-      <li>The source of truth is updated — Figma designs AND the PRD/decision doc</li>
-      <li>AI summarizes the day's changes from Slack + PRs into a brief</li>
-      <li>Someone on the team approves the brief (5 min)</li>
-      <li>It's appended to the log — always current, always linkable</li>
+      <li>The repo is updated — the relevant <code>prds/</code> file reflects the current state of decisions</li>
+      <li>Figma frames are linked from the PRD for any decision with a visual call-out</li>
+      <li>AI summarizes the day's changes from Slack + PRs into a digest — this is the RFC's daily digest agent. Design plugs into the same loop.</li>
+      <li>Someone approves the digest (5 min) — it becomes the durable record</li>
     </ol>
 
-    <h3 style="margin-bottom: 14px;">What the source of truth contains</h3>
+    <h3 style="margin-bottom: 14px;">What the source of truth contains <span style="font-size:12px; font-weight:400; color: var(--text-3);">(all in the repo)</span></h3>
     <div class="truth-grid">
       <div class="truth-item">
-        <span class="ti-emoji">📐</span>
-        <div class="ti-title">Figma</div>
-        <div class="ti-desc">All UX flows, final designs, options considered</div>
+        <span class="ti-emoji">📋</span>
+        <div class="ti-title"><code>prds/</code> files</div>
+        <div class="ti-desc">Behavior contracts — what was decided, acceptance criteria, edge cases</div>
       </div>
       <div class="truth-item">
-        <span class="ti-emoji">📋</span>
+        <span class="ti-emoji">📐</span>
+        <div class="ti-title">Figma links</div>
+        <div class="ti-desc">Specific visual call-outs linked from PRD — not exhaustive hi-fi</div>
+      </div>
+      <div class="truth-item">
+        <span class="ti-emoji">📝</span>
         <div class="ti-title">Decision log</div>
-        <div class="ti-desc">What was decided, who decided it, why</div>
+        <div class="ti-desc">What changed, who decided it, why — auto-generated from PRs + Slack</div>
       </div>
       <div class="truth-item">
         <span class="ti-emoji">🚩</span>
         <div class="ti-title">Flag tracker</div>
         <div class="ti-desc">Open questions + their current status</div>
       </div>
-      <div class="truth-item">
-        <span class="ti-emoji">🕰</span>
-        <div class="ti-title">Change history</div>
-        <div class="ti-desc">What changed and when, with timestamps</div>
-      </div>
     </div>
 
     <div class="the-rule">
       <strong>The rule</strong>
-      <p>Leadership shouldn't need to attend every sync to stay current. They should be able to open the doc. If they can't — the log isn't being kept.</p>
+      <p>Leadership shouldn't need to attend every sync to stay current. They should be able to open the repo. If they can't — the log isn't being kept.</p>
     </div>
   </div>
 </section>
@@ -802,22 +673,15 @@
     <h2>What we'd keep. What we'd change.</h2>
 
     <div class="retro-grid">
-
       <div class="retro-col keep">
         <div class="retro-col-header">
           <span class="retro-col-icon">✓</span>
           <span class="retro-col-title">What worked</span>
         </div>
         <div class="retro-items">
-          <div class="retro-item">
-            <p class="retro-item-text">Seeing the product in a real working prototype early — you can feel UX problems that Figma can't show</p>
-          </div>
-          <div class="retro-item">
-            <p class="retro-item-text">Deep cross-functional collaboration — design, eng, and PM in the same room daily</p>
-          </div>
-          <div class="retro-item">
-            <p class="retro-item-text">Speed of iteration when the team was aligned</p>
-          </div>
+          <div class="retro-item"><p class="retro-item-text">Seeing the product in a real working prototype early — you can feel UX problems that Figma can't show</p></div>
+          <div class="retro-item"><p class="retro-item-text">Deep cross-functional collaboration — design, eng, and PM in the same room daily</p></div>
+          <div class="retro-item"><p class="retro-item-text">Speed of iteration when the team was aligned</p></div>
           <div class="retro-item">
             <p class="retro-item-text">Prototype-first allowed testers to provide feedback quickly</p>
             <span class="retro-attribution">— Ina</span>
@@ -861,7 +725,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </section>
@@ -889,16 +752,20 @@
       </div>
       <div class="q-item">
         <span class="q-num">04</span>
-        <span class="q-text">Is the daily log realistic to maintain during a high-velocity sprint? What's the minimum viable version?</span>
+        <span class="q-text">What's the minimum viable daily log — what must be in the repo vs. what can stay in Slack?</span>
       </div>
       <div class="q-item">
         <span class="q-num">05</span>
         <span class="q-text">How do we define "MVP scope" vs. future iteration clearly enough that the team isn't second-guessing constraints?</span>
       </div>
+      <div class="q-item">
+        <span class="q-num">06</span>
+        <span class="q-text">When does a design decision warrant a Figma frame in the PRD vs. a prose description? Who decides?</span>
+      </div>
     </div>
 
-    <div class="cta-block" style="text-align:left; background: transparent; border: 1px solid var(--border); padding: 24px 28px;">
-      <p style="margin-bottom: 14px;">This is a proposal, not a finished playbook. These questions need the whole team — drop a note below.</p>
+    <div class="cta-block">
+      <p>This is a proposal, not a playbook. Add your questions, flag what's missing, and let's build the next version together.</p>
       <a href="#sticky-board" class="cta-button">Add a sticky ↓</a>
     </div>
   </div>
@@ -915,7 +782,7 @@
     <div class="sticky-grid" id="sticky-grid"><!-- rendered by JS --></div>
 
     <div class="sticky-share-row">
-      <span class="sticky-share-note" id="share-note">Your stickies are saved in this browser.</span>
+      <span class="sticky-share-note" id="share-note">Add a sticky, then share the link in Slack for others to see yours.</span>
       <button class="sticky-share-btn" id="share-btn">Copy link with my notes</button>
     </div>
   </div>
@@ -950,18 +817,14 @@
   const LS_KEY = 'ai-process-notes-v1';
 
   const SEEDS = [
-    { name:'Ina',     text:'Prototype-first let testers feel real UX problems — keep this in the new process.',                         color:'sc-yellow', ts:'May 20' },
-    { name:'Esteban', text:'Source of truth needs to be non-negotiable. A decision in Slack doesn\'t exist.',                           color:'sc-pink',   ts:'May 21' },
-    { name:'June',    text:'The parallel tracks model directly solves the prototype/product duplication. Big yes.',                      color:'sc-blue',   ts:'May 22' },
-    { name:'Bianca',  text:'Daily log sounds right — but what\'s the lightest version that won\'t fall apart under sprint pressure?',   color:'sc-green',  ts:'May 22' },
+    { name:'Ina',     text:'Prototype-first let testers feel real UX problems — keep this in the new process.',                        color:'sc-yellow', ts:'May 20' },
+    { name:'Esteban', text:'Source of truth needs to be non-negotiable. A decision in Slack doesn\'t exist.',                          color:'sc-pink',   ts:'May 21' },
+    { name:'June',    text:'The parallel tracks model directly solves the prototype/product duplication. Big yes.',                     color:'sc-blue',   ts:'May 22' },
+    { name:'Bianca',  text:'Daily log sounds right — but what\'s the lightest version that won\'t fall apart under sprint pressure?',  color:'sc-green',  ts:'May 22' },
   ];
 
-  function loadLocal() {
-    try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch { return []; }
-  }
-  function saveLocal(notes) {
-    localStorage.setItem(LS_KEY, JSON.stringify(notes));
-  }
+  function loadLocal() { try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch { return []; } }
+  function saveLocal(n) { localStorage.setItem(LS_KEY, JSON.stringify(n)); }
   function loadFromURL() {
     const h = location.hash;
     if (!h.startsWith('#notes=')) return [];
@@ -973,10 +836,7 @@
     const d = document.createElement('div');
     d.className = 'sticky-card ' + note.color;
     d.style.setProperty('--rot', rot + 'deg');
-    d.innerHTML = `
-      <div class="s-name">${isShared ? '🔗 ' : ''}${escHtml(note.name || 'Anonymous')}</div>
-      <div class="s-text">${escHtml(note.text)}</div>
-      <div class="s-date">${escHtml(note.ts || '')}</div>`;
+    d.innerHTML = `<div class="s-name">${isShared ? '🔗 ' : ''}${escHtml(note.name || 'Anonymous')}</div><div class="s-text">${escHtml(note.text)}</div><div class="s-date">${escHtml(note.ts || '')}</div>`;
     return d;
   }
 
@@ -989,12 +849,12 @@
   }
 
   function makeFormCard(selectedColor) {
+    const dotColors = { yellow:'#FEF08A', pink:'#FBCFE8', blue:'#BAE6FD', green:'#86EFAC', orange:'#FDB68A' };
     const card = document.createElement('div');
     card.className = 'sticky-form-card ' + selectedColor;
-    card.id = 'sticky-form-card';
     card.innerHTML = `
       <div class="s-color-row" id="color-row">
-        ${COLORS.map(c => `<div class="s-color-dot ${c}${c===selectedColor?' sel':''}" data-color="${c}" title="${c.slice(3)}" style="background:var(--dot-${c.slice(3)})"></div>`).join('')}
+        ${COLORS.map(c => `<div class="s-color-dot${c===selectedColor?' sel':''}" data-color="${c}" style="background:${dotColors[c.slice(3)]}"></div>`).join('')}
       </div>
       <input id="s-name" type="text" placeholder="Your name (optional)" maxlength="40">
       <textarea id="s-text" placeholder="Drop your thought here…" maxlength="200"></textarea>
@@ -1003,11 +863,7 @@
         <button class="s-post-btn" id="s-post">Post sticky</button>
       </div>`;
 
-    // color dot inline styles (CSS vars not available for pseudo vars)
-    const dotColors = {yellow:'#FEF08A',pink:'#FBCFE8',blue:'#BAE6FD',green:'#86EFAC',orange:'#FDB68A'};
     card.querySelectorAll('.s-color-dot').forEach(dot => {
-      const key = dot.dataset.color.slice(3);
-      dot.style.background = dotColors[key];
       dot.onclick = () => {
         selectedColor = dot.dataset.color;
         card.className = 'sticky-form-card ' + selectedColor;
@@ -1024,9 +880,8 @@
       if (!text) { ta.focus(); return; }
       const note = {
         name:  card.querySelector('#s-name').value.trim() || 'Anonymous',
-        text,
-        color: selectedColor,
-        ts:    new Date().toLocaleDateString('en-US', { month:'short', day:'numeric' })
+        text, color: selectedColor,
+        ts: new Date().toLocaleDateString('en-US', { month:'short', day:'numeric' })
       };
       const local = loadLocal();
       local.push(note);
@@ -1034,7 +889,6 @@
       renderBoard();
       updateShareNote(local.length);
     };
-
     return card;
   }
 
@@ -1056,9 +910,7 @@
     const shared = loadFromURL();
     const local  = loadLocal();
     const all    = [...SEEDS, ...shared.map(n => ({...n, _shared:true})), ...local];
-    all.forEach((note, i) => {
-      grid.appendChild(makeCard(note, i, !!note._shared));
-    });
+    all.forEach((note, i) => grid.appendChild(makeCard(note, i, !!note._shared)));
     grid.appendChild(makeAddCard());
     updateShareNote(local.length);
   }
@@ -1073,7 +925,7 @@
 
   document.getElementById('share-btn').addEventListener('click', function() {
     const local = loadLocal();
-    if (!local.length) { document.getElementById('sticky-grid').querySelector('.add-sticky-card')?.click(); return; }
+    if (!local.length) { showForm(); return; }
     const encoded = encodeURIComponent(btoa(JSON.stringify(local)));
     const url = location.origin + location.pathname + '#notes=' + encoded;
     navigator.clipboard.writeText(url).then(() => {
