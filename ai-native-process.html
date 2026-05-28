@@ -507,6 +507,7 @@
         <strong>The contract</strong>
         <p>Things can change. That's expected. But the source of truth updates before dev acts on it. A decision made in Slack doesn't exist until it's in the repo.</p>
         <p>Decisions land in the initiative's <code>prds/</code> folder — the same behavior contract the RFC's drift-detection tooling runs against. Figma frames are linked from the PRD for specific visual call-outs. The repo is the source of truth; Figma is a linked reference.</p>
+        <p>Soon after a decision is locked: prototypes and Figma frames for the affected flow are updated to match. No artifact should show a superseded state.</p>
       </div>
     </div>
 
@@ -629,7 +630,8 @@
 
     <ol style="max-width: 600px; margin-bottom: 28px;">
       <li>The repo is updated — the relevant <code>prds/</code> file reflects the current state of decisions</li>
-      <li>Figma frames are linked from the PRD for any decision with a visual call-out</li>
+      <li>Prototypes and Figma frames for the affected flow are updated to match — no artifact should show a superseded state</li>
+      <li>Figma frames with visual call-outs are linked from the PRD</li>
       <li>AI summarizes the day's changes from Slack + PRs into a digest — this is the RFC's daily digest agent. Design plugs into the same loop.</li>
       <li>Someone approves the digest (5 min) — it becomes the durable record</li>
     </ol>
