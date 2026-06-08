@@ -121,6 +121,105 @@
       accentLight: 'rgba(91,95,239,0.09)',
     };
 
+    /* ── Marcus's 5 learning paths (5 Helix trigger journeys adapted to his context) ── */
+    const LEARNERS = [
+      /* ── Scenario 1: Atom — RCA (pull, small gap) ── */
+      {
+        id:'marcus-rca', name:'Marcus Chen', initials:'MC', color:'#5B5FEF',
+        role:'People Manager', company:'B2B SaaS',
+        learn:{
+          breadcrumb:['Customer Success','Support Operations','RCA Lab'],
+          headlines:{ write:"Today you're writing a root cause analysis for a support escalation.", feedback:"Solid structure — one thing to sharpen before you send this.", lab:"Now apply it to your actual escalation." },
+          mcp:null,
+          task:{ company:'YOUR TEAM · DUE TODAY', text:"Using the 5 Whys method, work through the root cause of the escalation you just got off a call about. Start with the customer-facing symptom — what did the customer actually experience? Work backward from there." },
+          prompt:{ initial:"Customer-facing symptom:\nA tier-1 enterprise customer experienced a 6-day response delay, two incorrect escalations, and never received a follow-up confirmation.\n\nWhy did this happen? (Why 1)\nBecause the ticket was tagged as low priority on intake.\n\nWhy was it tagged low priority? (Why 2)\n...\n\nWhy 3: ...\nWhy 4: ...\nWhy 5: ...\n\nRoot cause: ...\n\nCorrective actions:\n1. [Action] · Owner: · Due:\n2. [Action] · Owner: · Due:", refined:"Customer-facing symptom:\nTier-1 enterprise customer: 6-day response delay, two incorrect escalations, no follow-up confirmation.\n\nWhy 1: Ticket tagged low priority on intake.\nWhy 2: Intake agent used account size as the only priority signal — not contract tier.\nWhy 3: Priority matrix doesn't include contract SLA tier as a field.\nWhy 4: Priority matrix was last updated 18 months ago, before tiered SLAs were introduced.\nWhy 5: No owner was assigned to keep the matrix current after the SLA rollout.\n\nRoot cause: An operational process (priority matrix) wasn't updated to reflect a commercial change (tiered SLAs), with no ownership assigned to maintain it.\n\nCorrective actions:\n1. Update priority matrix to include contract tier · Owner: Marcus · Due: EOW\n2. Assign ongoing quarterly ownership of priority matrix to CS Ops · Owner: Priya · Recurring\n3. Audit open tickets for misclassification · Owner: Full team · Due: EOD today\n\nCustomer communication: [draft a one-paragraph response to the customer]" },
+          feedback:[{ ok:true, text:"5 Whys reaches a real root cause — a process failure with no owner, not a person." },{ ok:false, text:"Corrective actions need an owner and a due date on each line. Without both, they become suggestions." },{ ok:false, text:"Missing: customer communication. A complete RCA includes what you're telling the customer and when." }],
+          lab:[{ title:'State the customer-facing symptom in one sentence', hint:'What did the customer experience? Not what went wrong internally — what did they see?' },{ title:'Ask Why five times', hint:'Each answer becomes the next Why. Stop when you hit a process or system failure — not a person.' },{ title:'Name the root cause', hint:'Usually: a missing owner, an outdated process, or a system that doesn\'t reflect current reality.' },{ title:'Write 2–3 corrective actions', hint:'Each needs an owner and a due date. If it doesn\'t have both, it won\'t happen.' },{ title:'Draft the customer communication', hint:'One paragraph: what happened, what we\'re doing, what we\'re changing so it doesn\'t happen again.' }],
+          labIntro:"You'll work through today's actual escalation using the 5 Whys structure. Helix will flag when you're describing a symptom instead of a root cause — and ask one question when it needs more specificity.",
+          labCovers:['Build the 5 Whys chain for today\'s escalation','Name the root cause','Write corrective actions with owners and due dates'],
+          tracker:{ sectionLabel:'Support Operations', skillName:'Root Cause Analysis', progress:{ current:0, total:5 },
+            competencies:[{ ok:false, label:'Symptom vs. root cause distinguished' },{ ok:false, label:'5 Whys chain complete' },{ ok:false, label:'Root cause names a process/system failure' },{ ok:false, label:'Corrective actions: owner + due date' },{ ok:false, label:'Customer communication drafted' }],
+            steps:[{ label:'State the customer-facing symptom', done:false },{ label:'Complete 5 Whys chain', done:false },{ label:'Write corrective actions', done:false },{ label:'Draft customer communication', done:false }] },
+        },
+      },
+      /* ── Scenario 2: Lesson — SBI Feedback (pull, medium gap) ── */
+      {
+        id:'marcus-sbi', name:'Marcus Chen', initials:'MC', color:'#5B5FEF',
+        role:'People Manager', company:'B2B SaaS',
+        learn:{
+          breadcrumb:['People Management','Performance Conversations','Session 1'],
+          headlines:{ write:"Today you're learning to make direct feedback land — without it blowing up.", feedback:"You have the structure. Here's what makes the difference in delivery.", lab:"Now write what you'd actually say in tomorrow's 1:1." },
+          mcp:null,
+          task:{ company:'YOUR 1:1 TOMORROW', text:"Using the SBI framework (Situation → Behavior → Impact), write the specific thing you want to say tomorrow. Start with the most direct version — don't soften it yet. We'll calibrate after." },
+          prompt:{ initial:"What I want to say:\n\"You've been missing targets for two months and every time I try to bring it up, we end up talking about something else. I need you to understand this is serious.\"\n\n[Let's rewrite this as SBI...]\n\nSituation (specific instances, not 'lately'):\n\nBehavior (observable, not interpreted):\n\nImpact (on you, on the team, on the work):\n\nOpening question (ask, don't tell):", refined:"Situation:\n\"In our last three 1:1s — on [dates] — I brought up the missed targets each time. Each time we moved to other topics before we got to what needs to change.\"\n\nBehavior:\n\"When I name the missed targets, you tend to pivot to context — the pipeline, the workload — and I follow you there. We've spent less than five minutes on what specifically is going to be different.\"\n\nImpact:\n\"For me, it means I don't know if we see this the same way. For the team, two months without a correction plan is something I'll have to account for upward.\"\n\n→ Then stop talking. Ask: \"What's your read on where things stand?\"\n→ If they agree quickly: \"Tell me more about what 'working on it' looks like for you.\"\n→ If they deflect: \"I hear that context — and I want to stay on the specific pattern I'm seeing.\"" },
+          feedback:[{ ok:true, text:"Situation is specific — named the last three 1:1s, not 'lately' or 'often'. That's observable." },{ ok:false, text:"Behavior section describes what you do (follow them to other topics), not what they do. Flip it: name their observable action, not your response to it." },{ ok:false, text:"After Impact, you need to stop and ask a question — not make another statement. The goal is for them to talk, not just hear." }],
+          lab:[{ title:'Write the Situation — two specific instances', hint:'Date, context, what happened. No generalizations. \"Our last three 1:1s\" is better than \"recently.\"' },{ title:'Write the Behavior — what you observed them do', hint:'Observable actions, not interpretations. \"Pivoted to context after I named the target\" not \"got defensive.\"' },{ title:'Write the Impact — two levels', hint:'Impact on you (what you\'re uncertain about) and impact on the team or the work.' },{ title:'Write the opening question', hint:'After Impact, don\'t keep talking. \"What\'s your read on where things stand?\" — then stop.' },{ title:'Anticipate the deflection and write your response', hint:'If they pivot to context: \"I hear that — and I want to stay on the specific pattern I\'m seeing.\"' }],
+          labIntro:"You'll write exactly what you're going to say tomorrow — in SBI format — then Helix will roleplay the direct report's response so you can practice holding the thread when they deflect.",
+          labCovers:['Write your SBI script','Roleplay the deflection','Practice naming the pattern when they pivot'],
+          tracker:{ sectionLabel:'People Management', skillName:'SBI Feedback Delivery', progress:{ current:0, total:5 },
+            competencies:[{ ok:false, label:'Situation is specific, not vague' },{ ok:false, label:'Behavior is observable, not interpreted' },{ ok:false, label:'Impact is named clearly' },{ ok:false, label:'Ends with a question, not a statement' },{ ok:false, label:'Holds the thread when direct report deflects' }],
+            steps:[{ label:'Write your SBI script', done:false },{ label:'Identify the likely deflection', done:false },{ label:'Roleplay the conversation', done:false },{ label:'Debrief what worked', done:false }] },
+        },
+      },
+      /* ── Scenario 3: Course — Data Narrative (push, from review feedback) ── */
+      {
+        id:'marcus-data', name:'Marcus Chen', initials:'MC', color:'#5B5FEF',
+        role:'People Manager', company:'B2B SaaS',
+        learn:{
+          breadcrumb:['Google Data Analytics','Narrative Structure','Module 4'],
+          headlines:{ write:"You don't need better writing. You need a mental model for how data and narrative interact.", feedback:"The structure is right. Here's what's still reading as anecdote.", lab:"Now restructure your last team update using context–conflict–resolution." },
+          mcp:{ label:'What your review flagged · via Workday', intro:'Your performance review surfaced this pattern across <strong>your last four team updates</strong> sent upward:', observation:'"Marcus\'s team updates rely too much on gut feel and anecdote. When he reports up, I can\'t tell if things are on track or not." — Direct manager feedback, Q4 review', gap:"The gap isn't stylistic. You can't fix this by cleaning up the writing — the AI can't fix it either. You need a mental model for how data and narrative interact. That's different from writing 'more data-driven.' That's what we're addressing today." },
+          task:{ company:'YOUR TEAM REPORTING', text:"Take your last team update — the one you sent upward. Find the first claim that relies on gut feel or a qualitative word like 'things are going well.' Replace it using the context–conflict–resolution structure." },
+          prompt:{ initial:"What I wrote:\n\"Things are going well on the team overall. Jamie has been struggling a bit but I think they're turning a corner. We had a tough week with two escalations but the team handled it well. I'm cautiously optimistic about Q4.\"\n\n[This is anecdote — let's find the structure...]\n\nContext (baseline + actual result, numbers only):\n\nConflict (where is the gap? who or what is creating it?):\n\nResolution (what's the plan? who owns it? when will you know it's working?)", refined:"Context:\nThe team closed 87% of assigned tickets in Q3, against a target of 90%. Two enterprise escalations in week 12 accounted for the shortfall — both resolved within SLA.\n\nConflict:\nJamie has missed individual targets in 6 of the last 8 weeks (72% vs. 85% team average). I've flagged this in three 1:1s. I haven't yet seen a change in output pattern.\n\nResolution:\nFor Q4: team-level target stays at 90%. Jamie starts a 4-week performance plan in week 1 — I'll report progress at the next manager check-in. No other team members are trending below target.\n\nDecision point: If Jamie is not at 80%+ by week 4 of the plan, I'll escalate to HR. I'll flag proactively if we're heading that direction." },
+          feedback:[{ ok:true, text:"Context is specific — 87% vs. 90%, two escalations named as the cause. That's a data observation, not anecdote." },{ ok:false, text:"Conflict names the gap but not the trajectory. 'Missed targets in 6 of 8 weeks' is good — is it getting better or worse week-over-week?" },{ ok:false, text:"Resolution needs a decision point, not just a plan. When will you know the performance plan is working? What's the signal that tells you to escalate?" }],
+          lab:[{ title:'Open your last team update', hint:'The one you sent to your manager — not an internal team message' },{ title:'Find the first qualitative claim', hint:"Look for: 'things are going well,' 'the team is engaged,' 'cautiously optimistic' — anything without a number" },{ title:'Write the Context', hint:'What is the baseline? What was the target? What actually happened? Numbers only.' },{ title:'Write the Conflict', hint:'Where is the gap? Who or what is creating it? Be specific — name the person or process.' },{ title:'Write the Resolution + decision point', hint:"What's the plan? Who owns it? When will you know it's working — and what's the trigger to escalate?" }],
+          labIntro:"You'll take your actual last team update — the one your manager read — and restructure it using context–conflict–resolution. Helix identifies the anecdote-to-data swaps and flags when the narrative still relies on qualitative signals.",
+          labCovers:['Find the first anecdote in your update','Replace it with context–conflict–resolution','Add the decision point that tells you whether the plan is working'],
+          tracker:{ sectionLabel:'Google Data Analytics', skillName:'Team Performance Narrative', progress:{ current:0, total:6 },
+            competencies:[{ ok:false, label:'Claims are data-grounded, not qualitative' },{ ok:false, label:'Context: baseline + actual result' },{ ok:false, label:'Conflict names the specific person or process' },{ ok:false, label:'Resolution has owner + timeline' },{ ok:false, label:'Decision point is explicit' },{ ok:false, label:'Manager can track without asking clarifying questions' }],
+            steps:[{ label:'Find the first anecdote in your last update', done:false },{ label:'Write context–conflict–resolution', done:false },{ label:'Add decision point and trigger', done:false },{ label:'Full team update restructured', done:false }] },
+        },
+      },
+      /* ── Scenario 4: Path — Performance Review Cycle (push, onboarding assessment) ── */
+      {
+        id:'marcus-path', name:'Marcus Chen', initials:'MC', color:'#5B5FEF',
+        role:'People Manager', company:'B2B SaaS',
+        learn:{
+          breadcrumb:['Performance Review Cycle','Goal Setting','Week 1 of 6'],
+          headlines:{ write:"This is three distinct skills. We'll sequence them in the order you'll actually need them.", feedback:"Good start on goals. Here's what to tighten before your 1:1s.", lab:"Now map your six-week timeline and identify where each node lands." },
+          mcp:{ label:'What your onboarding assessment flagged', intro:'Your Helix onboarding assessment — completed in month one — flagged <strong>three separate skill gaps</strong>:', observation:'"Goal-setting frameworks: not demonstrated. Developmental feedback delivery: not demonstrated. Data-backed reporting to leadership: not demonstrated." — Helix onboarding assessment', gap:"These don't come from the same course. We'll build a path that sequences them in the order the review cycle actually requires: goals first, then feedback, then reporting." },
+          task:{ company:'YOUR TEAM · REVIEW CYCLE', text:"Start with Node 1: Goal Setting. For each of your four direct reports, draft one Q3 goal using SMART format. Write the goals below — we'll review them together before your first 1:1." },
+          prompt:{ initial:"My four direct reports — Q3 goals (draft):\n\n1. [Name] · [Role]: Goal:\n2. [Name] · [Role]: Goal:\n3. [Name] · [Role]: Goal:\n4. [Name] · [Role]: Goal:\n\n---\nPath overview:\nNode 1 · Goal Setting → this session\nNode 2 · Developmental Feedback (SBI) → Week 2\nNode 3 · Data Narrative (Google Analytics) → Week 3–4\nNode 4 · Leadership Presentation → Week 5–6", refined:"1. Jamie (CS Manager): Increase individual ticket close rate from 72% to 85% by end of Q3 — measured weekly in the CS dashboard.\n2. Priya (CS Manager): Lead two enterprise onboarding cycles end-to-end without escalation — measured by escalation log and 30-day NPS.\n3. Lena (CS Specialist): Reduce average first-response time for standard tickets from 6h to 3h — measured in Zendesk weekly report.\n4. Tom (CS Specialist): Complete advanced Zendesk certification AND ship one workflow improvement to the team queue — measured by cert completion + PR merged by week 8.\n\nNote on Tom: two separate outcomes in one goal. If one is done and one isn't, I can't assess it cleanly. Need to split or weight.\n\nPath timeline:\nWeek 1–2: Goal-setting 1:1s with all four direct reports.\nWeek 3: SBI feedback in mid-cycle check-ins (I've done the SBI lesson — starting at the practice step).\nWeek 4: Restructure mid-cycle team update using context–conflict–resolution.\nWeek 6: Leadership presentation — team results to my manager." },
+          feedback:[{ ok:true, text:"Jamie's goal is well-formed — specific, measurable, timebound, with a named tracking system." },{ ok:false, text:"Tom's goal has two outcomes. Split them or weight them — otherwise you can't assess the goal if one is done and one isn't." },{ ok:false, text:"Missing: each goal needs a mid-cycle check-in point. Without a Week 3 marker, you'll have a surprise at Week 6." }],
+          lab:[{ title:'Draft Q3 goals for all four direct reports', hint:'SMART: Specific, Measurable, Achievable, Relevant, Time-bound. One goal each to start.' },{ title:'Check: does each goal have a tracking system?', hint:'Not just "I\'ll track it" — name the dashboard, spreadsheet, or log.' },{ title:'Map the six-week review timeline', hint:'Goals → 1:1s (Week 1–2) → SBI check-ins (Week 3) → mid-cycle update (Week 4) → leadership presentation (Week 6)' },{ title:'Identify your Node 2 entry point', hint:"Have you done the SBI lesson? If yes, you're starting at the practice step, not the framework." },{ title:'Draft one mid-cycle 1:1 agenda', hint:'15 min: goal progress (data), one SBI observation, one question (what do you need from me?)' }],
+          labIntro:"You'll build your complete six-week review cycle plan — starting with Q3 goals today, then sequencing the feedback and reporting nodes in the order you'll actually need them.",
+          labCovers:['Draft SMART goals for all four direct reports','Map the six-week review timeline','Identify your entry point for each path node'],
+          tracker:{ sectionLabel:'Performance Review Cycle', skillName:'End-to-End Review Cycle', progress:{ current:0, total:4 },
+            competencies:[{ ok:false, label:'SMART goals set for each direct report' },{ ok:false, label:'Mid-cycle SBI feedback delivered' },{ ok:false, label:'Data-backed team update sent to manager' },{ ok:false, label:'Leadership presentation completed' }],
+            steps:[{ label:'Node 1: Draft Q3 goals', done:false },{ label:'Node 2: SBI feedback in 1:1s (Week 3)', done:false },{ label:'Node 3: Data narrative update (Week 4)', done:false },{ label:'Node 4: Leadership presentation (Week 6)', done:false }] },
+        },
+      },
+      /* ── Scenario 5: Avatar — Kim Scott post-SBI debrief (pull, judgment gap) ── */
+      {
+        id:'marcus-avatar', name:'Marcus Chen', initials:'MC', color:'#5B5FEF',
+        role:'People Manager', company:'B2B SaaS',
+        learn:{
+          breadcrumb:['Radical Candor','Post-1:1 Debrief','Conversation'],
+          headlines:{ write:"Let's think through what actually happened in that 1:1.", feedback:"You said the right words. Here's what was happening underneath them.", lab:"What would you do differently in the next one?" },
+          mcp:null,
+          task:{ company:'POST-1:1 REFLECTION', text:"Describe what happened. Be specific: what did you say, what did they say, and when did you feel like you lost them? There's no right answer here — we're working out what actually happened." },
+          prompt:{ initial:"What happened:\nI used the SBI thing. I said the situation (our last 3 1:1s, the missed targets), the behavior (they kept pivoting), the impact (I don't know if we see this the same way). Then I asked \"what's your read?\" — and they said \"I know, I've been working on it\" and agreed with everything.\n\nThen we talked about workload for 20 minutes.\n\nI said the right words I think but it didn't really land. They heard me but something shut down.\n\n[What Kim Scott would say about this moment:]", refined:"What you're describing is a specific dynamic. When someone agrees quickly and moves on — 'I know, I've been working on it' — that often means they felt the feedback as a verdict, not a conversation. They closed the door instead of opening it.\n\nThe SBI was right. The problem wasn't the framework. It was what happened after 'what's your read?'\n\nWhen they said 'I know, I've been working on it' — that's the moment. Not another statement. Not agreement. A pause, and then:\n\n\"Tell me more about what 'working on it' looks like for you.\"\n\nThat question turns a verdict into a conversation. They have to say something real. You get information. They feel heard instead of judged.\n\nThe next 1:1: same SBI. But after their first response — whatever it is — don't move. Ask one follow-up question. Then wait.\n\n→ What would you do differently at that moment? [Kim Scott's question to you]" },
+          feedback:[{ ok:true, text:"You used SBI correctly and ended with a question. The structure was right — the framework didn't fail you." },{ ok:false, text:"When they agreed quickly: that's the signal, not the resolution. Quick agreement in a performance conversation usually means they're closing down, not opening up." },{ ok:false, text:"'I know, I've been working on it' needed one follow-up question, not acceptance. What does working on it look like? What's different from last month?" }],
+          lab:[{ title:"What did they say when you asked 'what's your read?'", hint:'Write it exactly — their words, not your interpretation of what they meant.' },{ title:'What did you do next?', hint:'Did you accept their answer? Follow up? Move on? Be specific.' },{ title:"What would you do differently at that moment?", hint:"Kim Scott: 'The work isn't in saying the hard thing — it's in staying in the room after you say it.'" },{ title:'Write the one follow-up question for next time', hint:"Not a statement. Not agreement. One open question that requires them to say something real. \"Tell me more about what that looks like.\"" },{ title:'What would a good outcome look like in the next 1:1?', hint:'Not resolution — what would you see or hear that tells you the conversation was real and not just polite?' }],
+          labIntro:"This isn't a lesson — it's a debrief. You already did the 1:1. We're working out what actually happened and what to do differently next time, using Kim Scott's Radical Candor framework as the frame. Her models are the source. This conversation is mine.",
+          labCovers:['Identify the moment you lost them','Name what was happening underneath the quick agreement','Write the one follow-up question for next time'],
+          tracker:{ sectionLabel:'Radical Candor', skillName:'Developmental Feedback Debrief', progress:{ current:0, total:4 },
+            competencies:[{ ok:false, label:'Identifies the moment the conversation shifted' },{ ok:false, label:'Understands quick agreement as a signal, not resolution' },{ ok:false, label:'Has a follow-up question for next time' },{ ok:false, label:'Can distinguish feedback landing vs. being heard' }],
+            steps:[{ label:'Describe what happened in the 1:1', done:false },{ label:'Identify the moment you lost them', done:false },{ label:'Write the follow-up question for next time', done:false },{ label:'Articulate what a real outcome would look like', done:false }] },
+        },
+      },
+    ];
+
     /* ── Nav mini illustrations ── */
     const IconMyPlan = ({ active = false }) => (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -241,7 +340,7 @@
     };
 
     /* ── Sidebar ── */
-    function Sidebar({ tab, onSelect, collapsed, onToggle }) {
+    function Sidebar({ tab, onSelect, collapsed, onToggle, learner }) {
       const items = [
         { id: 0, label: 'My Plan', I: IconMyPlan },
         { id: 1, label: 'Learn',   I: IconLearn  },
@@ -308,10 +407,10 @@
 
           {/* User avatar */}
           <div style={{ padding: '10px 12px', borderTop: '1px solid rgba(28,25,23,0.08)', display: 'flex', alignItems: 'center', gap: '9px', flexShrink: 0 }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', color: '#fff', flexShrink: 0 }}>MC</div>
+            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: learner.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', color: '#fff', flexShrink: 0 }}>{learner.initials}</div>
             <div style={txt}>
-              <div style={{ fontSize: '13px', fontWeight: '500', color: C.sbTxt, lineHeight: '1.3' }}>Marcus Chen</div>
-              <div style={{ fontSize: '11px', color: C.sbMut }}>Senior Data Analyst</div>
+              <div style={{ fontSize: '13px', fontWeight: '500', color: C.sbTxt, lineHeight: '1.3' }}>{learner.name}</div>
+              <div style={{ fontSize: '11px', color: C.sbMut }}>{learner.role}</div>
             </div>
           </div>
         </div>
@@ -319,7 +418,7 @@
     }
 
     /* ── Skill Tracker (Learn right panel, collapsible) ── */
-    function SkillTracker({ collapsed = false, onToggle = () => {} }) {
+    function SkillTracker({ collapsed = false, onToggle = () => {}, trackerData }) {
       const [area, setArea]     = useState('prototyping');
       const [skill, setSkill]   = useState('workflow');
       const [navOpen, setNavOpen] = useState(false);
@@ -356,7 +455,7 @@
           { id: 'culture', name: 'AI Culture Building',   sprint: 'Sprint 4', pct: 0 },
         ],
       };
-      const comps = [
+      const comps = trackerData?.competencies || [
         { ok: true,  label: 'Role defined clearly' },
         { ok: true,  label: 'Tone specified (skeptical)' },
         { ok: true,  label: 'Domain expertise established' },
@@ -364,7 +463,7 @@
         { ok: false, label: 'Behavior under uncertainty' },
         { ok: false, label: 'Escalation behavior' },
       ];
-      const steps = [
+      const steps = trackerData?.steps || [
         { label: 'Write a system prompt',       done: true  },
         { label: 'Chain 2 prompts in sequence', done: false },
         { label: 'Debug a failing prompt',      done: false },
@@ -407,8 +506,8 @@
                 background: navOpen ? C.accentLight : 'transparent',
                 transition: 'background 150ms ease' }}>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: '10px', fontWeight: '600', color: C.tMut, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: '2px' }}>{currentAreaObj?.name}</div>
-                <div style={{ fontSize: '13px', fontWeight: '600', color: C.tPri, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{currentSkillObj?.name}</div>
+                <div style={{ fontSize: '10px', fontWeight: '600', color: C.tMut, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: '2px' }}>{trackerData?.sectionLabel || currentAreaObj?.name}</div>
+                <div style={{ fontSize: '13px', fontWeight: '600', color: C.tPri, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{trackerData?.skillName || currentSkillObj?.name}</div>
               </div>
               <svg width="13" height="13" viewBox="0 0 14 14" fill="none"
                 style={{ flexShrink: 0, color: C.tMut, transition: 'transform 200ms ease', transform: navOpen ? 'rotate(180deg)' : 'none' }}>
@@ -498,8 +597,8 @@
                   </div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '12px', fontWeight: '600', color: C.tPri, marginBottom: '3px' }}>{done} of {comps.length} demonstrated</div>
-                  <div style={{ fontSize: '11px', color: C.tMut, lineHeight: '1.5', marginBottom: '8px' }}>{comps.length - done} more unlock verification</div>
+                  <div style={{ fontSize: '12px', fontWeight: '600', color: C.tPri, marginBottom: '3px' }}>{trackerData?.progress ? trackerData.progress.current : done} of {trackerData?.progress ? trackerData.progress.total : comps.length} demonstrated</div>
+                  <div style={{ fontSize: '11px', color: C.tMut, lineHeight: '1.5', marginBottom: '8px' }}>{trackerData?.progress ? (trackerData.progress.total - trackerData.progress.current) : (comps.length - done)} more unlock verification</div>
                   <div style={{ width: '80px', height: '3px', background: C.border, borderRadius: '2px', overflow: 'hidden' }}>
                     <div style={{ width: `${compPct*100}%`, height: '100%', background: C.accent, borderRadius: '2px' }}/>
                   </div>
@@ -811,112 +910,127 @@
       );
     }
 
-    /* ── Vignette 0: My Plan ── */
-    function VignetteMyPlan({ onStart }) {
-      const areas = [
-        {
-          Icon: IllAIProto, title: 'AI Prototyping', status: 'active', pct: 42,
-          desc: 'Build and iterate with AI tools — prompting, workflows, and APIs.',
-          skills: 4, verified: 1,
-          mcp: {
-            sessions: 12,
-            narrative: "You're making real progress — and it shows in how you work. Three things have clearly shifted over the past few weeks.",
-            behaviors: [
-              "You now write a system prompt before running analysis — this wasn't happening a month ago",
-              "Your prompts are 2× longer and more specific, with personas and output instructions",
-              "You're chaining follow-up queries instead of starting fresh each time",
-            ],
-          },
-          subskills: [
-            { label: 'Prompt Engineering',     done: true  },
-            { label: 'AI Workflow Integration', active: true },
-            { label: 'Claude API Fundamentals' },
-            { label: 'Prototyping & Iteration' },
-          ],
-        },
-        {
-          Icon: IllData, title: 'Data Literacy', status: 'active', pct: 68,
-          desc: 'Read, analyze, and communicate with data confidently.',
-          skills: 4, verified: 2,
-          mcp: {
-            sessions: 8,
-            narrative: "The gap between knowing this and actually using it is closing. Your sessions show you reaching for data instinctively now — not just when asked.",
-            behaviors: [
-              "SQL queries are getting more complex — you're using JOINs and subqueries regularly now",
-              "You asked for a confidence interval unprompted in last week's model review",
-              "Visualizations are appearing in your outputs before anyone requests them",
-            ],
-          },
-          subskills: [
-            { label: 'SQL & Data Querying',  done: true  },
-            { label: 'Data Visualization',    done: true  },
-            { label: 'Statistical Analysis',  active: true },
-            { label: 'Python for Data' },
-          ],
-        },
-        {
-          Icon: IllStrategy, title: 'AI Strategy', status: 'upnext', pct: 0,
-          desc: 'Evaluate AI investments, risks, and organizational readiness.',
-          skills: 4, verified: 0,
-          assignedBy: 'Priya Sharma · Meridian AI Program',
-          goal: 'All team leads verified', deadline: 'Q4 2026',
-          unlockAfter: 'AI Prototyping',
-          workday: 'Strategic AI evaluation required for Senior Analyst role progression — flagged in Q1 review.',
-        },
-        {
-          Icon: IllManagement, title: 'Management in AI Era', status: 'locked', pct: 0,
-          desc: 'Lead teams through change as AI reshapes how work gets done.',
-          skills: 4, verified: 0,
-          assignedBy: 'Meridian Financial · L&D',
-          goal: 'Leadership team ready', deadline: 'Q1 2027',
-          unlockAfter: 'AI Strategy',
-          workday: 'Change management skills identified as a growth gap in your last 360 review.',
-        },
+    /* ── Vignette 0: Marcus's Home ── */
+    function VignetteMyPlan({ onSelectLearner }) {
+      const [query, setQuery]         = useState('');
+      const [filter, setFilter]       = useState('all');
+
+      // Map learner ids to indices for routing
+      const LEARNER_IDX = { 'marcus-rca':0, 'marcus-sbi':1, 'marcus-data':2, 'marcus-path':3, 'marcus-avatar':4 };
+
+      const convos = [
+        { id:'marcus-rca',    title:'Write a root cause analysis for a support escalation — due today', type:'solving',   source:'self',     sourceLabel:null,                            time:30, steps:{done:0,total:4}, status:'not-started', track:'Customer Success · Support Operations · Atom', context:'You asked: "I need to write a formal RCA for the first time and it\'s due today."' },
+        { id:'marcus-sbi',    title:'Make direct feedback land without it blowing up — 1:1 tomorrow', type:'preparing',  source:'self',     sourceLabel:null,                            time:40, steps:{done:0,total:4}, status:'not-started', track:'People Management · Performance Conversations · Lesson', context:'You asked: "How do I make this person actually hear what I\'m saying?"' },
+        { id:'marcus-data',   title:'Build a data-backed team narrative — not just a gut-feel update', type:'skill-gap',  source:'assigned', sourceLabel:'Direct manager · Q4 review',    time:45, steps:{done:0,total:4}, status:'not-started', track:'Google Data Analytics · Narrative Structure · Course', context:'Review feedback: "I can\'t tell if things are on track from your updates."' },
+        { id:'marcus-path',   title:'Run my first performance review cycle — goals to leadership presentation', type:'skill-gap',  source:'assigned', sourceLabel:'Helix onboarding assessment', time:180, steps:{done:0,total:4}, status:'not-started', track:'Performance Review Cycle · Path · 6 weeks', context:'Onboarding assessment flagged three separate gaps: goal-setting, feedback, and reporting.' },
+        { id:'marcus-avatar', title:'Think through what actually happened in that 1:1 — with Kim Scott', type:'preparing',  source:'self',     sourceLabel:null,                            time:25, steps:{done:0,total:4}, status:'not-started', track:'Radical Candor · Post-1:1 Debrief · Avatar', context:'You said: "I used SBI and it went okay but the person just kind of shut down."' },
       ];
 
+      const chips = ['Help me write a hard email','Prep me for a tough conversation','How do I give better feedback','What does a good RCA look like?'];
+
+      const TYPE_META = {
+        'skill-gap':  { label:'Skill gap',         color:'#B45309', bg:'rgba(217,119,6,0.1)', dot:'#F59E0B' },
+        'solving':    { label:'Solving a problem',  color:C.accent,  bg:C.accentLight,         dot:C.accent  },
+        'preparing':  { label:'Preparing for',      color:'#0D7A6A', bg:'rgba(13,148,136,0.09)', dot:'#14B8A6' },
+      };
+
+      const filtered = filter === 'assigned' ? convos.filter(c => c.source === 'assigned')
+                     : filter === 'self'     ? convos.filter(c => c.source === 'self')
+                     : convos;
+
       return (
-        <div className="scroll vignette" style={{ flex: 1, background: C.canvas, padding: '44px 52px' }}>
-          {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '48px' }}>
-            <div>
-              <h1 style={{ fontSize: '44px', fontWeight: '700', letterSpacing: '-0.035em', color: C.tPri, lineHeight: '1.05', marginBottom: '12px' }}>
-                Hi Marcus.
-              </h1>
-              <div style={{ fontSize: '16px', color: C.tMut, marginBottom: '20px', lineHeight: '1.5' }}>
-                Great progress last week — you're on a roll.
-              </div>
-              {/* Stats — plain text, no color */}
-              <div style={{ display: 'flex', gap: '20px' }}>
-                {[
-                  { label: '4-day streak' },
-                  { label: '1 skill verified last week' },
-                  { label: '2 areas active' },
-                ].map((stat, i) => (
-                  <span key={i} style={{ fontSize: '13px', color: C.tMut, borderLeft: i > 0 ? `1px solid rgba(28,25,23,0.12)` : 'none', paddingLeft: i > 0 ? '20px' : 0 }}>
-                    {stat.label}
-                  </span>
+        <div className="scroll vignette" style={{ flex:1, background:C.canvas, display:'flex', flexDirection:'column', alignItems:'center', padding:'0 0 72px' }}>
+
+          {/* ── Greeting + input ── */}
+          <div style={{ width:'100%', maxWidth:660, padding:'60px 32px 0', textAlign:'center' }}>
+            <h1 style={{ fontSize:42, fontWeight:700, letterSpacing:'-0.03em', color:C.tPri, lineHeight:1.12, marginBottom:10 }}>
+              Hi Marcus.
+            </h1>
+            <p style={{ fontSize:17, color:C.tMut, marginBottom:8, lineHeight:1.55 }}>
+              8 months in. <span style={{ color:C.tSec }}>You've been sitting with this one for a while.</span>
+            </p>
+            <p style={{ fontSize:15, color:C.tMut, marginBottom:32 }}>What do you need to figure out today?</p>
+
+            {/* Input */}
+            <div style={{ position:'relative', marginBottom:14 }}>
+              <textarea
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                placeholder="Describe what you're working on, or what you need to get better at…"
+                rows={3}
+                style={{ width:'100%', padding:'16px 56px 16px 18px', background:C.surface, border:`1.5px solid ${C.border}`, borderRadius:14, fontSize:14, lineHeight:1.65, color:C.tPri, resize:'none', outline:'none', fontFamily:'Inter,sans-serif', boxShadow:'0 2px 8px rgba(0,0,0,0.05)', transition:'border-color 150ms' }}
+                onFocus={e => e.target.style.borderColor = C.accent}
+                onBlur={e => e.target.style.borderColor = C.border}
+              />
+              <button style={{ position:'absolute', right:12, bottom:12, width:32, height:32, borderRadius:'50%', background: query.trim() ? C.accent : C.border, border:'none', color:'#fff', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, transition:'background 150ms' }}>→</button>
+            </div>
+
+            {/* Suggestion chips */}
+            <div style={{ display:'flex', gap:8, flexWrap:'wrap', justifyContent:'center' }}>
+              {chips.map(chip => (
+                <button key={chip} onClick={() => setQuery(chip)} style={{ padding:'6px 14px', borderRadius:40, border:`1px solid ${C.border}`, background:C.surface, color:C.tMut, fontSize:12.5, cursor:'pointer', fontFamily:'Inter,sans-serif', transition:'all 150ms' }}
+                  onMouseEnter={e=>{ e.currentTarget.style.background=C.canvas; e.currentTarget.style.color=C.tPri; }}
+                  onMouseLeave={e=>{ e.currentTarget.style.background=C.surface; e.currentTarget.style.color=C.tMut; }}>
+                  {chip}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Pick up where you left off ── */}
+          <div style={{ width:'100%', maxWidth:800, padding:'48px 32px 0' }}>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:18 }}>
+              <div style={{ fontSize:13, fontWeight:600, color:C.tMut, letterSpacing:'.07em', textTransform:'uppercase' }}>Pick up where you left off</div>
+              <div style={{ display:'flex', gap:2, background:C.surface, borderRadius:8, padding:3, border:`1px solid ${C.border}` }}>
+                {[['all','All'],['assigned','Assigned'],['self','Self-directed']].map(([v,l]) => (
+                  <button key={v} onClick={() => setFilter(v)} style={{ padding:'5px 12px', borderRadius:6, border:'none', background: filter===v ? C.accent : 'transparent', color: filter===v ? '#fff' : C.tMut, fontSize:12, fontWeight: filter===v ? 600 : 400, cursor:'pointer', fontFamily:'Inter,sans-serif', transition:'all 150ms' }}>{l}</button>
                 ))}
               </div>
             </div>
-            <button className="btn btn-primary" onClick={onStart} style={{ padding: '11px 24px', fontSize: '14px', flexShrink: 0, marginTop: '8px' }}>
-              Continue →
-            </button>
-          </div>
 
-          {/* In-progress skill areas */}
-          <div style={{ fontSize: '11px', fontWeight: '600', color: C.tMut, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '14px' }}>In Progress</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '32px' }}>
-            {areas.filter(a => a.status === 'active').map((area, i) => (
-              <ActiveSkillCard key={i} area={area} onAction={onStart}/>
-            ))}
-          </div>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+              {filtered.map((c, i) => {
+                const tm = TYPE_META[c.type];
+                const pct = c.steps.done / c.steps.total * 100;
+                const idx = LEARNER_IDX[c.id] ?? 0;
+                return (
+                  <div key={i} className="card" style={{ padding:'18px 20px', cursor:'pointer', borderRadius:13 }}
+                    onMouseEnter={e=>e.currentTarget.style.transform='translateY(-1px)'}
+                    onMouseLeave={e=>e.currentTarget.style.transform='none'}>
 
-          {/* Upcoming skill areas */}
-          <div style={{ fontSize: '11px', fontWeight: '600', color: C.tMut, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '14px' }}>Coming Up</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-            {areas.filter(a => a.status !== 'active').map((area, i) => (
-              <UpcomingSkillCard key={i} area={area}/>
-            ))}
+                    <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:12, marginBottom:10 }}>
+                      <div style={{ fontSize:14, fontWeight:600, color:C.tPri, lineHeight:1.4, flex:1 }}>{c.title}</div>
+                      <div style={{ fontSize:11, color:C.tMut, whiteSpace:'nowrap', flexShrink:0, paddingTop:2 }}>⏱ {c.time} min</div>
+                    </div>
+
+                    <div style={{ display:'flex', gap:6, marginBottom:11, flexWrap:'wrap' }}>
+                      <span style={{ fontSize:10, fontWeight:700, letterSpacing:'.05em', padding:'3px 8px', borderRadius:5, background:tm.bg, color:tm.color }}>{tm.label}</span>
+                      {c.source === 'assigned'
+                        ? <span style={{ fontSize:10, fontWeight:500, padding:'3px 8px', borderRadius:5, background:'rgba(59,130,246,0.09)', color:'#2563EB' }}>Assigned · {c.sourceLabel}</span>
+                        : <span style={{ fontSize:10, fontWeight:500, padding:'3px 8px', borderRadius:5, background:C.canvas, color:C.tMut, border:`1px solid ${C.border}` }}>Self-directed</span>
+                      }
+                    </div>
+
+                    <div style={{ fontSize:12, color:C.tMut, lineHeight:1.55, marginBottom:14, fontStyle:'italic' }}>{c.context}</div>
+
+                    <div style={{ marginBottom:14 }}>
+                      <div style={{ height:2, background:C.border, borderRadius:1, overflow:'hidden', marginBottom:6 }}>
+                        <div style={{ width:`${pct}%`, height:'100%', background: pct > 0 ? C.accent : 'transparent', borderRadius:1, transition:'width 400ms ease' }}/>
+                      </div>
+                      <div style={{ fontSize:11, color:C.tMut }}>{c.steps.done} of {c.steps.total} steps · {c.track}</div>
+                    </div>
+
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                      {c.status === 'in-progress'
+                        ? <span style={{ fontSize:11, fontWeight:600, color:C.success, background:'rgba(5,150,105,0.09)', padding:'3px 9px', borderRadius:5 }}>In progress</span>
+                        : <span style={{ fontSize:11, color:C.tMut }}>Not started</span>
+                      }
+                      <button onClick={() => onSelectLearner(idx)} className="btn btn-primary" style={{ padding:'7px 16px', fontSize:12 }}>Open →</button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       );
@@ -1450,11 +1564,12 @@
     }
 
     /* ── Vignette 1: Learn (3-phase) ── */
-    function VignetteLearn({ onSubmit }) {
+    function VignetteLearn({ onSubmit, learner }) {
+      const LL = learner?.learn || LEARNERS[0].learn;  // learner learn data, fallback to Marcus
       const [learnPhase, setLearnPhase]   = useState('write');  // 'write' | 'feedback' | 'lab'
       const [conf, setConf]               = useState('getting-there');
-      const [promptText, setPromptText]   = useState("You are a senior quantitative analyst with 15 years of experience reviewing financial models. You approach every model with healthy skepticism...");
-      const [refinedText, setRefinedText] = useState("You are a senior quantitative analyst with 15 years of experience reviewing financial models. You approach every model with healthy skepticism.\n\nWhen data is incomplete or ambiguous, state your assumption before proceeding.\n\nAlways structure your response: risk verdict (Low / Medium / High) → key findings → specific concerns.");
+      const [promptText, setPromptText]   = useState(LL.prompt.initial);
+      const [refinedText, setRefinedText] = useState(LL.prompt.refined);
       const [trackerCollapsed, setTrackerCollapsed] = useState(false);
       const [labSteps, setLabSteps]       = useState([false, false, false, false, false]);
       const [videoPlaying, setVideoPlaying] = useState(false);
@@ -1465,11 +1580,7 @@
       const [streamed, setStreamed] = useState('');
       const [anim, setAnim]         = useState(0); // 0–5 per phase
 
-      const HEADLINES = {
-        write:    "Today you're learning to write prompts that return verdicts, not just analysis.",
-        feedback: "Strong foundation — two things to sharpen.",
-        lab:      "Time to apply it — in the real thing.",
-      };
+      const HEADLINES = LL.headlines;
 
       React.useEffect(() => {
         setStreamed('');
@@ -1511,11 +1622,12 @@
 
       const ContextBar = () => (
         <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'44px' }}>
-          <span style={{ fontSize:'11px', fontWeight:'600', color:C.tMut, letterSpacing:'0.04em' }}>AI Prototyping</span>
-          <span style={{ fontSize:'11px', color:'rgba(28,25,23,0.2)' }}>·</span>
-          <span style={{ fontSize:'11px', fontWeight:'500', color:C.tMut }}>Workflow Integration</span>
-          <span style={{ fontSize:'11px', color:'rgba(28,25,23,0.2)' }}>·</span>
-          <span style={{ fontSize:'11px', color:C.tMut }}>Learning Session 1</span>
+          {LL.breadcrumb.map((crumb, i) => (
+            <React.Fragment key={i}>
+              {i > 0 && <span style={{ fontSize:'11px', color:'rgba(28,25,23,0.2)' }}>·</span>}
+              <span style={{ fontSize:'11px', fontWeight: i === 0 ? '600' : i === 1 ? '500' : '400', color:C.tMut, letterSpacing: i===0 ? '0.04em' : 0 }}>{crumb}</span>
+            </React.Fragment>
+          ))}
         </div>
       );
 
@@ -1537,29 +1649,37 @@
                   <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'12px' }}>
                     <div style={{ display:'flex', alignItems:'center', gap:'7px' }}>
                       <div style={{ width:'6px', height:'6px', borderRadius:'50%', background:'#27C93F', animation:'mcpPulse 2s ease-in-out infinite', flexShrink:0 }}/>
-                      <span style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase' }}>Why this matters for you · via MCP</span>
+                      <span style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase' }}>{LL.mcp ? LL.mcp.label : 'Connect MCP to personalize'}</span>
                     </div>
-                    <div style={{ display:'flex', alignItems:'center', gap:'4px', background:'rgba(5,150,105,0.07)', border:'1px solid rgba(5,150,105,0.2)', borderRadius:'20px', padding:'2px 8px', flexShrink:0 }}>
-                      <svg width="8" height="10" viewBox="0 0 9 11" fill="none"><path d="M1.5 5V3.5a3 3 0 0 1 6 0V5M1 5h7a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5H1a.5.5 0 0 1-.5-.5v-4A.5.5 0 0 1 1 5z" stroke="#059669" strokeWidth="1.1" strokeLinecap="round"/></svg>
-                      <span style={{ fontSize:'9px', fontWeight:'700', color:'#059669', letterSpacing:'0.06em', textTransform:'uppercase' }}>Only visible to you</span>
+                    {LL.mcp && (
+                      <div style={{ display:'flex', alignItems:'center', gap:'4px', background:'rgba(5,150,105,0.07)', border:'1px solid rgba(5,150,105,0.2)', borderRadius:'20px', padding:'2px 8px', flexShrink:0 }}>
+                        <svg width="8" height="10" viewBox="0 0 9 11" fill="none"><path d="M1.5 5V3.5a3 3 0 0 1 6 0V5M1 5h7a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5H1a.5.5 0 0 1-.5-.5v-4A.5.5 0 0 1 1 5z" stroke="#059669" strokeWidth="1.1" strokeLinecap="round"/></svg>
+                        <span style={{ fontSize:'9px', fontWeight:'700', color:'#059669', letterSpacing:'0.06em', textTransform:'uppercase' }}>Only visible to you</span>
+                      </div>
+                    )}
+                  </div>
+                  {LL.mcp ? (
+                    <>
+                      <p style={{ fontSize:'13.5px', lineHeight:'1.7', color:C.tSec, marginBottom:'12px' }} dangerouslySetInnerHTML={{ __html: LL.mcp.intro }}/>
+                      <div style={{ padding:'10px 13px', background:C.canvas, borderRadius:'8px', border:`1px solid ${C.border}`, fontSize:'12.5px', color:C.tSec, fontStyle:'italic', lineHeight:'1.65', marginBottom:'12px' }}>
+                        {LL.mcp.observation}
+                      </div>
+                      <p style={{ fontSize:'13.5px', lineHeight:'1.7', color:C.tSec, margin:0 }} dangerouslySetInnerHTML={{ __html: LL.mcp.gap }}/>
+                    </>
+                  ) : (
+                    <div>
+                      <p style={{ fontSize:'13.5px', lineHeight:'1.7', color:C.tSec, marginBottom:'12px' }}>No MCP connection yet. Connect Claude, Cursor, or your work tools to get personalized context — or continue with the task as written.</p>
+                      <button style={{ background:'transparent', border:`1px solid ${C.accent}`, color:C.accent, borderRadius:'7px', padding:'6px 14px', fontSize:'12px', fontWeight:'600', cursor:'pointer' }}>Connect MCP →</button>
                     </div>
-                  </div>
-                  <p style={{ fontSize:'13.5px', lineHeight:'1.7', color:C.tSec, marginBottom:'12px' }}>
-                    We noticed a pattern across <strong>5 of your recent sessions</strong> in Cursor at Meridian. You keep starting with this:
-                  </p>
-                  <div style={{ padding:'10px 13px', background:C.canvas, borderRadius:'8px', border:`1px solid ${C.border}`, fontSize:'12.5px', color:C.tSec, fontStyle:'italic', lineHeight:'1.65', marginBottom:'12px' }}>
-                    "You are a senior quantitative analyst with 15 years of experience reviewing financial models. You approach every model with healthy skepticism."
-                  </div>
-                  <p style={{ fontSize:'13.5px', lineHeight:'1.7', color:C.tSec, margin:0 }}>
-                    It's getting you solid analysis — but your team needs <strong>risk verdicts</strong>. The prompt doesn't tell the AI how to format its output or what to do when data is ambiguous. That's the gap we're closing today.
-                  </p>
+                  )}
+
                 </div>
               </div>
 
               {/* Here's your task */}
               <div style={{ ...f(4), borderTop:`1px solid rgba(28,25,23,0.1)`, paddingTop:'24px', marginBottom:'32px' }}>
-                <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase', marginBottom:'10px' }}>Your task · Meridian Financial</div>
-                <p style={{ fontSize:'14px', lineHeight:'1.7', color:C.tSec }}>Rewrite your prompt so Claude leads every response with a structured risk verdict — <strong>Low / Medium / High</strong> — then shows its reasoning. Use the field below.</p>
+                <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase', marginBottom:'10px' }}>Your task · {LL.task.company}</div>
+                <p style={{ fontSize:'14px', lineHeight:'1.7', color:C.tSec }}>{LL.task.text}</p>
               </div>
               <div style={f(6)}>
                 <div style={{ marginBottom:'28px' }}>
@@ -1583,17 +1703,13 @@
               </div>
             </div>
           </div>
-          <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)}/>
+          <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)} trackerData={LL.tracker}/>
         </div>
       );
 
       /* ── FEEDBACK ── */
       if (learnPhase === 'feedback') {
-        const pts = [
-          { ok:true,  text:'Clear persona — "senior quant analyst, 15 years" gives Claude a sharp, specific role to inhabit.' },
-          { ok:false, text:'Missing: behavior under uncertainty — what should it do when data is incomplete or ambiguous?' },
-          { ok:false, text:'Missing: output format — lead with a risk verdict (Low / Medium / High), then detail the reasoning.' },
-        ];
+        const pts = LL.feedback;
         return (
           <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
             <div className="scroll vignette" style={{ flex:1, padding:'48px 56px', background:C.surface }}>
@@ -1625,19 +1741,13 @@
                 </div>
               </div>
             </div>
-            <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)}/>
+            <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)} trackerData={LL.tracker}/>
           </div>
         );
       }
 
       /* ── LAB ── */
-      const LAB_STEPS = [
-        { title:'Open Claude',                                                hint:'Create a new project or open an existing one' },
-        { title:'Go to Settings → Rules for AI',                             hint:'Press Cmd+Shift+J or navigate via the gear icon' },
-        { title:'Paste your system prompt and save',                         hint:'This becomes the persistent context for every AI interaction in this project' },
-        { title:'Ask: "Review Q3 financials for Meridian — flag anomalies"', hint:'Open a new chat and send this exact message' },
-        { title:'Compare the output',                                        hint:'Clear your rules, run the same query, and notice the difference in specificity' },
-      ];
+      const LAB_STEPS = LL.lab;
 
       /* ── Cursor lab mode (full-screen IDE + widget) ── */
       if (labMode === 'cursor') return (
@@ -1675,19 +1785,13 @@
 
               {/* What you'll do */}
               <div style={{ ...f(3), marginBottom:'32px' }}>
-                <p style={{ fontSize:'15px', lineHeight:'1.75', color:C.tSec, margin:0 }}>
-                  You'll apply your refined system prompt directly in Claude — where you already work. Coursera will appear as a floating guide and walk you through each step in real time via MCP.
-                </p>
+                <p style={{ fontSize:'15px', lineHeight:'1.75', color:C.tSec, margin:0 }}>{LL.labIntro}</p>
               </div>
 
               {/* What the lab covers */}
               <div style={{ ...f(4), borderRadius:'12px', border:`1px solid ${C.border}`, padding:'18px 20px', marginBottom:'36px' }}>
                 <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase', marginBottom:'14px' }}>What the lab covers</div>
-                {[
-                  'Set your prompt as a persistent rule in Claude',
-                  'Run a real analysis query on Meridian Q3 data',
-                  'Compare output — with and without the structured rules',
-                ].map((item, i) => (
+                {LL.labCovers.map((item, i) => (
                   <div key={i} style={{ display:'flex', gap:'10px', alignItems:'flex-start', marginBottom: i < 2 ? '10px' : 0 }}>
                     <span style={{ fontSize:'13px', color:C.accent, fontWeight:'700', flexShrink:0, marginTop:'1px' }}>→</span>
                     <span style={{ fontSize:'13.5px', color:C.tSec, lineHeight:'1.55' }}>{item}</span>
@@ -1714,7 +1818,7 @@
               </div>
             </div>
           </div>
-          <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)}/>
+          <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)} trackerData={LL.tracker}/>
         </div>
       );
     }
@@ -2224,17 +2328,59 @@
       );
     }
 
+    /* ── Path indicator — shows which of Marcus's 5 paths is active ── */
+    function LearnerSwitcher({ active, onSelect }) {
+      const labels = ['Write an RCA','SBI Feedback','Data Narrative','Review Cycle','Kim Scott'];
+      return (
+        <div style={{
+          position:'fixed', top:14, left:'50%', transform:'translateX(-50%)',
+          zIndex:200,
+          display:'flex', alignItems:'center', gap:3,
+          background:'rgba(255,255,255,0.92)',
+          backdropFilter:'blur(16px)', WebkitBackdropFilter:'blur(16px)',
+          border:'1px solid rgba(28,25,23,0.1)',
+          borderRadius:50, padding:'4px 6px',
+          boxShadow:'0 4px 24px rgba(0,0,0,0.12)',
+        }}>
+          <span style={{ fontSize:9, fontWeight:700, color:C.tMut, letterSpacing:'.1em', textTransform:'uppercase', paddingLeft:8, paddingRight:6 }}>Marcus</span>
+          <div style={{ width:1, height:14, background:C.border, margin:'0 3px' }}/>
+          {labels.map((label, i) => (
+            <button key={i} onClick={() => onSelect(i)} style={{
+              border:'none', cursor:'pointer', borderRadius:40,
+              padding:'5px 12px',
+              background: active===i ? C.accent : 'transparent',
+              color: active===i ? '#fff' : C.tMut,
+              fontSize:11.5, fontWeight: active===i ? 600 : 400,
+              fontFamily:'Inter,sans-serif', transition:'all 150ms',
+            }}>
+              {label}
+            </button>
+          ))}
+        </div>
+      );
+    }
+
     /* ── App ── */
     function App() {
       const [tab, setTab] = useState(0);
       const [collapsed, setCollapsed] = useState(true);
       const [justVerified, setJustVerified] = useState(false);
+      const [learnerIdx, setLearnerIdx] = useState(0);
+      const learner = LEARNERS[learnerIdx];
+
+      function handleLearnerSelect(idx) {
+        setLearnerIdx(idx);
+        setTab(1);
+        setJustVerified(false);
+      }
+
       return (
         <div style={{ height:'100vh', display:'flex', background:C.canvas, padding:'8px', gap:'8px', boxSizing:'border-box' }}>
-          <Sidebar tab={tab} onSelect={setTab} collapsed={collapsed} onToggle={() => setCollapsed(c => !c)}/>
-          <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
-            {tab===0 && <VignetteMyPlan  onStart={() => setTab(1)}/>}
-            {tab===1 && <VignetteLearn   onSubmit={() => { setJustVerified(true); setTab(2); }}/>}
+          <LearnerSwitcher active={learnerIdx} onSelect={handleLearnerSelect}/>
+          <Sidebar tab={tab} onSelect={t => { setTab(t); }} collapsed={collapsed} onToggle={() => setCollapsed(c => !c)} learner={learner}/>
+          <div style={{ flex:1, display:'flex', overflow:'hidden', borderRadius:'12px', overflow:'hidden' }}>
+            {tab===0 && <VignetteMyPlan  onSelectLearner={handleLearnerSelect}/>}
+            {tab===1 && <VignetteLearn   key={learner.id} learner={learner} onSubmit={() => { setJustVerified(true); setTab(2); }}/>}
             {tab===2 && <VignetteWallet  key={String(justVerified)} justVerified={justVerified} onDismiss={() => setJustVerified(false)}/>}
           </div>
         </div>
