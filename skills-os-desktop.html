@@ -131,7 +131,7 @@
           breadcrumb:['Customer Success','Support Operations','RCA Lab'],
           headlines:{ write:"Today you're writing a root cause analysis for a support escalation.", feedback:"Solid structure — one thing to sharpen before you send this.", lab:"Now apply it to your actual escalation." },
           mcp:null,
-          task:{ company:'YOUR TEAM · DUE TODAY', text:"Using the 5 Whys method, work through the root cause of the escalation you just got off a call about. Start with the customer-facing symptom — what did the customer actually experience? Work backward from there." },
+          task:{ company:'YOUR TEAM · DUE TODAY', promptLabel:'YOUR DRAFT · 5 WHYS', confidenceQ:'How clear is the root cause in your draft right now?', text:"Using the 5 Whys method, work through the root cause of the escalation you just got off a call about. Start with the customer-facing symptom — what did the customer actually experience? Work backward from there." },
           prompt:{ initial:"Customer-facing symptom:\nA tier-1 enterprise customer experienced a 6-day response delay, two incorrect escalations, and never received a follow-up confirmation.\n\nWhy did this happen? (Why 1)\nBecause the ticket was tagged as low priority on intake.\n\nWhy was it tagged low priority? (Why 2)\n...\n\nWhy 3: ...\nWhy 4: ...\nWhy 5: ...\n\nRoot cause: ...\n\nCorrective actions:\n1. [Action] · Owner: · Due:\n2. [Action] · Owner: · Due:", refined:"Customer-facing symptom:\nTier-1 enterprise customer: 6-day response delay, two incorrect escalations, no follow-up confirmation.\n\nWhy 1: Ticket tagged low priority on intake.\nWhy 2: Intake agent used account size as the only priority signal — not contract tier.\nWhy 3: Priority matrix doesn't include contract SLA tier as a field.\nWhy 4: Priority matrix was last updated 18 months ago, before tiered SLAs were introduced.\nWhy 5: No owner was assigned to keep the matrix current after the SLA rollout.\n\nRoot cause: An operational process (priority matrix) wasn't updated to reflect a commercial change (tiered SLAs), with no ownership assigned to maintain it.\n\nCorrective actions:\n1. Update priority matrix to include contract tier · Owner: Marcus · Due: EOW\n2. Assign ongoing quarterly ownership of priority matrix to CS Ops · Owner: Priya · Recurring\n3. Audit open tickets for misclassification · Owner: Full team · Due: EOD today\n\nCustomer communication: [draft a one-paragraph response to the customer]" },
           feedback:[{ ok:true, text:"5 Whys reaches a real root cause — a process failure with no owner, not a person." },{ ok:false, text:"Corrective actions need an owner and a due date on each line. Without both, they become suggestions." },{ ok:false, text:"Missing: customer communication. A complete RCA includes what you're telling the customer and when." }],
           lab:[{ title:'State the customer-facing symptom in one sentence', hint:'What did the customer experience? Not what went wrong internally — what did they see?' },{ title:'Ask Why five times', hint:'Each answer becomes the next Why. Stop when you hit a process or system failure — not a person.' },{ title:'Name the root cause', hint:'Usually: a missing owner, an outdated process, or a system that doesn\'t reflect current reality.' },{ title:'Write 2–3 corrective actions', hint:'Each needs an owner and a due date. If it doesn\'t have both, it won\'t happen.' },{ title:'Draft the customer communication', hint:'One paragraph: what happened, what we\'re doing, what we\'re changing so it doesn\'t happen again.' }],
@@ -158,7 +158,7 @@
           breadcrumb:['People Management','Performance Conversations','Session 1'],
           headlines:{ write:"Today you're learning to make direct feedback land — without it blowing up.", feedback:"You have the structure. Here's what makes the difference in delivery.", lab:"Now write what you'd actually say in tomorrow's 1:1." },
           mcp:null,
-          task:{ company:'YOUR 1:1 TOMORROW', text:"Using the SBI framework (Situation → Behavior → Impact), write the specific thing you want to say tomorrow. Start with the most direct version — don't soften it yet. We'll calibrate after." },
+          task:{ company:'YOUR 1:1 TOMORROW', promptLabel:'YOUR OPENING STATEMENT', confidenceQ:'How does this opening feel — too direct, about right, or still too soft?', text:"Using the SBI framework (Situation → Behavior → Impact), write the specific thing you want to say tomorrow. Start with the most direct version — don't soften it yet. We'll calibrate after." },
           prompt:{ initial:"What I want to say:\n\"You've been missing targets for two months and every time I try to bring it up, we end up talking about something else. I need you to understand this is serious.\"\n\n[Let's rewrite this as SBI...]\n\nSituation (specific instances, not 'lately'):\n\nBehavior (observable, not interpreted):\n\nImpact (on you, on the team, on the work):\n\nOpening question (ask, don't tell):", refined:"Situation:\n\"In our last three 1:1s — on [dates] — I brought up the missed targets each time. Each time we moved to other topics before we got to what needs to change.\"\n\nBehavior:\n\"When I name the missed targets, you tend to pivot to context — the pipeline, the workload — and I follow you there. We've spent less than five minutes on what specifically is going to be different.\"\n\nImpact:\n\"For me, it means I don't know if we see this the same way. For the team, two months without a correction plan is something I'll have to account for upward.\"\n\n→ Then stop talking. Ask: \"What's your read on where things stand?\"\n→ If they agree quickly: \"Tell me more about what 'working on it' looks like for you.\"\n→ If they deflect: \"I hear that context — and I want to stay on the specific pattern I'm seeing.\"" },
           feedback:[{ ok:true, text:"Situation is specific — named the last three 1:1s, not 'lately' or 'often'. That's observable." },{ ok:false, text:"Behavior section describes what you do (follow them to other topics), not what they do. Flip it: name their observable action, not your response to it." },{ ok:false, text:"After Impact, you need to stop and ask a question — not make another statement. The goal is for them to talk, not just hear." }],
           lab:[{ title:'Write the Situation — two specific instances', hint:'Date, context, what happened. No generalizations. \"Our last three 1:1s\" is better than \"recently.\"' },{ title:'Write the Behavior — what you observed them do', hint:'Observable actions, not interpretations. \"Pivoted to context after I named the target\" not \"got defensive.\"' },{ title:'Write the Impact — two levels', hint:'Impact on you (what you\'re uncertain about) and impact on the team or the work.' },{ title:'Write the opening question', hint:'After Impact, don\'t keep talking. \"What\'s your read on where things stand?\" — then stop.' },{ title:'Anticipate the deflection and write your response', hint:'If they pivot to context: \"I hear that — and I want to stay on the specific pattern I\'m seeing.\"' }],
@@ -185,7 +185,7 @@
           breadcrumb:['Google Data Analytics','Narrative Structure','Module 4'],
           headlines:{ write:"You don't need better writing. You need a mental model for how data and narrative interact.", feedback:"The structure is right. Here's what's still reading as anecdote.", lab:"Now restructure your last team update using context–conflict–resolution." },
           mcp:{ label:'What your review flagged · via Workday', intro:'Your performance review surfaced this pattern across <strong>your last four team updates</strong> sent upward:', observation:'"Marcus\'s team updates rely too much on gut feel and anecdote. When he reports up, I can\'t tell if things are on track or not." — Direct manager feedback, Q4 review', gap:"The gap isn't stylistic. You can't fix this by cleaning up the writing — the AI can't fix it either. You need a mental model for how data and narrative interact. That's different from writing 'more data-driven.' That's what we're addressing today." },
-          task:{ company:'YOUR TEAM REPORTING', text:"Take your last team update — the one you sent upward. Find the first claim that relies on gut feel or a qualitative word like 'things are going well.' Replace it using the context–conflict–resolution structure." },
+          task:{ company:'YOUR TEAM REPORTING', promptLabel:'YOUR DRAFT · CONTEXT–CONFLICT–RESOLUTION', confidenceQ:'How data-grounded does this feel compared to what you sent before?', text:"Take your last team update — the one you sent upward. Find the first claim that relies on gut feel or a qualitative word like 'things are going well.' Replace it using the context–conflict–resolution structure." },
           prompt:{ initial:"What I wrote:\n\"Things are going well on the team overall. Jamie has been struggling a bit but I think they're turning a corner. We had a tough week with two escalations but the team handled it well. I'm cautiously optimistic about Q4.\"\n\n[This is anecdote — let's find the structure...]\n\nContext (baseline + actual result, numbers only):\n\nConflict (where is the gap? who or what is creating it?):\n\nResolution (what's the plan? who owns it? when will you know it's working?)", refined:"Context:\nThe team closed 87% of assigned tickets in Q3, against a target of 90%. Two enterprise escalations in week 12 accounted for the shortfall — both resolved within SLA.\n\nConflict:\nJamie has missed individual targets in 6 of the last 8 weeks (72% vs. 85% team average). I've flagged this in three 1:1s. I haven't yet seen a change in output pattern.\n\nResolution:\nFor Q4: team-level target stays at 90%. Jamie starts a 4-week performance plan in week 1 — I'll report progress at the next manager check-in. No other team members are trending below target.\n\nDecision point: If Jamie is not at 80%+ by week 4 of the plan, I'll escalate to HR. I'll flag proactively if we're heading that direction." },
           feedback:[{ ok:true, text:"Context is specific — 87% vs. 90%, two escalations named as the cause. That's a data observation, not anecdote." },{ ok:false, text:"Conflict names the gap but not the trajectory. 'Missed targets in 6 of 8 weeks' is good — is it getting better or worse week-over-week?" },{ ok:false, text:"Resolution needs a decision point, not just a plan. When will you know the performance plan is working? What's the signal that tells you to escalate?" }],
           lab:[{ title:'Open your last team update', hint:'The one you sent to your manager — not an internal team message' },{ title:'Find the first qualitative claim', hint:"Look for: 'things are going well,' 'the team is engaged,' 'cautiously optimistic' — anything without a number" },{ title:'Write the Context', hint:'What is the baseline? What was the target? What actually happened? Numbers only.' },{ title:'Write the Conflict', hint:'Where is the gap? Who or what is creating it? Be specific — name the person or process.' },{ title:'Write the Resolution + decision point', hint:"What's the plan? Who owns it? When will you know it's working — and what's the trigger to escalate?" }],
@@ -212,7 +212,7 @@
           breadcrumb:['Performance Review Cycle','Goal Setting','Week 1 of 6'],
           headlines:{ write:"This is three distinct skills. We'll sequence them in the order you'll actually need them.", feedback:"Good start on goals. Here's what to tighten before your 1:1s.", lab:"Now map your six-week timeline and identify where each node lands." },
           mcp:{ label:'What your onboarding assessment flagged', intro:'Your Helix onboarding assessment — completed in month one — flagged <strong>three separate skill gaps</strong>:', observation:'"Goal-setting frameworks: not demonstrated. Developmental feedback delivery: not demonstrated. Data-backed reporting to leadership: not demonstrated." — Helix onboarding assessment', gap:"These don't come from the same course. We'll build a path that sequences them in the order the review cycle actually requires: goals first, then feedback, then reporting." },
-          task:{ company:'YOUR TEAM · REVIEW CYCLE', text:"Start with Node 1: Goal Setting. For each of your four direct reports, draft one Q3 goal using SMART format. Write the goals below — we'll review them together before your first 1:1." },
+          task:{ company:'YOUR TEAM · REVIEW CYCLE', promptLabel:'YOUR GOALS DRAFT · Q3', confidenceQ:'How specific and measurable are these goals right now?', text:"Start with Node 1: Goal Setting. For each of your four direct reports, draft one Q3 goal using SMART format. Write the goals below — we'll review them together before your first 1:1." },
           prompt:{ initial:"My four direct reports — Q3 goals (draft):\n\n1. [Name] · [Role]: Goal:\n2. [Name] · [Role]: Goal:\n3. [Name] · [Role]: Goal:\n4. [Name] · [Role]: Goal:\n\n---\nPath overview:\nNode 1 · Goal Setting → this session\nNode 2 · Developmental Feedback (SBI) → Week 2\nNode 3 · Data Narrative (Google Analytics) → Week 3–4\nNode 4 · Leadership Presentation → Week 5–6", refined:"1. Jamie (CS Manager): Increase individual ticket close rate from 72% to 85% by end of Q3 — measured weekly in the CS dashboard.\n2. Priya (CS Manager): Lead two enterprise onboarding cycles end-to-end without escalation — measured by escalation log and 30-day NPS.\n3. Lena (CS Specialist): Reduce average first-response time for standard tickets from 6h to 3h — measured in Zendesk weekly report.\n4. Tom (CS Specialist): Complete advanced Zendesk certification AND ship one workflow improvement to the team queue — measured by cert completion + PR merged by week 8.\n\nNote on Tom: two separate outcomes in one goal. If one is done and one isn't, I can't assess it cleanly. Need to split or weight.\n\nPath timeline:\nWeek 1–2: Goal-setting 1:1s with all four direct reports.\nWeek 3: SBI feedback in mid-cycle check-ins (I've done the SBI lesson — starting at the practice step).\nWeek 4: Restructure mid-cycle team update using context–conflict–resolution.\nWeek 6: Leadership presentation — team results to my manager." },
           feedback:[{ ok:true, text:"Jamie's goal is well-formed — specific, measurable, timebound, with a named tracking system." },{ ok:false, text:"Tom's goal has two outcomes. Split them or weight them — otherwise you can't assess the goal if one is done and one isn't." },{ ok:false, text:"Missing: each goal needs a mid-cycle check-in point. Without a Week 3 marker, you'll have a surprise at Week 6." }],
           lab:[{ title:'Draft Q3 goals for all four direct reports', hint:'SMART: Specific, Measurable, Achievable, Relevant, Time-bound. One goal each to start.' },{ title:'Check: does each goal have a tracking system?', hint:'Not just "I\'ll track it" — name the dashboard, spreadsheet, or log.' },{ title:'Map the six-week review timeline', hint:'Goals → 1:1s (Week 1–2) → SBI check-ins (Week 3) → mid-cycle update (Week 4) → leadership presentation (Week 6)' },{ title:'Identify your Node 2 entry point', hint:"Have you done the SBI lesson? If yes, you're starting at the practice step, not the framework." },{ title:'Draft one mid-cycle 1:1 agenda', hint:'15 min: goal progress (data), one SBI observation, one question (what do you need from me?)' }],
@@ -239,7 +239,7 @@
           breadcrumb:['Radical Candor','Post-1:1 Debrief','Conversation'],
           headlines:{ write:"Let's think through what actually happened in that 1:1.", feedback:"You said the right words. Here's what was happening underneath them.", lab:"What would you do differently in the next one?" },
           mcp:null,
-          task:{ company:'POST-1:1 REFLECTION', text:"Describe what happened. Be specific: what did you say, what did they say, and when did you feel like you lost them? There's no right answer here — we're working out what actually happened." },
+          task:{ company:'POST-1:1 REFLECTION', promptLabel:'DESCRIBE WHAT HAPPENED', confidenceQ:'How clearly can you name the moment you lost them?', text:"Describe what happened. Be specific: what did you say, what did they say, and when did you feel like you lost them? There's no right answer here — we're working out what actually happened." },
           prompt:{ initial:"What happened:\nI used the SBI thing. I said the situation (our last 3 1:1s, the missed targets), the behavior (they kept pivoting), the impact (I don't know if we see this the same way). Then I asked \"what's your read?\" — and they said \"I know, I've been working on it\" and agreed with everything.\n\nThen we talked about workload for 20 minutes.\n\nI said the right words I think but it didn't really land. They heard me but something shut down.\n\n[What Kim Scott would say about this moment:]", refined:"What you're describing is a specific dynamic. When someone agrees quickly and moves on — 'I know, I've been working on it' — that often means they felt the feedback as a verdict, not a conversation. They closed the door instead of opening it.\n\nThe SBI was right. The problem wasn't the framework. It was what happened after 'what's your read?'\n\nWhen they said 'I know, I've been working on it' — that's the moment. Not another statement. Not agreement. A pause, and then:\n\n\"Tell me more about what 'working on it' looks like for you.\"\n\nThat question turns a verdict into a conversation. They have to say something real. You get information. They feel heard instead of judged.\n\nThe next 1:1: same SBI. But after their first response — whatever it is — don't move. Ask one follow-up question. Then wait.\n\n→ What would you do differently at that moment? [Kim Scott's question to you]" },
           feedback:[{ ok:true, text:"You used SBI correctly and ended with a question. The structure was right — the framework didn't fail you." },{ ok:false, text:"When they agreed quickly: that's the signal, not the resolution. Quick agreement in a performance conversation usually means they're closing down, not opening up." },{ ok:false, text:"'I know, I've been working on it' needed one follow-up question, not acceptance. What does working on it look like? What's different from last month?" }],
           lab:[{ title:"What did they say when you asked 'what's your read?'", hint:'Write it exactly — their words, not your interpretation of what they meant.' },{ title:'What did you do next?', hint:'Did you accept their answer? Follow up? Move on? Be specific.' },{ title:"What would you do differently at that moment?", hint:"Kim Scott: 'The work isn't in saying the hard thing — it's in staying in the room after you say it.'" },{ title:'Write the one follow-up question for next time', hint:"Not a statement. Not agreement. One open question that requires them to say something real. \"Tell me more about what that looks like.\"" },{ title:'What would a good outcome look like in the next 1:1?', hint:'Not resolution — what would you see or hear that tells you the conversation was real and not just polite?' }],
@@ -458,7 +458,7 @@
     }
 
     /* ── Skill Tracker (Learn right panel, collapsible) ── */
-    function SkillTracker({ collapsed = false, onToggle = () => {}, trackerData }) {
+    function SkillTracker({ collapsed = false, onToggle = () => {}, trackerData, simplified = false }) {
       const [area, setArea]     = useState('prototyping');
       const [skill, setSkill]   = useState('workflow');
       const [navOpen, setNavOpen] = useState(false);
@@ -513,6 +513,41 @@
       const done     = comps.filter(c => c.ok).length;
       const compPct  = done / comps.length;
       const r = 28, circ = 2 * Math.PI * r;
+
+      /* ── Simplified mode: just show steps, no skill header or competencies ── */
+      if (simplified) return (
+        <div style={{ width: collapsed ? '44px' : '248px', flexShrink: 0, borderLeft: `1px solid ${C.border}`, background: C.surface, display: 'flex', flexDirection: 'column', transition: 'width 220ms cubic-bezier(0.4,0,0.2,1)', overflow: 'hidden' }}>
+          <div style={{ padding: '13px 14px', borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'flex-end', flexShrink: 0 }}>
+            <button onClick={onToggle} style={{ width: '22px', height: '22px', borderRadius: '6px', border: `1px solid ${C.border}`, background: 'transparent', color: C.tMut, cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d={collapsed ? 'M3 1 L7 5 L3 9' : 'M7 1 L3 5 L7 9'} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </button>
+          </div>
+          <div style={{ flex: 1, opacity: collapsed ? 0 : 1, transition: 'opacity 150ms ease', pointerEvents: collapsed ? 'none' : 'auto', padding: '18px 14px', overflowY: 'auto' }}>
+            {/* Skill name — small, muted */}
+            <div style={{ fontSize: '10px', fontWeight: '600', color: C.tMut, letterSpacing: '.08em', textTransform: 'uppercase', marginBottom: '4px' }}>{trackerData?.sectionLabel || 'This session'}</div>
+            <div style={{ fontSize: '13px', fontWeight: '600', color: C.tPri, marginBottom: '18px', lineHeight: '1.3' }}>{trackerData?.skillName || 'Learning'}</div>
+            {/* Steps as conversation thread */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+              {steps.map((s, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '9px 10px', borderRadius: '8px',
+                  background: s.done ? 'rgba(5,150,105,0.05)' : 'transparent',
+                  border: `1px solid ${s.done ? 'rgba(5,150,105,0.18)' : C.border}` }}>
+                  <div style={{ width: '18px', height: '18px', borderRadius: '50%', flexShrink: 0,
+                    background: s.done ? C.success : C.muted,
+                    border: `1.5px solid ${s.done ? C.success : C.border}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '8px', fontWeight: '700', color: s.done ? '#fff' : C.tMut, marginTop: '1px' }}>
+                    {s.done ? '✓' : i + 1}
+                  </div>
+                  <span style={{ fontSize: '12px', color: s.done ? C.success : C.tSec, lineHeight: '1.5',
+                    textDecoration: s.done ? 'line-through' : 'none',
+                    textDecorationColor: 'rgba(5,150,105,0.4)' }}>{s.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
 
       const currentSkills   = skillsByArea[area] || [];
       const currentAreaObj  = areas.find(a => a.id === area);
@@ -1729,14 +1764,14 @@
               </div>
               <div style={f(6)}>
                 <div style={{ marginBottom:'28px' }}>
-                  <div style={{ fontSize:'11px', fontWeight:'600', color:C.tMut, letterSpacing:'0.07em', textTransform:'uppercase', marginBottom:'10px' }}>Your System Prompt</div>
+                  <div style={{ fontSize:'11px', fontWeight:'600', color:C.tMut, letterSpacing:'0.07em', textTransform:'uppercase', marginBottom:'10px' }}>{LL.task.promptLabel || 'Your Draft'}</div>
                   <textarea value={promptText} onChange={e => setPromptText(e.target.value)}
                     style={{ width:'100%', height:'120px', padding:'14px 16px', border:`1px solid rgba(28,25,23,0.12)`, borderRadius:'10px', fontSize:'13.5px', lineHeight:'1.7', color:C.tPri, background:C.canvas, resize:'none', outline:'none', transition:'border-color 150ms ease' }}
                     onFocus={e => e.target.style.borderColor = C.accent}
                     onBlur={e => e.target.style.borderColor = 'rgba(28,25,23,0.12)'}/>
                 </div>
                 <div style={{ marginBottom:'32px' }}>
-                  <div style={{ fontSize:'13px', color:C.tMut, marginBottom:'12px' }}>How confident do you feel writing a system prompt from scratch right now?</div>
+                  <div style={{ fontSize:'13px', color:C.tMut, marginBottom:'12px' }}>{LL.task.confidenceQ || 'How does this feel right now?'}</div>
                   <div style={{ display:'flex', gap:'8px' }}>
                     {[{id:'not-yet',l:'Not yet'},{id:'getting-there',l:'Getting there'},{id:'got-it',l:"I've got it"}].map(chip => {
                       const a = conf === chip.id;
@@ -1749,7 +1784,7 @@
               </div>
             </div>
           </div>
-          <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)} trackerData={LL.tracker}/>
+          <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)} trackerData={LL.tracker} simplified={true}/>
         </div>
       );
 
@@ -1787,7 +1822,7 @@
                 </div>
               </div>
             </div>
-            <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)} trackerData={LL.tracker}/>
+            <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)} trackerData={LL.tracker} simplified={true}/>
           </div>
         );
       }
@@ -1834,7 +1869,7 @@
               </button>
             </div>
           </div>
-          <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)} trackerData={LL.tracker}/>
+          <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)} trackerData={LL.tracker} simplified={true}/>
         </div>
       );
 
@@ -1907,7 +1942,7 @@
               </div>
             </div>
           </div>
-          <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)} trackerData={LL.tracker}/>
+          <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)} trackerData={LL.tracker} simplified={true}/>
         </div>
       );
     }
