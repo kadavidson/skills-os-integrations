@@ -994,11 +994,11 @@
       const LEARNER_IDX = { 'marcus-rca':0, 'marcus-sbi':1, 'marcus-data':2, 'marcus-path':3, 'marcus-avatar':4 };
 
       const convos = [
-        { id:'marcus-rca',    title:'Write a root cause analysis for a support escalation — due today', type:'solving',   source:'self',     sourceLabel:null,                            time:30, steps:{done:0,total:4}, status:'not-started', track:'Customer Success · Support Operations · Atom', context:'You asked: "I need to write a formal RCA for the first time and it\'s due today."' },
-        { id:'marcus-sbi',    title:'Make direct feedback land without it blowing up — 1:1 tomorrow', type:'preparing',  source:'self',     sourceLabel:null,                            time:40, steps:{done:0,total:4}, status:'not-started', track:'People Management · Performance Conversations · Lesson', context:'You asked: "How do I make this person actually hear what I\'m saying?"' },
-        { id:'marcus-data',   title:'Build a data-backed team narrative — not just a gut-feel update', type:'skill-gap',  source:'assigned', sourceLabel:'Direct manager · Q4 review',    time:45, steps:{done:0,total:4}, status:'not-started', track:'Google Data Analytics · Narrative Structure · Course', context:'Review feedback: "I can\'t tell if things are on track from your updates."' },
-        { id:'marcus-path',   title:'Run my first performance review cycle — goals to leadership presentation', type:'skill-gap',  source:'assigned', sourceLabel:'Helix onboarding assessment', time:180, steps:{done:0,total:4}, status:'not-started', track:'Performance Review Cycle · Path · 6 weeks', context:'Onboarding assessment flagged three separate gaps: goal-setting, feedback, and reporting.' },
-        { id:'marcus-avatar', title:'Think through what actually happened in that 1:1 — with Kim Scott', type:'preparing',  source:'self',     sourceLabel:null,                            time:25, steps:{done:0,total:4}, status:'not-started', track:'Radical Candor · Post-1:1 Debrief · Avatar', context:'You said: "I used SBI and it went okay but the person just kind of shut down."' },
+        { id:'marcus-rca',    contentType:'Atom',   title:'Write a root cause analysis for a support escalation — due today', type:'solving',   source:'self',     sourceLabel:null,                            time:30, steps:{done:0,total:4}, status:'not-started', track:'Customer Success · Support Operations', context:'You asked: "I need to write a formal RCA for the first time and it\'s due today."' },
+        { id:'marcus-sbi',    contentType:'Lesson', title:'Make direct feedback land without it blowing up — 1:1 tomorrow', type:'preparing',  source:'self',     sourceLabel:null,                            time:40, steps:{done:0,total:4}, status:'not-started', track:'People Management · Performance Conversations', context:'You asked: "How do I make this person actually hear what I\'m saying?"' },
+        { id:'marcus-data',   contentType:'Course', title:'Build a data-backed team narrative — not just a gut-feel update', type:'skill-gap',  source:'assigned', sourceLabel:'Direct manager · Q4 review',    time:45, steps:{done:0,total:4}, status:'not-started', track:'Google Data Analytics · Narrative Structure', context:'Review feedback: "I can\'t tell if things are on track from your updates."' },
+        { id:'marcus-path',   contentType:'Path',   title:'Run my first performance review cycle — goals to leadership presentation', type:'skill-gap',  source:'assigned', sourceLabel:'Helix onboarding assessment', time:180, steps:{done:0,total:4}, status:'not-started', track:'Performance Review Cycle · 6 weeks', context:'Onboarding assessment flagged three separate gaps: goal-setting, feedback, and reporting.' },
+        { id:'marcus-avatar', contentType:'Avatar', title:'Think through what actually happened in that 1:1 — with Kim Scott', type:'preparing',  source:'self',     sourceLabel:null,                            time:25, steps:{done:0,total:4}, status:'not-started', track:'Radical Candor · Post-1:1 Debrief', context:'You said: "I used SBI and it went okay but the person just kind of shut down."' },
       ];
 
       const chips = ['Help me write a hard email','Prep me for a tough conversation','How do I give better feedback','What does a good RCA look like?'];
@@ -1007,6 +1007,13 @@
         'skill-gap':  { label:'Skill gap',         color:'#B45309', bg:'rgba(217,119,6,0.1)', dot:'#F59E0B' },
         'solving':    { label:'Solving a problem',  color:C.accent,  bg:C.accentLight,         dot:C.accent  },
         'preparing':  { label:'Preparing for',      color:'#0D7A6A', bg:'rgba(13,148,136,0.09)', dot:'#14B8A6' },
+      };
+      const CONTENT_META = {
+        'Atom':   { color:'#6D28D9', bg:'rgba(109,40,217,0.09)' },
+        'Lesson': { color:'#B45309', bg:'rgba(217,119,6,0.09)'  },
+        'Course': { color:'#0D7A6A', bg:'rgba(13,148,136,0.09)' },
+        'Path':   { color:'#1D4ED8', bg:'rgba(29,78,216,0.09)'  },
+        'Avatar': { color:'#7C4E9F', bg:'rgba(124,78,159,0.09)' },
       };
 
       const filtered = filter === 'assigned' ? convos.filter(c => c.source === 'assigned')
@@ -1078,12 +1085,15 @@
                       <div style={{ fontSize:11, color:C.tMut, whiteSpace:'nowrap', flexShrink:0, paddingTop:2 }}>⏱ {c.time} min</div>
                     </div>
 
-                    <div style={{ display:'flex', gap:6, marginBottom:11, flexWrap:'wrap' }}>
+                    <div style={{ display:'flex', gap:6, marginBottom:11, flexWrap:'wrap', alignItems:'center' }}>
                       <span style={{ fontSize:10, fontWeight:700, letterSpacing:'.05em', padding:'3px 8px', borderRadius:5, background:tm.bg, color:tm.color }}>{tm.label}</span>
                       {c.source === 'assigned'
                         ? <span style={{ fontSize:10, fontWeight:500, padding:'3px 8px', borderRadius:5, background:'rgba(59,130,246,0.09)', color:'#2563EB' }}>Assigned · {c.sourceLabel}</span>
                         : <span style={{ fontSize:10, fontWeight:500, padding:'3px 8px', borderRadius:5, background:C.canvas, color:C.tMut, border:`1px solid ${C.border}` }}>Self-directed</span>
                       }
+                      {c.contentType && (() => { const cm = CONTENT_META[c.contentType] || {}; return (
+                        <span style={{ fontSize:10, fontWeight:700, letterSpacing:'.06em', padding:'3px 8px', borderRadius:5, background:cm.bg, color:cm.color, textTransform:'uppercase' }}>{c.contentType}</span>
+                      ); })()}
                     </div>
 
                     <div style={{ fontSize:12, color:C.tMut, lineHeight:1.55, marginBottom:14, fontStyle:'italic' }}>{c.context}</div>
