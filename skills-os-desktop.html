@@ -137,6 +137,14 @@
           lab:[{ title:'State the customer-facing symptom in one sentence', hint:'What did the customer experience? Not what went wrong internally — what did they see?' },{ title:'Ask Why five times', hint:'Each answer becomes the next Why. Stop when you hit a process or system failure — not a person.' },{ title:'Name the root cause', hint:'Usually: a missing owner, an outdated process, or a system that doesn\'t reflect current reality.' },{ title:'Write 2–3 corrective actions', hint:'Each needs an owner and a due date. If it doesn\'t have both, it won\'t happen.' },{ title:'Draft the customer communication', hint:'One paragraph: what happened, what we\'re doing, what we\'re changing so it doesn\'t happen again.' }],
           labIntro:"You'll work through today's actual escalation using the 5 Whys structure. Helix will flag when you're describing a symptom instead of a root cause — and ask one question when it needs more specificity.",
           labCovers:['Build the 5 Whys chain for today\'s escalation','Name the root cause','Write corrective actions with owners and due dates'],
+          verify:{
+            skill:'Root Cause Analysis', contentType:'Atom', level:'Foundational',
+            artifact:'Completed RCA — root cause identified, 5 Whys traceable, corrective action with named owner and due date',
+            rubric:['Root cause identified — not just the nearest symptom','5 Whys chain complete and traceable to a process failure','Corrective action: named owner + specific due date','Customer communication drafted'],
+            assessedBy:'Helix Skills Framework · CS Support Operations rubric',
+            orgSignal:{ dashboard:'Root cause analysis — verified, artifact available', wallet:'RCA / Structured problem analysis', vp:'Management capability readiness: +1 verified gap closed' },
+            quote:'"Scored on the artifact — not the fact that he read the explainer."',
+          },
           tracker:{ sectionLabel:'Support Operations', skillName:'Root Cause Analysis', progress:{ current:0, total:5 },
             competencies:[{ ok:false, label:'Symptom vs. root cause distinguished' },{ ok:false, label:'5 Whys chain complete' },{ ok:false, label:'Root cause names a process/system failure' },{ ok:false, label:'Corrective actions: owner + due date' },{ ok:false, label:'Customer communication drafted' }],
             steps:[{ label:'State the customer-facing symptom', done:false },{ label:'Complete 5 Whys chain', done:false },{ label:'Write corrective actions', done:false },{ label:'Draft customer communication', done:false }] },
@@ -156,6 +164,14 @@
           lab:[{ title:'Write the Situation — two specific instances', hint:'Date, context, what happened. No generalizations. \"Our last three 1:1s\" is better than \"recently.\"' },{ title:'Write the Behavior — what you observed them do', hint:'Observable actions, not interpretations. \"Pivoted to context after I named the target\" not \"got defensive.\"' },{ title:'Write the Impact — two levels', hint:'Impact on you (what you\'re uncertain about) and impact on the team or the work.' },{ title:'Write the opening question', hint:'After Impact, don\'t keep talking. \"What\'s your read on where things stand?\" — then stop.' },{ title:'Anticipate the deflection and write your response', hint:'If they pivot to context: \"I hear that — and I want to stay on the specific pattern I\'m seeing.\"' }],
           labIntro:"You'll write exactly what you're going to say tomorrow — in SBI format — then Helix will roleplay the direct report's response so you can practice holding the thread when they deflect.",
           labCovers:['Write your SBI script','Roleplay the deflection','Practice naming the pattern when they pivot'],
+          verify:{
+            skill:'Direct Performance Feedback', contentType:'Lesson', level:'Foundational',
+            artifact:'Written SBI statement — opening script for tomorrow\'s 1:1, scored against the SBI rubric',
+            rubric:['Situation: specific instances, not generalizations','Behavior: observable action, not a character judgment','Impact: named at two levels — on you, on the team','Ends with a question, not another statement'],
+            assessedBy:'Helix Skills Framework · SBI Performance Conversation rubric',
+            orgSignal:{ dashboard:'Direct performance feedback — SBI rubric score surfaced. Review gap "name what you\'re seeing" tagged as addressed with evidence.', wallet:'SBI / Performance observation delivery', vp:'Review gap "needs to name what he\'s seeing" — closed with evidence, not just completed.' },
+            quote:'"The gap from his review is now tagged as addressed with evidence — not just completed."',
+          },
           tracker:{ sectionLabel:'People Management', skillName:'SBI Feedback Delivery', progress:{ current:0, total:5 },
             competencies:[{ ok:false, label:'Situation is specific, not vague' },{ ok:false, label:'Behavior is observable, not interpreted' },{ ok:false, label:'Impact is named clearly' },{ ok:false, label:'Ends with a question, not a statement' },{ ok:false, label:'Holds the thread when direct report deflects' }],
             steps:[{ label:'Write your SBI script', done:false },{ label:'Identify the likely deflection', done:false },{ label:'Roleplay the conversation', done:false },{ label:'Debrief what worked', done:false }] },
@@ -175,6 +191,14 @@
           lab:[{ title:'Open your last team update', hint:'The one you sent to your manager — not an internal team message' },{ title:'Find the first qualitative claim', hint:"Look for: 'things are going well,' 'the team is engaged,' 'cautiously optimistic' — anything without a number" },{ title:'Write the Context', hint:'What is the baseline? What was the target? What actually happened? Numbers only.' },{ title:'Write the Conflict', hint:'Where is the gap? Who or what is creating it? Be specific — name the person or process.' },{ title:'Write the Resolution + decision point', hint:"What's the plan? Who owns it? When will you know it's working — and what's the trigger to escalate?" }],
           labIntro:"You'll take your actual last team update — the one your manager read — and restructure it using context–conflict–resolution. Helix identifies the anecdote-to-data swaps and flags when the narrative still relies on qualitative signals.",
           labCovers:['Find the first anecdote in your update','Replace it with context–conflict–resolution','Add the decision point that tells you whether the plan is working'],
+          verify:{
+            skill:'Data-Backed Team Narrative', contentType:'Course', level:'Foundational',
+            artifact:'Restructured team update — real document, context–conflict–resolution, data before recommendation',
+            rubric:['Data appears before the recommendation','Context–conflict–resolution structure present','Claims grounded in numbers, not qualitative signals','Decision point explicitly named with a trigger'],
+            assessedBy:'Google Data Analytics Certificate · Helix Augmented Behavioral Assessment',
+            orgSignal:{ dashboard:'Data storytelling — Google certified + behavioral assessment passed. Two evidence types.', wallet:'Google Data Analytics cert + Structured data narrative — both verified, both portable', vp:'Review gap "reporting relies on anecdote" — closed with proof, not just completion. Partner cert + scored artifact.' },
+            quote:'"Google cert alone is not sufficient — the behavioral output is required. Both travel with Marcus."',
+          },
           tracker:{ sectionLabel:'Google Data Analytics', skillName:'Team Performance Narrative', progress:{ current:0, total:6 },
             competencies:[{ ok:false, label:'Claims are data-grounded, not qualitative' },{ ok:false, label:'Context: baseline + actual result' },{ ok:false, label:'Conflict names the specific person or process' },{ ok:false, label:'Resolution has owner + timeline' },{ ok:false, label:'Decision point is explicit' },{ ok:false, label:'Manager can track without asking clarifying questions' }],
             steps:[{ label:'Find the first anecdote in your last update', done:false },{ label:'Write context–conflict–resolution', done:false },{ label:'Add decision point and trigger', done:false },{ label:'Full team update restructured', done:false }] },
@@ -194,6 +218,14 @@
           lab:[{ title:'Draft Q3 goals for all four direct reports', hint:'SMART: Specific, Measurable, Achievable, Relevant, Time-bound. One goal each to start.' },{ title:'Check: does each goal have a tracking system?', hint:'Not just "I\'ll track it" — name the dashboard, spreadsheet, or log.' },{ title:'Map the six-week review timeline', hint:'Goals → 1:1s (Week 1–2) → SBI check-ins (Week 3) → mid-cycle update (Week 4) → leadership presentation (Week 6)' },{ title:'Identify your Node 2 entry point', hint:"Have you done the SBI lesson? If yes, you're starting at the practice step, not the framework." },{ title:'Draft one mid-cycle 1:1 agenda', hint:'15 min: goal progress (data), one SBI observation, one question (what do you need from me?)' }],
           labIntro:"You'll build your complete six-week review cycle plan — starting with Q3 goals today, then sequencing the feedback and reporting nodes in the order you'll actually need them.",
           labCovers:['Draft SMART goals for all four direct reports','Map the six-week review timeline','Identify your entry point for each path node'],
+          verify:{
+            skill:'Performance Review Cycle', contentType:'Path', level:'Practitioner',
+            artifact:'Q3 goals doc + SBI feedback script + team readiness summary — all three scored against a single standardized rubric',
+            rubric:['SMART goals: specific, measurable, timebound, with a tracking system','SBI: situation specific, behavior observable, impact named','Data narrative: context–conflict–resolution structure present','Readiness summary: data before recommendation, decision point explicit'],
+            assessedBy:'Helix Skills Framework · Management Readiness Assessment · 3-domain rubric',
+            orgSignal:{ dashboard:'Management readiness — performance review cycle: Marcus verified across 3 skill domains.', wallet:'Goal-setting, developmental feedback, data narrative — all verified, all portable. If Marcus moves, the proof travels.', vp:'First-time managers: assessed against the capability, not just trained. Board-reportable.' },
+            quote:'"Not individual completion rates. Org-level readiness against a stated business priority."',
+          },
           tracker:{ sectionLabel:'Performance Review Cycle', skillName:'End-to-End Review Cycle', progress:{ current:0, total:4 },
             competencies:[{ ok:false, label:'SMART goals set for each direct report' },{ ok:false, label:'Mid-cycle SBI feedback delivered' },{ ok:false, label:'Data-backed team update sent to manager' },{ ok:false, label:'Leadership presentation completed' }],
             steps:[{ label:'Node 1: Draft Q3 goals', done:false },{ label:'Node 2: SBI feedback in 1:1s (Week 3)', done:false },{ label:'Node 3: Data narrative update (Week 4)', done:false },{ label:'Node 4: Leadership presentation (Week 6)', done:false }] },
@@ -213,6 +245,14 @@
           lab:[{ title:"What did they say when you asked 'what's your read?'", hint:'Write it exactly — their words, not your interpretation of what they meant.' },{ title:'What did you do next?', hint:'Did you accept their answer? Follow up? Move on? Be specific.' },{ title:"What would you do differently at that moment?", hint:"Kim Scott: 'The work isn't in saying the hard thing — it's in staying in the room after you say it.'" },{ title:'Write the one follow-up question for next time', hint:"Not a statement. Not agreement. One open question that requires them to say something real. \"Tell me more about what that looks like.\"" },{ title:'What would a good outcome look like in the next 1:1?', hint:'Not resolution — what would you see or hear that tells you the conversation was real and not just polite?' }],
           labIntro:"This isn't a lesson — it's a debrief. You already did the 1:1. We're working out what actually happened and what to do differently next time, using Kim Scott's Radical Candor framework as the frame. Her models are the source. This conversation is mine.",
           labCovers:['Identify the moment you lost them','Name what was happening underneath the quick agreement','Write the one follow-up question for next time'],
+          verify:{
+            skill:'Developmental Feedback', contentType:'Avatar', level:'Practitioner',
+            artifact:'Written debrief — pattern observed, impact named, how to open space for the direct report to lead the fix',
+            rubric:['Pattern named — not the incident','Impact clearly connected to the pattern','Space opened for direct report to lead the fix','Kim Scott framework applied and attributed'],
+            assessedBy:'Radical Candor (Kim Scott) · Helix Judgment Assessment rubric',
+            orgSignal:{ dashboard:'Developmental feedback — avatar session complete, structured debrief scored: framework applied.', wallet:'Radical Candor / Developmental feedback · Coaching vs. correcting — verified and portable', vp:'Not "completed a course." Demonstrated judgment, attributed to a source, scored against a standard.' },
+            quote:'"The conversation alone is not verifiable. The written debrief turns a private conversation into observable, scoreable evidence."',
+          },
           tracker:{ sectionLabel:'Radical Candor', skillName:'Developmental Feedback Debrief', progress:{ current:0, total:4 },
             competencies:[{ ok:false, label:'Identifies the moment the conversation shifted' },{ ok:false, label:'Understands quick agreement as a signal, not resolution' },{ ok:false, label:'Has a follow-up question for next time' },{ ok:false, label:'Can distinguish feedback landing vs. being heard' }],
             steps:[{ label:'Describe what happened in the 1:1', done:false },{ label:'Identify the moment you lost them', done:false },{ label:'Write the follow-up question for next time', done:false },{ label:'Articulate what a real outcome would look like', done:false }] },
@@ -1573,6 +1613,7 @@
       const [trackerCollapsed, setTrackerCollapsed] = useState(false);
       const [labSteps, setLabSteps]       = useState([false, false, false, false, false]);
       const [videoPlaying, setVideoPlaying] = useState(false);
+      const [showTutorial, setShowTutorial] = useState(false);
       const [labMode, setLabMode]         = useState('steps');  // 'steps' | 'cursor'
       const [cursorStep, setCursorStep]   = useState(0);
 
@@ -1749,6 +1790,49 @@
       /* ── LAB ── */
       const LAB_STEPS = LL.lab;
 
+      /* ── Tutorial video overlay ── */
+      if (showTutorial) return (
+        <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
+          <div className="scroll vignette" style={{ flex:1, padding:'48px 56px', background:C.surface }}>
+            <ContextBar/>
+            <div style={{ maxWidth:'580px' }}>
+              {/* Back link */}
+              <button onClick={() => setShowTutorial(false)}
+                style={{ background:'none', border:'none', color:C.tMut, fontSize:'13px', cursor:'pointer', padding:0, marginBottom:'24px', display:'flex', alignItems:'center', gap:'6px', fontFamily:'inherit' }}>
+                ← Back to lab options
+              </button>
+
+              <div style={{ marginBottom:'20px' }}><Sparkle/></div>
+              <h2 style={{ fontSize:'28px', fontWeight:'700', color:C.tPri, letterSpacing:'-0.025em', lineHeight:'1.2', marginBottom:'8px' }}>
+                Watch first, then do it.
+              </h2>
+              <p style={{ fontSize:'14px', color:C.tMut, marginBottom:'28px', lineHeight:'1.65' }}>
+                A 2-minute walkthrough of the lab steps — then you'll do it yourself.
+              </p>
+
+              {/* Video player */}
+              <VideoTutorial playing={videoPlaying} onToggle={() => setVideoPlaying(v => !v)}/>
+
+              <div style={{ marginTop:'28px', padding:'16px 20px', background:C.canvas, borderRadius:'10px', border:`1px solid ${C.border}`, marginBottom:'28px' }}>
+                <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'10px' }}>What the lab covers</div>
+                {LL.labCovers.map((item, i) => (
+                  <div key={i} style={{ display:'flex', gap:'10px', alignItems:'flex-start', marginBottom: i < LL.labCovers.length - 1 ? '8px' : 0 }}>
+                    <span style={{ color:C.success, fontSize:'12px', flexShrink:0, marginTop:'2px', fontWeight:'700' }}>✓</span>
+                    <span style={{ fontSize:'13px', color:C.tSec, lineHeight:'1.55' }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+
+              <button className="btn btn-primary" onClick={() => { setShowTutorial(false); setCursorStep(0); setLabMode('cursor'); }}
+                style={{ padding:'13px 28px', fontSize:'14px' }}>
+                Launch lab →
+              </button>
+            </div>
+          </div>
+          <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)} trackerData={LL.tracker}/>
+        </div>
+      );
+
       /* ── Cursor lab mode (full-screen IDE + widget) ── */
       if (labMode === 'cursor') return (
         <div style={{ flex:1, position:'relative', overflow:'hidden' }}>
@@ -1806,7 +1890,7 @@
                     style={{ padding:'14px 28px', fontSize:'14px', width:'100%' }}>
                     Launch lab →
                   </button>
-                  <button onClick={() => { setVideoPlaying(true); setCursorStep(0); setLabMode('cursor'); }}
+                  <button onClick={() => setShowTutorial(true)}
                     style={{ padding:'13px 28px', fontSize:'13.5px', fontWeight:'500', width:'100%',
                       background:'transparent', border:`1px solid rgba(28,25,23,0.15)`, borderRadius:'10px',
                       color:C.tSec, cursor:'pointer', fontFamily:'inherit', transition:'border-color 150ms ease' }}
@@ -1836,58 +1920,92 @@
     }
 
     /* ── Vignette 2: Verify ── */
-    function VignetteVerify({ onAddToWallet }) {
+    function VignetteVerify({ onAddToWallet, verify }) {
+      const V = verify || {
+        skill:'Skill', contentType:'Assessment', level:'Foundational',
+        artifact:'Completed assessment artifact',
+        rubric:['Criterion 1','Criterion 2','Criterion 3'],
+        assessedBy:'Helix Skills Framework',
+        orgSignal:{ dashboard:'Skill verified — artifact available', wallet:'Skill entry logged', vp:'Readiness +1' },
+        quote:'"Scored on what you did — not what you watched."',
+      };
+
       return (
-        <div className="scroll vignette" style={{ flex: 1, background: '#0A0A0F', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px' }}>
-          <div style={{ display: 'flex', gap: '56px', alignItems: 'center', maxWidth: '960px', width: '100%' }}>
-            {/* Left */}
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '11px', fontWeight: '600', color: C.accent, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '14px' }}>Assessment Complete</div>
-              <h2 style={{ fontSize: '68px', fontWeight: '700', color: '#FFFFFF', letterSpacing: '-0.04em', lineHeight: '1.0', marginBottom: '22px' }}>Skill<br/>Verified.</h2>
-              <p style={{ fontSize: '15px', color: '#9CA3AF', lineHeight: '1.75', marginBottom: '28px', maxWidth: '380px' }}>You were assessed on what you can do, not what you watched. Backed by Coursera and DeepLearning.AI, tied to your verified identity.</p>
-              <div style={{ padding: '18px 20px', borderRadius: '12px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', marginBottom: '24px' }}>
-                <div style={{ fontSize: '10px', fontWeight: '600', color: '#8E8E93', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '12px' }}>What You Demonstrated</div>
-                {['Wrote an effective system prompt for a real Meridian use case', 'Specified role, tone, and domain expertise precisely', 'Defined behavioral constraints for production contexts'].map((item, i) => (
-                  <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', marginBottom: i < 2 ? '10px' : 0 }}>
-                    <span style={{ color: C.success, fontSize: '13px', fontWeight: '700', flexShrink: 0, marginTop: '2px' }}>✓</span>
-                    <span style={{ fontSize: '13px', color: '#E5E7EB', lineHeight: '1.6' }}>{item}</span>
+        <div className="scroll vignette" style={{ flex:1, background:'#0A0A0F', display:'flex', alignItems:'center', justifyContent:'center', padding:'48px' }}>
+          <div style={{ display:'flex', gap:'56px', alignItems:'flex-start', maxWidth:'1000px', width:'100%' }}>
+
+            {/* Left — verification story */}
+            <div style={{ flex:1 }}>
+              <div style={{ fontSize:'11px', fontWeight:'600', color:C.accent, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'14px' }}>Assessment Complete · {V.contentType}</div>
+              <h2 style={{ fontSize:'60px', fontWeight:'700', color:'#FFFFFF', letterSpacing:'-0.04em', lineHeight:'1.0', marginBottom:'18px' }}>Skill<br/>Verified.</h2>
+              <p style={{ fontSize:'14px', color:'#9CA3AF', lineHeight:'1.75', marginBottom:'24px', maxWidth:'380px' }}>Scored on what you produced — not what you watched or read. The artifact is the evidence.</p>
+
+              {/* What you demonstrated */}
+              <div style={{ padding:'16px 18px', borderRadius:'12px', background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.08)', marginBottom:'20px' }}>
+                <div style={{ fontSize:'10px', fontWeight:'600', color:'#8E8E93', letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'10px' }}>Rubric — what was scored</div>
+                {V.rubric.map((item, i) => (
+                  <div key={i} style={{ display:'flex', gap:'10px', alignItems:'flex-start', marginBottom: i < V.rubric.length-1 ? '9px' : 0 }}>
+                    <span style={{ color:C.success, fontSize:'12px', fontWeight:'700', flexShrink:0, marginTop:'2px' }}>✓</span>
+                    <span style={{ fontSize:'13px', color:'#E5E7EB', lineHeight:'1.6' }}>{item}</span>
                   </div>
                 ))}
               </div>
-              <div style={{ fontSize: '22px', fontWeight: '700', color: '#FFFFFF', marginBottom: '6px', letterSpacing: '-0.02em' }}>"This is not a completion badge."</div>
-              <div style={{ fontSize: '14px', color: '#6B7280' }}>Applied assessment. Not video completion.</div>
+
+              {/* Artifact label */}
+              <div style={{ padding:'12px 16px', borderRadius:'10px', background:'rgba(91,95,239,0.08)', border:'1px solid rgba(91,95,239,0.2)', marginBottom:'20px' }}>
+                <div style={{ fontSize:'10px', fontWeight:'700', color:C.accent, letterSpacing:'.08em', textTransform:'uppercase', marginBottom:'5px' }}>Artifact submitted</div>
+                <div style={{ fontSize:'13px', color:'rgba(255,255,255,0.75)', lineHeight:'1.55' }}>{V.artifact}</div>
+              </div>
+
+              {/* Org signal */}
+              <div style={{ padding:'16px 18px', borderRadius:'12px', background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', marginBottom:'20px' }}>
+                <div style={{ fontSize:'10px', fontWeight:'600', color:'#8E8E93', letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'12px' }}>What your manager sees now</div>
+                <div style={{ display:'flex', flexDirection:'column', gap:'8px' }}>
+                  <div style={{ display:'flex', gap:'10px', alignItems:'flex-start' }}>
+                    <span style={{ fontSize:'10px', color:'#6B7280', flexShrink:0, marginTop:'3px', fontWeight:'600', textTransform:'uppercase', letterSpacing:'.06em' }}>Dashboard</span>
+                    <span style={{ fontSize:'12.5px', color:'rgba(255,255,255,0.65)', lineHeight:'1.55' }}>{V.orgSignal.dashboard}</span>
+                  </div>
+                  <div style={{ display:'flex', gap:'10px', alignItems:'flex-start' }}>
+                    <span style={{ fontSize:'10px', color:'#6B7280', flexShrink:0, marginTop:'3px', fontWeight:'600', textTransform:'uppercase', letterSpacing:'.06em' }}>Wallet</span>
+                    <span style={{ fontSize:'12.5px', color:'rgba(255,255,255,0.65)', lineHeight:'1.55' }}>{V.orgSignal.wallet}</span>
+                  </div>
+                  <div style={{ display:'flex', gap:'10px', alignItems:'flex-start' }}>
+                    <span style={{ fontSize:'10px', color:'#6B7280', flexShrink:0, marginTop:'3px', fontWeight:'600', textTransform:'uppercase', letterSpacing:'.06em' }}>VP view</span>
+                    <span style={{ fontSize:'12.5px', color:'rgba(255,255,255,0.65)', lineHeight:'1.55' }}>{V.orgSignal.vp}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ fontSize:'16px', fontWeight:'700', color:'rgba(255,255,255,0.85)', marginBottom:'4px', letterSpacing:'-0.01em', fontStyle:'italic' }}>{V.quote}</div>
             </div>
 
-            {/* Card */}
-            <div className="glow-card" style={{ width: '380px', background: '#FFFFFF', borderRadius: '16px', padding: '32px', flexShrink: 0 }}>
-              <div style={{ display: 'flex', justifyContent: 'center', margin: '0 auto 18px' }}>
-                <IconSeal/>
+            {/* Right — badge card */}
+            <div className="glow-card" style={{ width:'340px', background:'#FFFFFF', borderRadius:'16px', padding:'28px', flexShrink:0 }}>
+              <div style={{ display:'flex', justifyContent:'center', margin:'0 auto 16px' }}><IconSeal/></div>
+              <div style={{ textAlign:'center', marginBottom:'18px' }}>
+                <div style={{ fontSize:'10px', fontWeight:'700', color:C.accent, letterSpacing:'.08em', textTransform:'uppercase', marginBottom:'5px' }}>Verified · {V.contentType}</div>
+                <div style={{ fontSize:'20px', fontWeight:'700', color:C.tPri, letterSpacing:'-0.02em', marginBottom:'3px', lineHeight:'1.25' }}>{V.skill}</div>
+                <div style={{ fontSize:'13px', color:C.tSec }}>{V.level}</div>
               </div>
-              <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                <div className="label caption" style={{ color: C.accent, marginBottom: '5px' }}>Demonstrated</div>
-                <div style={{ fontSize: '22px', fontWeight: '600', color: C.tPri, letterSpacing: '-0.02em', marginBottom: '3px' }}>Prompt Engineering</div>
-                <div style={{ fontSize: '14px', color: C.tSec }}>Foundation Level</div>
-              </div>
-              <div style={{ height: '1px', background: C.border, marginBottom: '16px' }}/>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '16px' }}>
-                {[{ l: 'Verified', v: 'Apr 23, 2026', c: C.tPri }, { l: 'Current for', v: '18 months', c: C.success }, { l: 'Refresh by', v: 'Oct 2027', c: C.tPri }].map((x, i) => (
-                  <div key={i} style={{ background: C.muted, borderRadius: '8px', padding: '10px 8px', textAlign: 'center' }}>
-                    <div className="caption" style={{ fontSize: '10px', marginBottom: '2px' }}>{x.l}</div>
-                    <div style={{ fontSize: '11px', fontWeight: '600', color: x.c, lineHeight: '1.3' }}>{x.v}</div>
+              <div style={{ height:'1px', background:C.border, marginBottom:'14px' }}/>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'7px', marginBottom:'14px' }}>
+                {[{ l:'Verified', v:'Jun 8, 2026', c:C.tPri },{ l:'Current for', v:'18 months', c:C.success },{ l:'Refresh by', v:'Dec 2027', c:C.tPri }].map((x,i) => (
+                  <div key={i} style={{ background:C.muted, borderRadius:'7px', padding:'9px 7px', textAlign:'center' }}>
+                    <div style={{ fontSize:'9px', color:C.tMut, marginBottom:'2px', fontWeight:'600', textTransform:'uppercase' }}>{x.l}</div>
+                    <div style={{ fontSize:'10.5px', fontWeight:'600', color:x.c, lineHeight:'1.3' }}>{x.v}</div>
                   </div>
                 ))}
               </div>
-              <div className="caption" style={{ fontSize: '11px', fontWeight: '600', marginBottom: '4px' }}>Assessed:</div>
-              <div style={{ fontSize: '13px', fontWeight: '500', color: C.tSec, marginBottom: '14px' }}>Coursera Skills Framework + DeepLearning.AI</div>
-              <div style={{ height: '1px', background: C.border, marginBottom: '14px' }}/>
-              <p style={{ fontSize: '13px', lineHeight: '1.65', color: C.tSec, marginBottom: '18px' }}>Can write effective system prompts, chain prompts for multi-step tasks, and debug prompt failures — through applied assessment, not video completion.</p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '7px', padding: '9px 12px', borderRadius: '8px', background: 'rgba(91,95,239,0.06)', marginBottom: '18px' }}>
-                <span>🔒</span>
-                <span style={{ fontSize: '12px', fontWeight: '500', color: C.accent }}>Identity verified · Proctored assessment</span>
+              <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, textTransform:'uppercase', letterSpacing:'.07em', marginBottom:'3px' }}>Assessed by</div>
+              <div style={{ fontSize:'12px', color:C.tSec, marginBottom:'14px', lineHeight:'1.5' }}>{V.assessedBy}</div>
+              <div style={{ height:'1px', background:C.border, marginBottom:'14px' }}/>
+              <div style={{ display:'flex', alignItems:'center', gap:'7px', padding:'8px 12px', borderRadius:'8px', background:'rgba(91,95,239,0.06)', marginBottom:'16px' }}>
+                <span style={{ fontSize:'12px' }}>🔒</span>
+                <span style={{ fontSize:'11.5px', fontWeight:'500', color:C.accent }}>Priced on skills verified, not seats</span>
               </div>
-              <div style={{ display: 'flex', gap: '9px' }}>
-                <button className="btn btn-accent" onClick={onAddToWallet} style={{ flex: 1, padding: '12px', fontSize: '13px' }}>Add to Wallet</button>
-                <button className="btn" onClick={() => {}} style={{ flex: 1, padding: '12px', fontSize: '13px', background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: '8px', color: C.tPri, fontWeight: '500' }}>Share with Priya →</button>
+              <div style={{ display:'flex', gap:'8px' }}>
+                <button className="btn btn-accent" onClick={onAddToWallet} style={{ flex:1, padding:'11px', fontSize:'12.5px' }}>Add to Wallet</button>
+                <button className="btn" style={{ flex:1, padding:'11px', fontSize:'12.5px', background:C.surface, border:`1.5px solid ${C.border}`, borderRadius:'8px', color:C.tPri, fontWeight:'500', cursor:'pointer' }}>Share →</button>
               </div>
             </div>
           </div>
@@ -2146,12 +2264,12 @@
     }
 
     /* ── Vignette 3: Wallet ── */
-    function VignetteWallet({ justVerified = false, onDismiss = () => {} }) {
+    function VignetteWallet({ justVerified = false, onDismiss = () => {}, learner }) {
       const [view, setView] = useState('6mo');
       const [showVerify, setShowVerify] = useState(justVerified);
 
       if (showVerify) return (
-        <VignetteVerify onAddToWallet={() => { setShowVerify(false); onDismiss(); }}/>
+        <VignetteVerify verify={learner?.learn?.verify} onAddToWallet={() => { setShowVerify(false); onDismiss(); }}/>
       );
 
       const day1Skills = [
@@ -2381,7 +2499,7 @@
           <div style={{ flex:1, display:'flex', overflow:'hidden', borderRadius:'12px', overflow:'hidden' }}>
             {tab===0 && <VignetteMyPlan  onSelectLearner={handleLearnerSelect}/>}
             {tab===1 && <VignetteLearn   key={learner.id} learner={learner} onSubmit={() => { setJustVerified(true); setTab(2); }}/>}
-            {tab===2 && <VignetteWallet  key={String(justVerified)} justVerified={justVerified} onDismiss={() => setJustVerified(false)}/>}
+            {tab===2 && <VignetteWallet  key={String(justVerified)} justVerified={justVerified} onDismiss={() => setJustVerified(false)} learner={learner}/>}
           </div>
         </div>
       );
