@@ -1689,8 +1689,8 @@
                 <div style={{ borderRadius:'12px', border:`1px solid ${C.border}`, background:C.muted, borderTop:`2px solid ${C.accent}`, padding:'16px 18px' }}>
                   <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'12px' }}>
                     <div style={{ display:'flex', alignItems:'center', gap:'7px' }}>
-                      <div style={{ width:'6px', height:'6px', borderRadius:'50%', background:'#27C93F', animation:'mcpPulse 2s ease-in-out infinite', flexShrink:0 }}/>
-                      <span style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase' }}>{LL.mcp ? LL.mcp.label : 'Connect MCP to personalize'}</span>
+                      {LL.mcp && <div style={{ width:'6px', height:'6px', borderRadius:'50%', background:'#27C93F', animation:'mcpPulse 2s ease-in-out infinite', flexShrink:0 }}/>}
+                      <span style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase' }}>{LL.mcp ? LL.mcp.label : 'Personalize your learning'}</span>
                     </div>
                     {LL.mcp && (
                       <div style={{ display:'flex', alignItems:'center', gap:'4px', background:'rgba(5,150,105,0.07)', border:'1px solid rgba(5,150,105,0.2)', borderRadius:'20px', padding:'2px 8px', flexShrink:0 }}>
@@ -1708,9 +1708,14 @@
                       <p style={{ fontSize:'13.5px', lineHeight:'1.7', color:C.tSec, margin:0 }} dangerouslySetInnerHTML={{ __html: LL.mcp.gap }}/>
                     </>
                   ) : (
-                    <div>
-                      <p style={{ fontSize:'13.5px', lineHeight:'1.7', color:C.tSec, marginBottom:'12px' }}>No MCP connection yet. Connect Claude, Cursor, or your work tools to get personalized context — or continue with the task as written.</p>
-                      <button style={{ background:'transparent', border:`1px solid ${C.accent}`, color:C.accent, borderRadius:'7px', padding:'6px 14px', fontSize:'12px', fontWeight:'600', cursor:'pointer' }}>Connect MCP →</button>
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:'16px' }}>
+                      <span style={{ fontSize:'13px', color:C.tMut, lineHeight:'1.5' }}>
+                        Personalize this further — connect your work tools or upload docs.
+                      </span>
+                      <div style={{ display:'flex', gap:'7px', flexShrink:0 }}>
+                        <button style={{ background:'transparent', border:`1px solid ${C.border}`, color:C.tSec, borderRadius:'7px', padding:'5px 12px', fontSize:'12px', fontWeight:'500', cursor:'pointer', whiteSpace:'nowrap', fontFamily:'inherit' }}>↑ Upload docs</button>
+                        <button style={{ background:'transparent', border:`1px solid ${C.accent}`, color:C.accent, borderRadius:'7px', padding:'5px 12px', fontSize:'12px', fontWeight:'600', cursor:'pointer', whiteSpace:'nowrap', fontFamily:'inherit' }}>Connect MCP</button>
+                      </div>
                     </div>
                   )}
 
