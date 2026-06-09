@@ -110,7 +110,7 @@
 <body>
   <div id="root"></div>
   <script type="text/babel">
-    const { useState } = React;
+    const { useState, useEffect, useRef } = React;
 
     const C = {
       canvas:  '#F5F4F1',  surface: '#FFFFFF',  muted:  '#F0EDE8',
@@ -1638,311 +1638,292 @@
       );
     }
 
-    /* ── Vignette 1: Learn (3-phase) ── */
+    /* ── Vignette 1: Learn (chat thread) ── */
     function VignetteLearn({ onSubmit, learner }) {
-      const LL = learner?.learn || LEARNERS[0].learn;  // learner learn data, fallback to Marcus
-      const [learnPhase, setLearnPhase]   = useState('write');  // 'write' | 'feedback' | 'lab'
+      const LL = learner?.learn || LEARNERS[0].learn;
       const [conf, setConf]               = useState('getting-there');
       const [promptText, setPromptText]   = useState(LL.prompt.initial);
       const [refinedText, setRefinedText] = useState(LL.prompt.refined);
       const [trackerCollapsed, setTrackerCollapsed] = useState(false);
-      const [labSteps, setLabSteps]       = useState([false, false, false, false, false]);
       const [videoPlaying, setVideoPlaying] = useState(false);
       const [showTutorial, setShowTutorial] = useState(false);
-      const [labMode, setLabMode]         = useState('steps');  // 'steps' | 'cursor'
+      const [labMode, setLabMode]         = useState('steps');
       const [cursorStep, setCursorStep]   = useState(0);
+      const [revealed, setRevealed]       = useState(1); // thread sections visible (1–9)
+      const [focusId, setFocusId]         = useState(null); // full-screen focused section id
+      const threadRef                     = useRef(null);
 
-      // Per-phase streaming state
+      // Streaming headline (runs once on mount / learner change)
       const [streamed, setStreamed] = useState('');
-      const [anim, setAnim]         = useState(0); // 0–5 per phase
-
-      const HEADLINES = LL.headlines;
-
-      React.useEffect(() => {
-        setStreamed('');
-        setAnim(0);
-        let interval;
-        const hl = HEADLINES[learnPhase] || '';
+      const [hlDone, setHlDone]     = useState(false);
+      useEffect(() => {
+        setStreamed(''); setHlDone(false); setRevealed(1);
+        const hl = LL.headlines.write;
+        let i = 0, interval;
         const t0 = setTimeout(() => {
-          setAnim(1);
           const t1 = setTimeout(() => {
-            setAnim(2);
-            let i = 0;
             interval = setInterval(() => {
-              i += 2;
-              setStreamed(hl.slice(0, i));
+              i += 2; setStreamed(hl.slice(0, i));
               if (i >= hl.length) {
-                setStreamed(hl);
-                clearInterval(interval);
-                setTimeout(() => setAnim(3), 120);
-                setTimeout(() => setAnim(4), 380);
-                setTimeout(() => setAnim(5), 640);
-                setTimeout(() => setAnim(6), 920);
+                setStreamed(hl); clearInterval(interval); setHlDone(true);
+                setTimeout(() => setRevealed(2), 400);
+                setTimeout(() => setRevealed(3), 900);
+                setTimeout(() => setRevealed(4), 1400);
               }
             }, 18);
           }, 200);
           return () => clearTimeout(t1);
-        }, 80);
+        }, 120);
         return () => { clearTimeout(t0); clearInterval(interval); };
-      }, [learnPhase]);
+      }, [learner?.id]);
 
-      const f = (n) => ({
-        opacity: anim >= n ? 1 : 0,
-        transform: anim >= n ? 'none' : 'translateY(7px)',
-        transition: 'opacity 360ms ease, transform 360ms ease',
-      });
+      // Auto-scroll thread to bottom when new section appears
+      useEffect(() => {
+        if (threadRef.current) setTimeout(() => threadRef.current.scrollTo({ top: threadRef.current.scrollHeight, behavior: 'smooth' }), 80);
+      }, [revealed]);
 
-      const Cursor = () => anim === 2
-        ? <span style={{ display:'inline-block', width:'2px', height:'32px', background:C.accent, marginLeft:'2px', verticalAlign:'middle', animation:'blink 0.9s step-end infinite' }}/>
-        : null;
+      function reveal(n) { setTimeout(() => setRevealed(r => Math.max(r, n)), 0); setTimeout(() => setRevealed(r => Math.max(r, n+1)), 500); setTimeout(() => setRevealed(r => Math.max(r, n+2)), 1000); }
 
-      const ContextBar = () => (
-        <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'44px' }}>
-          {LL.breadcrumb.map((crumb, i) => (
-            <React.Fragment key={i}>
-              {i > 0 && <span style={{ fontSize:'11px', color:'rgba(28,25,23,0.2)' }}>·</span>}
-              <span style={{ fontSize:'11px', fontWeight: i === 0 ? '600' : i === 1 ? '500' : '400', color:C.tMut, letterSpacing: i===0 ? '0.04em' : 0 }}>{crumb}</span>
-            </React.Fragment>
-          ))}
-        </div>
-      );
-
-      const allDone = labSteps.every(Boolean);
-
-      /* ── WRITE ── */
-      if (learnPhase === 'write') return (
-        <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
-          <div className="scroll vignette" style={{ flex:1, padding:'48px 56px', background:C.surface }}>
-            <ContextBar/>
-            <div style={{ maxWidth:'560px' }}>
-              <div style={{ ...f(1), marginBottom:'20px' }}><Sparkle/></div>
-              <h2 style={{ fontSize:'34px', fontWeight:'700', color:C.tPri, letterSpacing:'-0.03em', lineHeight:'1.2', marginBottom:'16px', minHeight:'84px' }}>
-                {streamed}<Cursor/>
-              </h2>
-              {/* Why it's relevant to Marcus — MCP insight */}
-              <div style={{ ...f(3), marginBottom:'28px' }}>
-                <div style={{ borderRadius:'12px', border:`1px solid ${C.border}`, background:C.muted, borderTop:`2px solid ${C.accent}`, padding:'16px 18px' }}>
-                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'12px' }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:'7px' }}>
-                      {LL.mcp && <div style={{ width:'6px', height:'6px', borderRadius:'50%', background:'#27C93F', animation:'mcpPulse 2s ease-in-out infinite', flexShrink:0 }}/>}
-                      <span style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase' }}>{LL.mcp ? LL.mcp.label : 'Personalize your learning'}</span>
-                    </div>
-                    {LL.mcp && (
-                      <div style={{ display:'flex', alignItems:'center', gap:'4px', background:'rgba(5,150,105,0.07)', border:'1px solid rgba(5,150,105,0.2)', borderRadius:'20px', padding:'2px 8px', flexShrink:0 }}>
-                        <svg width="8" height="10" viewBox="0 0 9 11" fill="none"><path d="M1.5 5V3.5a3 3 0 0 1 6 0V5M1 5h7a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5H1a.5.5 0 0 1-.5-.5v-4A.5.5 0 0 1 1 5z" stroke="#059669" strokeWidth="1.1" strokeLinecap="round"/></svg>
-                        <span style={{ fontSize:'9px', fontWeight:'700', color:'#059669', letterSpacing:'0.06em', textTransform:'uppercase' }}>Only visible to you</span>
-                      </div>
-                    )}
-                  </div>
-                  {LL.mcp ? (
-                    <>
-                      <p style={{ fontSize:'13.5px', lineHeight:'1.7', color:C.tSec, marginBottom:'12px' }} dangerouslySetInnerHTML={{ __html: LL.mcp.intro }}/>
-                      <div style={{ padding:'10px 13px', background:C.canvas, borderRadius:'8px', border:`1px solid ${C.border}`, fontSize:'12.5px', color:C.tSec, fontStyle:'italic', lineHeight:'1.65', marginBottom:'12px' }}>
-                        {LL.mcp.observation}
-                      </div>
-                      <p style={{ fontSize:'13.5px', lineHeight:'1.7', color:C.tSec, margin:0 }} dangerouslySetInnerHTML={{ __html: LL.mcp.gap }}/>
-                    </>
-                  ) : (
-                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:'16px' }}>
-                      <span style={{ fontSize:'13px', color:C.tMut, lineHeight:'1.5' }}>
-                        Personalize this further — connect your work tools or upload docs.
-                      </span>
-                      <div style={{ display:'flex', gap:'7px', flexShrink:0 }}>
-                        <button style={{ background:'transparent', border:`1px solid ${C.border}`, color:C.tSec, borderRadius:'7px', padding:'5px 12px', fontSize:'12px', fontWeight:'500', cursor:'pointer', whiteSpace:'nowrap', fontFamily:'inherit' }}>↑ Upload docs</button>
-                        <button style={{ background:'transparent', border:`1px solid ${C.accent}`, color:C.accent, borderRadius:'7px', padding:'5px 12px', fontSize:'12px', fontWeight:'600', cursor:'pointer', whiteSpace:'nowrap', fontFamily:'inherit' }}>Connect MCP</button>
-                      </div>
-                    </div>
-                  )}
-
-                </div>
-              </div>
-
-              {/* Here's your task */}
-              <div style={{ ...f(4), borderTop:`1px solid rgba(28,25,23,0.1)`, paddingTop:'24px', marginBottom:'32px' }}>
-                <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase', marginBottom:'10px' }}>Your task · {LL.task.company}</div>
-                <p style={{ fontSize:'14px', lineHeight:'1.7', color:C.tSec }}>{LL.task.text}</p>
-              </div>
-              <div style={f(6)}>
-                <div style={{ marginBottom:'28px' }}>
-                  <div style={{ fontSize:'11px', fontWeight:'600', color:C.tMut, letterSpacing:'0.07em', textTransform:'uppercase', marginBottom:'10px' }}>{LL.task.promptLabel || 'Your Draft'}</div>
-                  <textarea value={promptText} onChange={e => setPromptText(e.target.value)}
-                    style={{ width:'100%', height:'120px', padding:'14px 16px', border:`1px solid rgba(28,25,23,0.12)`, borderRadius:'10px', fontSize:'13.5px', lineHeight:'1.7', color:C.tPri, background:C.canvas, resize:'none', outline:'none', transition:'border-color 150ms ease' }}
-                    onFocus={e => e.target.style.borderColor = C.accent}
-                    onBlur={e => e.target.style.borderColor = 'rgba(28,25,23,0.12)'}/>
-                </div>
-                <div style={{ marginBottom:'32px' }}>
-                  <div style={{ fontSize:'13px', color:C.tMut, marginBottom:'12px' }}>{LL.task.confidenceQ || 'How does this feel right now?'}</div>
-                  <div style={{ display:'flex', gap:'8px' }}>
-                    {[{id:'not-yet',l:'Not yet'},{id:'getting-there',l:'Getting there'},{id:'got-it',l:"I've got it"}].map(chip => {
-                      const a = conf === chip.id;
-                      return <button key={chip.id} onClick={() => setConf(chip.id)}
-                        style={{ border:`1px solid ${a ? C.tPri : 'rgba(28,25,23,0.14)'}`, background: a ? C.tPri : 'transparent', fontWeight: a?'600':'400', color: a?'#fff':C.tMut, borderRadius:'8px', padding:'7px 16px', fontSize:'13px', cursor:'pointer', transition:'all 150ms ease' }}>{chip.l}</button>;
-                    })}
-                  </div>
-                </div>
-                <button className="btn btn-primary" onClick={() => setLearnPhase('feedback')} style={{ padding:'13px 28px', fontSize:'14px' }}>Submit prompt →</button>
-              </div>
+      // MCP card content (shared between thread and focused state)
+      const McpCard = () => (
+        <div style={{ borderRadius:'12px', border:`1px solid ${C.border}`, background:C.muted, borderTop:`2px solid ${C.accent}`, padding:'14px 16px' }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'10px' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:'7px' }}>
+              {LL.mcp && <div style={{ width:'6px', height:'6px', borderRadius:'50%', background:'#27C93F', animation:'mcpPulse 2s ease-in-out infinite', flexShrink:0 }}/>}
+              <span style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'.09em', textTransform:'uppercase' }}>{LL.mcp ? LL.mcp.label : 'Personalize your learning'}</span>
             </div>
+            {LL.mcp && <div style={{ display:'flex', alignItems:'center', gap:'4px', background:'rgba(5,150,105,0.07)', border:'1px solid rgba(5,150,105,0.2)', borderRadius:'20px', padding:'2px 8px', flexShrink:0 }}><svg width="8" height="10" viewBox="0 0 9 11" fill="none"><path d="M1.5 5V3.5a3 3 0 0 1 6 0V5M1 5h7a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5H1a.5.5 0 0 1-.5-.5v-4A.5.5 0 0 1 1 5z" stroke="#059669" strokeWidth="1.1" strokeLinecap="round"/></svg><span style={{ fontSize:'9px', fontWeight:'700', color:'#059669', letterSpacing:'.06em', textTransform:'uppercase' }}>Only visible to you</span></div>}
           </div>
-          <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)} trackerData={LL.tracker} simplified={true}/>
+          {LL.mcp ? (<><p style={{ fontSize:'13px', lineHeight:'1.7', color:C.tSec, marginBottom:'10px' }} dangerouslySetInnerHTML={{ __html:LL.mcp.intro }}/><div style={{ padding:'9px 12px', background:C.canvas, borderRadius:'8px', border:`1px solid ${C.border}`, fontSize:'12.5px', color:C.tSec, fontStyle:'italic', lineHeight:'1.65', marginBottom:'10px' }}>{LL.mcp.observation}</div><p style={{ fontSize:'13px', lineHeight:'1.7', color:C.tSec, margin:0 }} dangerouslySetInnerHTML={{ __html:LL.mcp.gap }}/></>)
+          : (<div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:'14px' }}><span style={{ fontSize:'12.5px', color:C.tMut }}>Personalize this further — connect your work tools or upload docs.</span><div style={{ display:'flex', gap:'6px', flexShrink:0 }}><button style={{ background:'transparent', border:`1px solid ${C.border}`, color:C.tSec, borderRadius:'7px', padding:'5px 10px', fontSize:'11.5px', cursor:'pointer', fontFamily:'inherit' }}>↑ Upload docs</button><button style={{ background:'transparent', border:`1px solid ${C.accent}`, color:C.accent, borderRadius:'7px', padding:'5px 10px', fontSize:'11.5px', fontWeight:'600', cursor:'pointer', fontFamily:'inherit' }}>Connect MCP</button></div></div>)}
         </div>
       );
 
-      /* ── FEEDBACK ── */
-      if (learnPhase === 'feedback') {
-        const pts = LL.feedback;
+      // Thread divider
+      const Div = () => <div style={{ display:'flex', alignItems:'center', gap:12, margin:'32px 0' }}><div style={{ flex:1, height:1, background:C.border }}/><div style={{ width:5, height:5, borderRadius:'50%', background:C.border }}/><div style={{ flex:1, height:1, background:C.border }}/></div>;
+
+      // Hover-to-focus wrapper
+      function Section({ id, children }) {
+        const [hov, setHov] = useState(false);
         return (
-          <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
-            <div className="scroll vignette" style={{ flex:1, padding:'48px 56px', background:C.surface }}>
-              <ContextBar/>
-              <div style={{ maxWidth:'560px' }}>
-                <div style={{ ...f(1), marginBottom:'20px' }}><Sparkle/></div>
-                <h2 style={{ fontSize:'34px', fontWeight:'700', color:C.tPri, letterSpacing:'-0.03em', lineHeight:'1.2', marginBottom:'24px', minHeight:'44px' }}>
-                  {streamed}<Cursor/>
-                </h2>
-                <div style={{ ...f(3), marginBottom:'28px' }}>
-                  {pts.map((pt, i) => (
-                    <div key={i} style={{ display:'flex', gap:'12px', marginBottom:'10px', padding:'14px 16px', borderRadius:'10px',
-                      background: pt.ok ? 'rgba(5,150,105,0.04)' : 'rgba(28,25,23,0.03)',
-                      border:`1px solid ${pt.ok ? 'rgba(5,150,105,0.15)' : 'rgba(28,25,23,0.08)'}` }}>
-                      <span style={{ fontSize:'13px', color: pt.ok ? C.success : C.tMut, fontWeight:'700', flexShrink:0, marginTop:'2px' }}>{pt.ok ? '✓' : '→'}</span>
-                      <span style={{ fontSize:'13.5px', lineHeight:'1.65', color:C.tSec }}>{pt.text}</span>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ ...f(4), borderTop:`1px solid rgba(28,25,23,0.1)`, paddingTop:'24px', marginBottom:'28px' }}>
-                  <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase', marginBottom:'10px' }}>Refined prompt — edit if you'd like</div>
-                  <textarea value={refinedText} onChange={e => setRefinedText(e.target.value)}
-                    style={{ width:'100%', height:'150px', padding:'14px 16px', border:`1px solid rgba(28,25,23,0.12)`, borderRadius:'10px', fontSize:'13.5px', lineHeight:'1.7', color:C.tPri, background:C.canvas, resize:'none', outline:'none', transition:'border-color 150ms ease' }}
-                    onFocus={e => e.target.style.borderColor = C.accent}
-                    onBlur={e => e.target.style.borderColor = 'rgba(28,25,23,0.12)'}/>
-                </div>
-                <div style={f(5)}>
-                  <button className="btn btn-primary" onClick={() => setLearnPhase('lab')} style={{ padding:'13px 28px', fontSize:'14px' }}>Use this prompt — start lab →</button>
-                </div>
-              </div>
-            </div>
-            <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)} trackerData={LL.tracker} simplified={true}/>
+          <div style={{ position:'relative' }} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}>
+            {children}
+            {hov && (
+              <button onClick={() => setFocusId(id)} style={{ position:'absolute', top:0, right:0, background:'rgba(28,25,23,0.06)', border:`1px solid ${C.border}`, borderRadius:7, padding:'4px 10px', fontSize:10, fontWeight:600, color:C.tMut, cursor:'pointer', fontFamily:'inherit', backdropFilter:'blur(4px)', display:'flex', alignItems:'center', gap:4, letterSpacing:'.04em' }}>
+                ⤢ Focus
+              </button>
+            )}
           </div>
         );
       }
 
-      /* ── LAB ── */
-      const LAB_STEPS = LL.lab;
-
-      /* ── Tutorial video overlay ── */
-      if (showTutorial) return (
-        <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
-          <div className="scroll vignette" style={{ flex:1, padding:'48px 56px', background:C.surface }}>
-            <ContextBar/>
-            <div style={{ maxWidth:'580px' }}>
-              {/* Back link */}
-              <button onClick={() => setShowTutorial(false)}
-                style={{ background:'none', border:'none', color:C.tMut, fontSize:'13px', cursor:'pointer', padding:0, marginBottom:'24px', display:'flex', alignItems:'center', gap:'6px', fontFamily:'inherit' }}>
-                ← Back to lab options
-              </button>
-
-              <div style={{ marginBottom:'20px' }}><Sparkle/></div>
-              <h2 style={{ fontSize:'28px', fontWeight:'700', color:C.tPri, letterSpacing:'-0.025em', lineHeight:'1.2', marginBottom:'8px' }}>
-                Watch first, then do it.
-              </h2>
-              <p style={{ fontSize:'14px', color:C.tMut, marginBottom:'28px', lineHeight:'1.65' }}>
-                A 2-minute walkthrough of the lab steps — then you'll do it yourself.
-              </p>
-
-              {/* Video player */}
-              <VideoTutorial playing={videoPlaying} onToggle={() => setVideoPlaying(v => !v)}/>
-
-              <div style={{ marginTop:'28px', padding:'16px 20px', background:C.canvas, borderRadius:'10px', border:`1px solid ${C.border}`, marginBottom:'28px' }}>
-                <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'10px' }}>What the lab covers</div>
-                {LL.labCovers.map((item, i) => (
-                  <div key={i} style={{ display:'flex', gap:'10px', alignItems:'flex-start', marginBottom: i < LL.labCovers.length - 1 ? '8px' : 0 }}>
-                    <span style={{ color:C.success, fontSize:'12px', flexShrink:0, marginTop:'2px', fontWeight:'700' }}>✓</span>
-                    <span style={{ fontSize:'13px', color:C.tSec, lineHeight:'1.55' }}>{item}</span>
-                  </div>
-                ))}
-              </div>
-
-              <button className="btn btn-primary" onClick={() => { setShowTutorial(false); setCursorStep(0); setLabMode('cursor'); }}
-                style={{ padding:'13px 28px', fontSize:'14px' }}>
-                Launch lab →
-              </button>
-            </div>
-          </div>
-          <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)} trackerData={LL.tracker} simplified={true}/>
+      // Breadcrumb
+      const Breadcrumb = () => (
+        <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:36 }}>
+          {LL.breadcrumb.map((c,i) => (<React.Fragment key={i}>{i>0&&<span style={{ fontSize:11, color:'rgba(28,25,23,0.2)' }}>·</span>}<span style={{ fontSize:11, fontWeight:i===0?'600':i===1?'500':'400', color:C.tMut }}>{c}</span></React.Fragment>))}
         </div>
       );
 
-      /* ── Cursor lab mode (full-screen IDE + widget) ── */
-      if (labMode === 'cursor') return (
-        <div style={{ flex:1, position:'relative', overflow:'hidden' }}>
-          <button onClick={() => setLabMode('steps')}
-            style={{ position:'absolute', top:'16px', left:'16px', zIndex:20,
-              background:'rgba(10,10,20,0.85)', border:'1px solid rgba(255,255,255,0.12)',
-              borderRadius:'7px', padding:'6px 12px', fontSize:'11px', fontWeight:'500',
-              color:'rgba(255,255,255,0.55)', cursor:'pointer', backdropFilter:'blur(8px)',
-              display:'flex', alignItems:'center', gap:'5px', fontFamily:'Inter,sans-serif',
-              transition:'color 150ms ease' }}
-            onMouseEnter={e=>e.currentTarget.style.color='rgba(255,255,255,0.9)'}
-            onMouseLeave={e=>e.currentTarget.style.color='rgba(255,255,255,0.55)'}>
-            ← Back
-          </button>
-          <CursorIDE step={cursorStep}/>
-          <CourseraWidget
-            step={cursorStep}
-            onAdvance={() => setCursorStep(s => Math.min(s + 1, 4))}
-            onComplete={onSubmit}
-          />
-        </div>
-      );
-
-      /* ── Steps view (default) ── */
-      return (
-        <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
-          <div className="scroll vignette" style={{ flex:1, padding:'48px 56px', background:C.surface }}>
-            <ContextBar/>
-            <div style={{ maxWidth:'560px' }}>
-              <div style={{ ...f(1), marginBottom:'20px' }}><Sparkle/></div>
-              <h2 style={{ fontSize:'34px', fontWeight:'700', color:C.tPri, letterSpacing:'-0.03em', lineHeight:'1.2', marginBottom:'24px', minHeight:'44px' }}>
-                {streamed}<Cursor/>
-              </h2>
-
-              {/* What you'll do */}
-              <div style={{ ...f(3), marginBottom:'32px' }}>
-                <p style={{ fontSize:'15px', lineHeight:'1.75', color:C.tSec, margin:0 }}>{LL.labIntro}</p>
+      /* ── Full-screen focused overlay ── */
+      if (focusId) {
+        const back = () => setFocusId(null);
+        return (
+          <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
+            <div className="scroll vignette" style={{ flex:1, background:C.surface, padding:'0' }}>
+              <div style={{ position:'sticky', top:0, zIndex:10, padding:'14px 40px', borderBottom:`1px solid ${C.border}`, background:C.surface, display:'flex', alignItems:'center', gap:12 }}>
+                <button onClick={back} style={{ background:'transparent', border:`1px solid ${C.border}`, borderRadius:8, padding:'6px 14px', fontSize:12.5, color:C.tMut, cursor:'pointer', fontFamily:'inherit', display:'flex', alignItems:'center', gap:6 }}>← Back to thread</button>
+                <span style={{ fontSize:11, color:C.tMut, letterSpacing:'.06em', textTransform:'uppercase' }}>Focused</span>
               </div>
-
-              {/* What the lab covers */}
-              <div style={{ ...f(4), borderRadius:'12px', border:`1px solid ${C.border}`, padding:'18px 20px', marginBottom:'36px' }}>
-                <div style={{ fontSize:'10px', fontWeight:'600', color:C.tMut, letterSpacing:'0.09em', textTransform:'uppercase', marginBottom:'14px' }}>What the lab covers</div>
-                {LL.labCovers.map((item, i) => (
-                  <div key={i} style={{ display:'flex', gap:'10px', alignItems:'flex-start', marginBottom: i < 2 ? '10px' : 0 }}>
-                    <span style={{ fontSize:'13px', color:C.accent, fontWeight:'700', flexShrink:0, marginTop:'1px' }}>→</span>
-                    <span style={{ fontSize:'13.5px', color:C.tSec, lineHeight:'1.55' }}>{item}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* CTAs */}
-              <div style={f(5)}>
-                <div style={{ display:'flex', flexDirection:'column', gap:'12px', maxWidth:'320px' }}>
-                  <button className="btn btn-primary" onClick={() => { setCursorStep(0); setLabMode('cursor'); }}
-                    style={{ padding:'14px 28px', fontSize:'14px', width:'100%' }}>
-                    Launch lab →
-                  </button>
-                  <button onClick={() => setShowTutorial(true)}
-                    style={{ padding:'13px 28px', fontSize:'13.5px', fontWeight:'500', width:'100%',
-                      background:'transparent', border:`1px solid rgba(28,25,23,0.15)`, borderRadius:'10px',
-                      color:C.tSec, cursor:'pointer', fontFamily:'inherit', transition:'border-color 150ms ease' }}
-                    onMouseEnter={e => e.currentTarget.style.borderColor = C.tPri}
-                    onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(28,25,23,0.15)'}>
-                    Start with the tutorial
-                  </button>
+              <div className="scroll" style={{ padding:'52px 0', display:'flex', justifyContent:'center' }}>
+                <div style={{ width:'100%', maxWidth:640, padding:'0 40px' }}>
+                  {focusId==='draft' && (<>
+                    <div style={{ fontSize:11, fontWeight:600, color:C.tMut, letterSpacing:'.07em', textTransform:'uppercase', marginBottom:10 }}>{LL.task.promptLabel||'Your Draft'}</div>
+                    <div style={{ fontSize:13.5, lineHeight:1.7, color:C.tSec, marginBottom:20 }}>{LL.task.text}</div>
+                    <textarea value={promptText} onChange={e=>setPromptText(e.target.value)} autoFocus
+                      style={{ width:'100%', height:280, padding:'16px 18px', border:`1.5px solid ${C.accent}`, borderRadius:12, fontSize:14.5, lineHeight:1.75, color:C.tPri, background:C.canvas, resize:'none', outline:'none', fontFamily:'inherit' }}/>
+                    <div style={{ marginTop:16, display:'flex', gap:10, alignItems:'center' }}>
+                      <button className="btn btn-primary" onClick={() => { back(); reveal(5); }} style={{ padding:'12px 24px', fontSize:13.5 }}>Submit →</button>
+                      <span style={{ fontSize:12, color:C.tMut }}>{LL.task.confidenceQ}</span>
+                    </div>
+                  </>)}
+                  {focusId==='refined' && (<>
+                    <div style={{ fontSize:11, fontWeight:600, color:C.tMut, letterSpacing:'.07em', textTransform:'uppercase', marginBottom:10 }}>Refined — edit if you'd like</div>
+                    <textarea value={refinedText} onChange={e=>setRefinedText(e.target.value)} autoFocus
+                      style={{ width:'100%', height:320, padding:'16px 18px', border:`1.5px solid ${C.accent}`, borderRadius:12, fontSize:14.5, lineHeight:1.75, color:C.tPri, background:C.canvas, resize:'none', outline:'none', fontFamily:'inherit' }}/>
+                    <button className="btn btn-primary" onClick={() => { back(); reveal(8); }} style={{ marginTop:16, padding:'12px 24px', fontSize:13.5 }}>Use this — start lab →</button>
+                  </>)}
+                  {focusId==='task' && (<>
+                    <div style={{ fontSize:11, fontWeight:600, color:C.tMut, letterSpacing:'.09em', textTransform:'uppercase', marginBottom:10 }}>Your task · {LL.task.company}</div>
+                    <p style={{ fontSize:18, lineHeight:1.75, color:C.tPri }}>{LL.task.text}</p>
+                  </>)}
+                  {focusId==='feedback' && LL.feedback.map((pt,i) => (
+                    <div key={i} style={{ display:'flex', gap:14, padding:'16px 18px', borderRadius:10, background:pt.ok?'rgba(5,150,105,0.04)':'rgba(28,25,23,0.03)', border:`1px solid ${pt.ok?'rgba(5,150,105,0.15)':C.border}`, marginBottom:10 }}>
+                      <span style={{ color:pt.ok?C.success:C.tMut, fontWeight:700, fontSize:14, flexShrink:0 }}>{pt.ok?'✓':'→'}</span>
+                      <span style={{ fontSize:14.5, lineHeight:1.7, color:C.tSec }}>{pt.text}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
+            <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c=>!c)} trackerData={LL.tracker} simplified={true}/>
           </div>
-          <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c => !c)} trackerData={LL.tracker} simplified={true}/>
+        );
+      }
+
+      /* ── Tutorial screen ── */
+      if (showTutorial) return (
+        <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
+          <div className="scroll vignette" style={{ flex:1, padding:'48px 56px', background:C.surface }}>
+            <button onClick={() => setShowTutorial(false)} style={{ background:'none', border:'none', color:C.tMut, fontSize:13, cursor:'pointer', padding:0, marginBottom:24, display:'flex', alignItems:'center', gap:6, fontFamily:'inherit' }}>← Back</button>
+            <div style={{ maxWidth:560 }}>
+              <div style={{ marginBottom:16 }}><Sparkle/></div>
+              <h2 style={{ fontSize:28, fontWeight:700, color:C.tPri, letterSpacing:'-0.025em', lineHeight:1.2, marginBottom:8 }}>Watch first, then do it.</h2>
+              <p style={{ fontSize:14, color:C.tMut, marginBottom:28, lineHeight:1.65 }}>A 2-minute walkthrough of the lab steps — then you'll do it yourself.</p>
+              <VideoTutorial playing={videoPlaying} onToggle={() => setVideoPlaying(v=>!v)}/>
+              <div style={{ marginTop:24, padding:'14px 18px', background:C.canvas, borderRadius:10, border:`1px solid ${C.border}`, marginBottom:24 }}>
+                <div style={{ fontSize:10, fontWeight:600, color:C.tMut, letterSpacing:'.08em', textTransform:'uppercase', marginBottom:10 }}>What the lab covers</div>
+                {LL.labCovers.map((item,i) => (<div key={i} style={{ display:'flex', gap:10, alignItems:'flex-start', marginBottom:i<LL.labCovers.length-1?8:0 }}><span style={{ color:C.success, fontSize:12, flexShrink:0, marginTop:2, fontWeight:700 }}>✓</span><span style={{ fontSize:13, color:C.tSec, lineHeight:1.55 }}>{item}</span></div>))}
+              </div>
+              <button className="btn btn-primary" onClick={() => { setShowTutorial(false); setCursorStep(0); setLabMode('cursor'); }} style={{ padding:'13px 28px', fontSize:14 }}>Launch lab →</button>
+            </div>
+          </div>
+          <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c=>!c)} trackerData={LL.tracker} simplified={true}/>
+        </div>
+      );
+
+      /* ── Cursor lab (full-screen IDE) ── */
+      if (labMode === 'cursor') return (
+        <div style={{ flex:1, position:'relative', overflow:'hidden' }}>
+          <button onClick={() => setLabMode('steps')} style={{ position:'absolute', top:16, left:16, zIndex:20, background:'rgba(10,10,20,0.85)', border:'1px solid rgba(255,255,255,0.12)', borderRadius:7, padding:'6px 12px', fontSize:11, fontWeight:500, color:'rgba(255,255,255,0.55)', cursor:'pointer', backdropFilter:'blur(8px)', display:'flex', alignItems:'center', gap:5, fontFamily:'Inter,sans-serif', transition:'color 150ms' }} onMouseEnter={e=>e.currentTarget.style.color='rgba(255,255,255,0.9)'} onMouseLeave={e=>e.currentTarget.style.color='rgba(255,255,255,0.55)'}>← Back</button>
+          <CursorIDE step={cursorStep}/>
+          <CourseraWidget step={cursorStep} onAdvance={() => setCursorStep(s=>Math.min(s+1,4))} onComplete={onSubmit}/>
+        </div>
+      );
+
+      /* ── Chat thread ── */
+      return (
+        <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
+          <div ref={threadRef} className="scroll vignette" style={{ flex:1, background:C.surface, overflowY:'auto' }}>
+            <div style={{ maxWidth:600, margin:'0 auto', padding:'48px 48px 100px' }}>
+              <Breadcrumb/>
+
+              {/* ① Headline */}
+              <div style={{ marginBottom:28 }}>
+                <div style={{ marginBottom:16 }}><Sparkle/></div>
+                <h2 style={{ fontSize:36, fontWeight:700, color:C.tPri, letterSpacing:'-0.03em', lineHeight:1.2, minHeight:88 }}>
+                  {streamed}{!hlDone && <span style={{ display:'inline-block', width:'2px', height:'32px', background:C.accent, marginLeft:2, verticalAlign:'middle', animation:'blink 0.9s step-end infinite' }}/>}
+                </h2>
+              </div>
+
+              {/* ② MCP / personalize card */}
+              {revealed >= 2 && (
+                <div style={{ animation:'fadeUp 300ms ease forwards', marginBottom:0 }}>
+                  <McpCard/>
+                  <Div/>
+                </div>
+              )}
+
+              {/* ③ Task */}
+              {revealed >= 3 && (
+                <div style={{ animation:'fadeUp 300ms ease forwards', marginBottom:0 }}>
+                  <Section id="task">
+                    <div style={{ fontSize:10, fontWeight:600, color:C.tMut, letterSpacing:'.09em', textTransform:'uppercase', marginBottom:10 }}>Your task · {LL.task.company}</div>
+                    <p style={{ fontSize:15, lineHeight:1.75, color:C.tSec }}>{LL.task.text}</p>
+                  </Section>
+                  <Div/>
+                </div>
+              )}
+
+              {/* ④ Draft input */}
+              {revealed >= 4 && (
+                <div style={{ animation:'fadeUp 300ms ease forwards' }}>
+                  <Section id="draft">
+                    <div style={{ fontSize:11, fontWeight:600, color:C.tMut, letterSpacing:'.07em', textTransform:'uppercase', marginBottom:10 }}>{LL.task.promptLabel||'Your Draft'}</div>
+                    <textarea value={promptText} onChange={e=>setPromptText(e.target.value)}
+                      style={{ width:'100%', height:130, padding:'14px 16px', border:`1px solid rgba(28,25,23,0.12)`, borderRadius:10, fontSize:13.5, lineHeight:1.7, color:C.tPri, background:C.canvas, resize:'none', outline:'none', fontFamily:'inherit', transition:'border-color 150ms' }}
+                      onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor='rgba(28,25,23,0.12)'}/>
+                    {revealed < 5 && (
+                      <div style={{ marginTop:18 }}>
+                        <div style={{ fontSize:13, color:C.tMut, marginBottom:10 }}>{LL.task.confidenceQ||'How does this feel right now?'}</div>
+                        <div style={{ display:'flex', gap:8, marginBottom:18 }}>
+                          {[{id:'not-yet',l:'Not yet'},{id:'getting-there',l:'Getting there'},{id:'got-it',l:"I've got it"}].map(chip => { const a=conf===chip.id; return <button key={chip.id} onClick={()=>setConf(chip.id)} style={{ border:`1px solid ${a?C.tPri:'rgba(28,25,23,0.14)'}`, background:a?C.tPri:'transparent', fontWeight:a?600:400, color:a?'#fff':C.tMut, borderRadius:8, padding:'7px 14px', fontSize:12.5, cursor:'pointer', fontFamily:'inherit', transition:'all 150ms' }}>{chip.l}</button>; })}
+                        </div>
+                        <button className="btn btn-primary" onClick={() => reveal(5)} style={{ padding:'12px 24px', fontSize:13.5 }}>Submit →</button>
+                      </div>
+                    )}
+                  </Section>
+                </div>
+              )}
+
+              {/* ⑤ Feedback headline */}
+              {revealed >= 5 && (
+                <div style={{ animation:'fadeUp 300ms ease forwards' }}>
+                  <Div/>
+                  <div style={{ display:'flex', gap:10, alignItems:'flex-start', marginBottom:20 }}>
+                    <div style={{ width:26, height:26, borderRadius:7, background:C.accent, display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:800, color:'#fff', flexShrink:0, marginTop:4 }}>H</div>
+                    <h3 style={{ fontSize:26, fontWeight:700, color:C.tPri, letterSpacing:'-0.025em', lineHeight:1.25 }}>{LL.headlines.feedback}</h3>
+                  </div>
+                </div>
+              )}
+
+              {/* ⑥ Feedback items */}
+              {revealed >= 6 && (
+                <div style={{ animation:'fadeUp 300ms ease forwards', marginBottom:8 }}>
+                  <Section id="feedback">
+                    {LL.feedback.map((pt,i) => (
+                      <div key={i} style={{ display:'flex', gap:12, marginBottom:8, padding:'13px 15px', borderRadius:10, background:pt.ok?'rgba(5,150,105,0.04)':'rgba(28,25,23,0.03)', border:`1px solid ${pt.ok?'rgba(5,150,105,0.15)':C.border}` }}>
+                        <span style={{ color:pt.ok?C.success:C.tMut, fontWeight:700, fontSize:13, flexShrink:0, marginTop:2 }}>{pt.ok?'✓':'→'}</span>
+                        <span style={{ fontSize:13.5, lineHeight:1.65, color:C.tSec }}>{pt.text}</span>
+                      </div>
+                    ))}
+                  </Section>
+                </div>
+              )}
+
+              {/* ⑦ Refined prompt */}
+              {revealed >= 7 && (
+                <div style={{ animation:'fadeUp 300ms ease forwards' }}>
+                  <Div/>
+                  <Section id="refined">
+                    <div style={{ fontSize:11, fontWeight:600, color:C.tMut, letterSpacing:'.07em', textTransform:'uppercase', marginBottom:10 }}>Refined — edit if you'd like</div>
+                    <textarea value={refinedText} onChange={e=>setRefinedText(e.target.value)}
+                      style={{ width:'100%', height:160, padding:'14px 16px', border:`1px solid rgba(28,25,23,0.12)`, borderRadius:10, fontSize:13.5, lineHeight:1.7, color:C.tPri, background:C.canvas, resize:'none', outline:'none', fontFamily:'inherit', transition:'border-color 150ms' }}
+                      onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor='rgba(28,25,23,0.12)'}/>
+                    {revealed < 8 && <button className="btn btn-primary" onClick={() => reveal(8)} style={{ marginTop:16, padding:'12px 24px', fontSize:13.5 }}>Use this — start lab →</button>}
+                  </Section>
+                </div>
+              )}
+
+              {/* ⑧ Lab headline */}
+              {revealed >= 8 && (
+                <div style={{ animation:'fadeUp 300ms ease forwards' }}>
+                  <Div/>
+                  <div style={{ display:'flex', gap:10, alignItems:'flex-start', marginBottom:16 }}>
+                    <div style={{ width:26, height:26, borderRadius:7, background:C.accent, display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:800, color:'#fff', flexShrink:0, marginTop:4 }}>H</div>
+                    <div>
+                      <h3 style={{ fontSize:26, fontWeight:700, color:C.tPri, letterSpacing:'-0.025em', lineHeight:1.25, marginBottom:6 }}>{LL.headlines.lab}</h3>
+                      <p style={{ fontSize:14, lineHeight:1.7, color:C.tSec }}>{LL.labIntro}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ⑨ Lab card */}
+              {revealed >= 9 && (
+                <div style={{ animation:'fadeUp 300ms ease forwards' }}>
+                  <div style={{ borderRadius:12, border:`1px solid ${C.border}`, padding:'16px 18px', marginBottom:16 }}>
+                    <div style={{ fontSize:10, fontWeight:600, color:C.tMut, letterSpacing:'.08em', textTransform:'uppercase', marginBottom:12 }}>What the lab covers</div>
+                    {LL.labCovers.map((item,i) => (<div key={i} style={{ display:'flex', gap:10, alignItems:'flex-start', marginBottom:i<LL.labCovers.length-1?8:0 }}><span style={{ color:C.success, fontSize:12, flexShrink:0, marginTop:2, fontWeight:700 }}>✓</span><span style={{ fontSize:13, color:C.tSec, lineHeight:1.55 }}>{item}</span></div>))}
+                  </div>
+                  <div style={{ display:'flex', gap:10 }}>
+                    <button className="btn btn-primary" onClick={() => { setCursorStep(0); setLabMode('cursor'); }} style={{ flex:1, padding:'13px 20px', fontSize:13.5 }}>Launch lab →</button>
+                    <button onClick={() => setShowTutorial(true)} style={{ flex:1, padding:'12px 20px', fontSize:13, fontWeight:500, background:'transparent', border:`1px solid rgba(28,25,23,0.15)`, borderRadius:10, color:C.tSec, cursor:'pointer', fontFamily:'inherit' }}>Start with tutorial</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          <SkillTracker collapsed={trackerCollapsed} onToggle={() => setTrackerCollapsed(c=>!c)} trackerData={LL.tracker} simplified={true}/>
         </div>
       );
     }
