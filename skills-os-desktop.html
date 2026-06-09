@@ -2488,32 +2488,44 @@
 
     /* ── Path indicator — shows which of Marcus's 5 paths is active ── */
     function LearnerSwitcher({ active, onSelect }) {
-      const labels = ['Write an RCA','SBI Feedback','Data Narrative','Review Cycle','Kim Scott'];
+      // Pull directly from LEARNERS so content type is always in sync
+      const items = LEARNERS.map(l => ({
+        label: l.learn.tracker?.skillName || l.id,
+        type:  l.learn.verify?.contentType || '',
+      }));
+
+      // Short display names for the pill
+      const SHORT = ['Write an RCA','SBI Feedback','Data Narrative','Review Cycle','Kim Scott'];
+
       return (
         <div style={{
           position:'fixed', top:14, left:'50%', transform:'translateX(-50%)',
           zIndex:200,
-          display:'flex', alignItems:'center', gap:3,
-          background:'rgba(255,255,255,0.92)',
+          display:'flex', alignItems:'center', gap:2,
+          background:'rgba(255,255,255,0.94)',
           backdropFilter:'blur(16px)', WebkitBackdropFilter:'blur(16px)',
           border:'1px solid rgba(28,25,23,0.1)',
           borderRadius:50, padding:'4px 6px',
           boxShadow:'0 4px 24px rgba(0,0,0,0.12)',
         }}>
           <span style={{ fontSize:9, fontWeight:700, color:C.tMut, letterSpacing:'.1em', textTransform:'uppercase', paddingLeft:8, paddingRight:6 }}>Marcus</span>
-          <div style={{ width:1, height:14, background:C.border, margin:'0 3px' }}/>
-          {labels.map((label, i) => (
-            <button key={i} onClick={() => onSelect(i)} style={{
-              border:'none', cursor:'pointer', borderRadius:40,
-              padding:'5px 12px',
-              background: active===i ? C.accent : 'transparent',
-              color: active===i ? '#fff' : C.tMut,
-              fontSize:11.5, fontWeight: active===i ? 600 : 400,
-              fontFamily:'Inter,sans-serif', transition:'all 150ms',
-            }}>
-              {label}
-            </button>
-          ))}
+          <div style={{ width:1, height:14, background:C.border, margin:'0 2px' }}/>
+          {items.map((item, i) => {
+            const isActive = active === i;
+            return (
+              <button key={i} onClick={() => onSelect(i)} style={{
+                border:'none', cursor:'pointer', borderRadius:40,
+                padding: isActive ? '5px 14px' : '5px 11px',
+                background: isActive ? C.accent : 'transparent',
+                color: isActive ? '#fff' : C.tMut,
+                fontFamily:'Inter,sans-serif', transition:'all 150ms',
+                display:'flex', flexDirection:'column', alignItems:'center', lineHeight:1.25, gap:1,
+              }}>
+                <span style={{ fontSize:11.5, fontWeight: isActive ? 600 : 400 }}>{SHORT[i]}</span>
+                <span style={{ fontSize:8.5, fontWeight:600, letterSpacing:'.06em', textTransform:'uppercase', opacity: isActive ? 0.75 : 0.55 }}>{item.type}</span>
+              </button>
+            );
+          })}
         </div>
       );
     }
